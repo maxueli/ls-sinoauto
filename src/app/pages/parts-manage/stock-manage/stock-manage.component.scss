@@ -1,0 +1,308 @@
+// component css goes here
+#stock{
+    width: 98%;
+    padding-left: 20px;
+    h4{
+        border-bottom: 1px solid #ccc;
+        line-height: 40px;
+    }
+    .stock_top{
+        width: 100%;
+        overflow: hidden;
+         .row{
+            .input-group{
+                .form-control{
+                    height: 40px;
+                }
+                .btn{
+                    border: none;
+                    padding: 6px 30px;
+                }
+            }
+        }
+    }
+     .history_main{
+        .history_main_w{
+            width: 100%;
+            max-height: 470px;
+            border: 1px solid rgb(236, 238, 239);
+            overflow: auto;
+            .table{
+                width:120%!important;
+                min-width: 140%!important;
+                margin-bottom: 0px!important;
+                 .Total td{
+                    font-weight: bold;
+                }
+                th{
+                    text-align: center;
+                    background: #f3f3f4;
+                    font-size: 16px!important;
+                    font-weight: 500!important;
+                    color: #727171;
+                    padding: 15px 0px!important;
+                    vertical-align: middle !important;
+                }
+                td{
+                    padding: 8px 0px;
+                    font-size: 14px!important;
+                    vertical-align: middle !important;
+                    color: #292b2c!important;
+                    .btn{
+                        border: none;
+                        width: 75px;
+                        padding: 6px 12px;
+                    }
+                    .hideinfo{
+                        
+                        position: relative;
+                        a{
+                            color: #000;
+                            font-size: 20px;
+                        }
+                        ul{
+                            position: absolute;
+                            top: 20px;
+                            left: -50px;
+                            border:1px solid #ccc;
+                            font-size: 12px;
+                            padding: 5px 10px;
+                            z-index: 10;
+                            li{
+                                border-bottom: 1px solid #ccc;
+                                padding: 3px 0px;
+                               white-space: nowrap;
+                            }
+                        }
+                    }
+                }
+
+            }
+        }
+    }
+    .inventory_buttom{
+        border-bottom:1px solid #ccc;
+    }
+    .stock_foot{
+        button{
+            margin-top: 20px;
+            padding: 9px 20px;
+        }
+    }
+    
+}
+// 模态框 start
+.modal{
+    .modal-header{
+        .close{
+            border-radius: 100%!important;
+            padding: 0px 3px 2px!important;
+            border: 2px solid #727171!important;
+             outline: none;
+            .times{
+                font-weight: 700;
+                color: #000;
+                
+            }
+        }
+    }
+    .modal_main{
+        border: 1px solid #ccc;
+        padding: 15px;
+        border-radius: 10px;
+        .modal_left{
+            width: 48%;
+            label{
+                display: block;
+                margin: 10px 0px;
+                i{
+                    display: inline-block;
+                    color: #eb5267;
+                    padding-right: 4px;
+                }
+            }
+            .form-group{
+                margin-bottom: 0px!important;
+            }
+            .bianma{
+                    position: relative;
+                    .stockhideinfo{
+                    position: absolute;
+                    top: 35px;
+                    left: 0px;
+                    background: #fff;
+                    z-index: 999;
+                    .paginate{
+                        padding: 0px;
+                    }
+                    .table{
+                        margin-bottom: 0px!important;
+                        
+                        tr th{
+                            text-align: center;
+                            white-space: nowrap;
+                            color: #333;
+                            font-weight: bold!important;
+                        }
+                        tr td{
+                            white-space: nowrap;
+                            text-align: center;
+                            padding: 5px 20px;
+                            cursor: pointer;
+                            
+                        }
+                    }
+                    .stocklist{
+                        width: 362px;
+                        border: 1px solid #ccc;
+                        border-radius: 4px;
+                        background: #fff;
+                        li{
+                            border-bottom: 1px solid #ccc;
+                            line-height: 35px;
+                            padding-left: 15px;
+                            cursor: pointer;
+                        }
+                            li:hover{
+                                background: #f5f5f5;
+                            }
+                    } 
+                }
+            }
+        }
+        .modal_right{
+            width: 48%;
+            label{
+                display: block;
+                margin: 10px 0px;
+            }
+            .bianma{
+                    position: relative;
+                    .stockhideinfo{
+                        position: absolute;
+                        top: 35px;
+                        left: 0px;
+                        background: #fff;
+                        padding-bottom: 20px;
+                        z-index: 999;
+                        
+                        .paginate{
+                            padding: 0px;
+                        }
+                        .table{
+                            margin-bottom: 10px!important;
+                            position: relative;
+                            .RClose{
+                                position: absolute;
+                                right: 10px;
+                                top: 0px;
+                                border-radius: 100%;
+                                color: #999;
+                                font-weight: bold;
+                                font-size: 18px;
+                                cursor: pointer;
+                            }
+                            tr th{
+                                text-align: center;
+                                white-space: nowrap;
+                                color: #333;
+                                font-weight: bold!important;
+                            }
+                            tr td{
+                                white-space: nowrap;
+                                text-align: center;
+                                padding: 5px 20px;
+                                cursor: pointer;
+                                
+                            }
+                    }
+                    .stocklist{
+                        width: 362px;
+                        border: 1px solid #ccc;
+                        border-radius: 4px;
+                        background: #fff;
+                       
+                        li{
+                            border-bottom: 1px solid #ccc;
+                            line-height: 35px;
+                            padding-left: 15px;
+                            cursor: pointer;
+                        }
+                            li:hover{
+                                background: #f5f5f5;
+                            }
+                    } 
+                }
+            }
+        
+        }
+        .cardes{
+            width: 450px;
+            max-height: 140px;
+            overflow-y: auto;
+            .cardesinfo{
+                display: inline-block;
+                padding: 5px 20px;
+                color: #000;
+                border: 1px solid #ccc;
+                margin: 5px;
+                .cardesclose{
+                    font-style: normal;
+                    font-size: 14px;
+                    color: #000;
+                    font-weight: bold;
+                    cursor: pointer;
+                }
+            }
+        }
+        .button{
+            clear: both;
+            button{
+                margin: 15px 0px 0px;
+                padding: 10px 30px;
+            }
+        }
+    }
+}
+.modal-tishi{
+    .icon {
+        width: 40px !important;
+        height: 40px !important;
+        line-height: 40px !important;
+        color: rgba(39, 179, 148, 0.59);
+        font-size: 30px !important;
+        text-align: center;
+        border: 4px solid rgba(39, 179, 148, 0.57);
+        border-radius: 50%;
+        margin: 6px auto 14px !important;
+        padding: 0;
+        position: relative;
+        box-sizing: content-box;
+    }
+    .content {
+        text-align: center;
+        margin: 10px 0;
+        font-size: 16px;
+    }
+    .infoButton {
+        text-align: center;
+        margin: 25px 0 10px 0;
+        button {
+            padding: 7px 28px !important;
+        }
+        button:last-child {
+            border: 1px solid #ccc;
+        }
+    }
+}
+// 滚动条样式
+::-webkit-scrollbar {
+    width: 8px; 
+    height: 8px;
+    background-color: rgba(68, 36, 36, 0.07);
+}
+::-webkit-scrollbar-thumb {
+    border-radius: 10px;
+    // -webkit-box-shadow: inset 0 0 6px rgba(0,0,0,.3);
+    background-color: rgba(149, 151, 154, 0.31);
+}

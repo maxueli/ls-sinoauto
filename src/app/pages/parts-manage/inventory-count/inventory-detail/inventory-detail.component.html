@@ -1,0 +1,85 @@
+<div id="parts_detail"  @flyIn>
+    <h3 clas="parts_title">盘点清单详情</h3>
+    <div class="parts_detail_top">
+        <p class="parts_detail_info">店铺名称：<span>华汽连锁一店</span> 盘点单号：<span>{{detailparams.inventoryCode}}</span> 生成时间：<span>{{printDate}}</span></p>
+         <div class="inventort_wrap">
+            <table class="table table-bordered text-center">
+            <thead>
+                <tr>
+                    <th>仓位</th>
+                    <th>库位</th>
+                    <th>配件编码</th>
+                    <th>配件分类</th>
+                    <th>配件名称</th>
+                    <th>品牌</th>
+                    <th>规格型号</th>
+                    <th>单位</th>
+                    <th>成本(元)</th>
+                    <th>库存量</th>
+                </tr>
+            </thead>
+            <tbody>
+                <tr *ngFor="let item of listetail" >
+                    <td>{{item.depotName}}</td>
+                    <td>{{item.depotPosName}}</td>
+                    <td>{{item.partsCode}}</td>
+                    <td>{{item.partsTypeName}}</td>
+                    <td>{{item.partsName}}</td>
+                    <td>{{item.partsBrandName}}</td>
+                    <td>{{item.partsSpec}}</td>
+                    <td>{{item.partsUnit}}</td>
+                    <td>{{item.sellPrice}}</td>
+                    <td>{{item.inventory}}</td>
+                </tr>
+            </tbody>
+        </table>
+       </div>
+    </div>
+    <div class="parts_detail_b">
+        <button type="button" class="btn btn-primary" (click)="orderPrint()">
+           打印
+        </button>
+        <button type="button" class="btn btn-info">
+           导出
+        </button>
+        <button type="button" class="btn" (click)="detail()">
+           返回
+        </button>
+    </div>
+</div>
+
+<div class="printgoods">
+    <div class="printHeader">
+        <img src="../../../../../assets/img/login_logo.png" alt="">
+        
+    </div>
+    <div class="printContnet">
+         <p class="parts_detail_info">店铺名称：<span>华汽连锁一店</span> 盘点单号：<span>{{detailparams.inventoryCode}}</span> 生成时间：<span>{{printDate}}</span></p>
+         <table class="table table-bordered text-center">
+            <thead>
+                <tr>
+                    <th>仓位</th>
+                    <th>库位</th>
+                    <th>配件编码</th>
+                    <th>配件分类</th>
+                    <th>配件名称</th>
+                    <th>品牌</th>
+                    <th>规格型号</th>
+                    
+                </tr>
+            </thead>
+            <tbody>
+                <tr *ngFor="let item of listetail" >
+                    <td>{{item.depotName}}</td>
+                    <td>{{item.depotPosName}}</td>
+                    <td>{{item.partsCode}}</td>
+                    <td>{{item.partsTypeName}}</td>
+                    <td>{{item.partsName}}</td>
+                    <td>{{item.partsBrandName}}</td>
+                    <td>{{item.partsSpec}}</td>
+                   
+                </tr>
+            </tbody>
+        </table>
+    </div>
+</div>

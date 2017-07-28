@@ -1,0 +1,86 @@
+<!--component html goes here -->
+<div class="page allscreen">
+
+    <div class="page-sider">
+        <div id="sidebar-menu" class="container sidebar">
+            <div class="logo">
+                <a><img src="../../assets/img/logo.png" alt=""></a>
+            </div>
+            <div class="menu_section">
+                <ul class="nav side-menu" id="accordion">
+                    <li *ngFor="let silder of silderlist">
+                        <!--一级目录-->
+                        <a class="side-menu-title list_title first_title" (click)="showOrhide(silder.ulclass)">
+                            <i class="fa" [ngClass]="silder.iocn" ></i>
+                            <span>{{silder.name}}</span>
+                            <i class="fa fa-chevron-left" aria-hidden="true"></i>
+                        </a>
+                        <ul class="nav child_menu " [ngClass]="silder.ulclass">
+                            <li *ngFor="let items of silder.children">
+                                <a *ngIf="items.ischild==false" routerLink="{{items.url}}" class="side-menu-title list_title two_title" routerLinkActive="active">
+                                    <!--<i class="fa fa-building" aria-hidden="true"></i>-->
+                                    <span>{{items.name}}</span>
+                                     <i class="fa fa-chevron-left visibility" aria-hidden="true"></i>
+                                    </a>
+                               
+                                <!--二级目录-->
+                                <a *ngIf="items.ischild==true" class="side-menu-title list_title two_title" (click)="showOrhide(items.ulclass)">
+                                    <!--<i class="fa fa-building"></i>-->
+                                    <span>{{items.name}}</span>
+                                    <i class="fa fa-chevron-left" aria-hidden="true"></i>
+                                </a>
+                                <ul *ngIf="items.ischild==true" class="nav child_menu" [ngClass]="items.ulclass">
+                                    <li *ngFor="let loadchild of items.children">
+                                        <a *ngIf="loadchild.ischild==false" routerLink="{{loadchild.url}}" routerLinkActive="active" class="side-menu-title list_title three_title">
+                                            <!--<i class="fa fa-building" aria-hidden="true"></i>-->
+                                            <span>{{loadchild.name}}</span>
+                                              <i class="fa fa-chevron-left visibility" aria-hidden="true"></i>
+                                            </a>
+                                        <!--三级目录-->
+                                        <a *ngIf="loadchild.ischild==true" class="side-menu-title list_title three_title" (click)="showOrhide(loadchild.ulclass)">
+                                            <!--<i class="fa fa-home"></i>-->
+                                            <span>{{loadchild.name}}</span>
+                                            <i class="fa fa-chevron-left" aria-hidden="true"></i>
+                                        </a>
+                                        <ul *ngIf="loadchild.ischild==true" class="nav child_menu" [ngClass]="loadchild.ulclass">
+                                            <li *ngFor="let loadchilds of loadchild.children">
+                                                <!--四级目录-->
+                                                <a routerLink="{{loadchilds.url}}" class="side-menu-title list_title four_title" routerLinkActive="active">
+                                                    <!--<i class="fa fa-building" aria-hidden="true"></i>-->
+                                                    <span>{{loadchilds.name}}</span> </a>
+                                            </li>
+                                        </ul>
+                                    </li>
+                                </ul>
+                            </li>
+                        </ul>
+                    </li>
+                </ul>
+            </div>
+        </div>
+    </div>
+    <div class="page-other">
+        <div class="page-head">
+            <div class="login-user">
+                <span dropdown class="admin-user">
+                    <span dropdownToggle>
+                        <i class="fa fa-user-circle-o" aria-hidden="true"></i> {{userInfo.mobile}}
+                    </span>
+                <ul *dropdownMenu class="dropdown-menu">
+                    <li (click)="layout()">退出</li>
+                </ul>
+                </span>
+
+
+            </div>
+        </div>
+        <div class="page-content">
+            <router-outlet></router-outlet>
+        </div>
+        <div class="page-footer">
+            华汽连锁
+        </div>
+    </div>
+
+
+</div>

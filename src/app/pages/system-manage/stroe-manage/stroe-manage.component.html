@@ -1,0 +1,137 @@
+<!--component html goes here -->
+<div class="work">
+    <h4>门店管理</h4>
+
+
+    <div class="form-inline">
+        <label>一级</label>
+        <select class="form-control" [(ngModel)]="selectKey.firstkey" (change)="getfirststroe('2',selectKey.firstkey)">
+  <option *ngFor="let item of filstleve" value="{{item.key}}">{{item.value}}</option>
+
+</select>
+        <label>二级</label><select class="form-control" [(ngModel)]="selectKey.seckey" (change)="getfirststroe('3',selectKey.seckey)">
+              <option *ngFor="let item of secleve" value="{{item.key}}">{{item.value}}</option>
+
+</select>
+        <label>三级</label><select class="form-control" [(ngModel)]="selectKey.threekey">
+  <option *ngFor="let item of threeleve" value="{{item.key}}">{{item.value}}</option>
+
+</select>
+        <button class="btn btn-success" type="button" (click)="search()">查询</button>
+        <button class="btn btn-primary" type="button" (click)="add()">添加</button>
+
+    </div>
+    <div class="stroetable">
+        <table class="table table-bordered">
+            <thead>
+                <tr>
+                    <th>门店名称</th>
+                    <th>联系人</th>
+                    <th>联系人号码</th>
+                    <th>门店地址</th>
+                    <th>操作</th>
+                </tr>
+            </thead>
+            <tbody>
+                <tr *ngFor="let item of stroelist">
+                    <td>{{item.orgName}}</td>
+                    <td>{{item.pName}}</td>
+                    <td>{{item.pName}}</td>
+                    <td>{{item.address}}</td>
+                    <td>
+                        <!--<button class="btn" (click)="CkAnedior('bj',item)">编辑</button>-->
+                        <button class="btn" (click)="CkAnedior('ck',item)">查看</button>
+                    </td>
+                </tr>
+            </tbody>
+        </table>
+        <div class="form-group paginate">
+            <label>
+每页显示
+<select class="form-control select" (change)="pageChanged($event)">
+<option value="10">10</option>
+<option value="20">20</option>
+<option value="30">30</option>
+<option value="50">50</option>
+<option value="100">100</option>
+</select>
+</label>
+            <pagination [totalItems]="totalItems" [(ngModel)]="index" [maxSize]="10" [itemsPerPage]="selectStroe.pageSize" [boundaryLinks]="true"
+                previousText="上一页" nextText="下一页" firstText="首页" lastText="尾页" (pageChanged)="pageChanged($event,'pageIndex')"></pagination>
+            <label class="contorl-label">
+跳转到<input type="number" class="form-control" min="1" [max]="maxPageSize" [(ngModel)]="choosePage">页
+</label>
+            <button class="btn btn-default" (click)="pageChanged($event,'go')">GO</button>
+        </div>
+    </div>
+
+</div>
+<div bsModal #addModalModal="bs-modal" class="modal fade" tabindex="-1" role="dialog" aria-labelledby="myLargeModalLabel"
+    aria-hidden="true" [config]="{backdrop: 'static'}">
+    <div class="modal-dialog modal-lg">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h4 class="modal-title pull-left">查看</h4>
+                <button type="button" class="close pull-right" (click)="addModalModal.hide()" aria-label="Close">
+          <span aria-hidden="true">&times;</span>
+        </button>
+            </div>
+            <div class="modal-body">
+                <form [formGroup]="addStroeForm">
+                    <div class="form-group">
+                        <label for="exampleInputName2">门店名称</label>
+                        <input type="text" class="form-control" placeholder="请输入门店名称(必填)" formControlName="orgName">
+                        <label *ngIf="formErrors.orgName.error" class="myerror">{{formErrors.orgName.error}}</label>
+
+                    </div>
+                    <div class="form-group">
+                        <label for="exampleInputEmail2">联系人姓名</label>
+                        <input type="text" class="form-control" placeholder="请输入联系人(必填)" formControlName="username">
+                        <label *ngIf="formErrors.username.error" class="myerror">{{formErrors.username.error}}</label>
+                    </div>
+                    <div class="form-group">
+                        <label for="exampleInputEmail2">联系人联系方式</label>
+                        <input type="mobile" class="form-control" placeholder="请输入手机号(必填)" formControlName="mobile">
+                        <label *ngIf="formErrors.mobile.error" class="myerror">{{formErrors.mobile.error}}</label>
+
+                    </div>
+                    <div class="form-group">
+                        <label for="exampleInputEmail2">门店地址</label>
+                        <div class="form-inline">
+                            <div class="form-group">
+                                <label>省</label>
+                                <select class="form-control" (change)="loadCitys($event)">
+                                    <option  *ngFor="let item of localarea"  value="{{item[0]}}">{{item[1]}}</option>
+                                </select>
+                                <!--<input type="text" class="form-control" id="exampleInputEmail3" placeholder="Email">-->
+                            </div>
+                            <div class="form-group">
+                                <label>市</label>
+                                <select class="form-control" (change)="loadthreecity($event)">
+                                     <option  *ngFor="let item of cityarea"  value="{{item[0]}}">{{item[1]}}</option>
+                                </select>
+                                <!--<input type="p" class="form-control" id="exampleInputPassword3" placeholder="Password">-->
+                            </div>
+                            <div class="form-group">
+                                <label>区</label>
+                                <select class="form-control" (change)="threequ($event)">
+                                     <option  *ngFor="let item of provincearea"  value="{{item[0]}}">{{item[1]}}</option>
+                                </select>
+                                <!--<input type="p" class="form-control" id="exampleInputPassword3" placeholder="Password">-->
+                            </div>
+                            <div class="form-group">
+                                <label>详细地址</label>
+
+                                <input type="text" class="form-control" placeholder="详细地址" formControlName="address">
+                            </div>
+                        </div>
+                        <label *ngIf="formErrors.address.error" class="myerror">{{formErrors.address.error}}</label>
+
+                    </div>
+                    <!--<button type="submit" class="btn btn-default" [disabled]="!addStroeForm.valid" (click)="addstroe()">添加</button>-->
+                </form>
+
+            </div>
+        </div>
+    </div>
+</div>

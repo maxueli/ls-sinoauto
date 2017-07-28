@@ -1,0 +1,263 @@
+// component css goes here
+.container {
+    width: 100%;
+    padding: 0 20px;
+    h4{
+        border-bottom: 1px solid #ccc;
+        line-height: 40px;
+    }
+    .select {
+        position: relative;
+        .input-group-addon,
+        .form-control{
+            height: 40px;
+            font-size: 16px;
+            border-color: #e8e8e8;
+        }
+        .gdStatus div {
+            padding-top: 4px;
+        }
+        .form-inline {
+            // padding-right: 300px;
+            .input-group {
+                margin-right: 10px;
+                .selectDefaultOption {
+                    display: none;
+                }
+                button {
+                    margin-right: 10px;
+                }
+                .date {
+                    position: absolute;
+                    top: 34px;
+                    z-index: 10;
+                    .well {
+                        margin-bottom: 0 !important;
+                        padding: 0 !important;
+                    }
+                }
+            }
+            .dateError {
+                position: relative;
+                .formInfo {
+                    color: #a94442;
+                    position: absolute;
+                    top: 45px;
+                    left: 90px;
+                    padding: 5px;
+                    border-radius: 3px;
+                    opacity: .8;
+                }
+            }
+            .show {
+                display: inline-table!important;
+            }
+            .selectModal{
+                position: relative;
+                .stockhideinfo{
+                    // width: 100%;
+                    position: absolute;
+                    top: 40px;
+                    left: 0px;
+                    background: #fff;
+                    padding-bottom: 20px;
+                    z-index: 999;
+                    .paginate{
+                        padding: 0px;
+                    }
+                    .table{
+                        margin-bottom: 10px!important;
+                        position: relative;
+                        tr th{
+                            text-align: center;
+                            white-space: nowrap;
+                            color: #333;
+                            font-weight: bold!important;
+                        }
+                        tr td{
+                            white-space: nowrap;
+                            text-align: center;
+                            padding: 5px 20px;
+                            cursor: pointer;
+                            
+                        }
+                        tr td.menuPaginate{
+                            padding: 0 15px;
+                        }
+                    }
+                    .closeSel{
+                        position: absolute;
+                        right: -8px;
+                        top: -8px;
+                        font-size: 20px;
+                        background: #000;
+                        width: 22px;
+                        height: 22px;
+                        border-radius: 50%;
+                        z-index: 20;
+                        opacity: 0.6;
+                        text-align: center;
+                        line-height: 22px;
+                        color: #fff;
+                        cursor: pointer;
+                    }
+                }
+            }
+        }
+    }
+    hr{
+        border: 0;
+        border-top: 1px solid rgba(0,0,0,.1);
+    }
+    .table-container{
+        width: 100%;
+        max-height: 400px;
+        border: 1px solid rgb(236, 238, 239);
+        overflow: auto;
+        table {
+            // width: 130% !important;
+            // min-width: 155% !important;
+            margin-bottom: 0;
+            th,
+            td {
+                text-align: center;
+                vertical-align: middle;
+            }
+            th {
+                background: #f3f3f4;
+            }
+            tr>td:first-child {
+                width: 175px;
+            }
+        }
+    }
+    .btn-export {
+        height: 40px;
+        font-size: 16px;
+        border-color: #e8e8e8;
+    }
+}
+// 下拉框位置
+.dropdown-menu {
+    padding: 0;
+    border: 0;
+    top: 37px;
+    left: 73px;
+    .table {
+        margin-bottom: 0;
+    }
+    .menuPaginate {
+        width: 100%;
+        padding: 0;
+        margin: 0;
+        line-height: 0;
+        .pagination-sm {
+            margin-bottom: 0;
+                ul.pagination {
+                margin: 0;
+            }
+        } 
+    }
+}
+
+
+.modal {
+    .modal-header button {
+        width: 24px;
+        height: 24px;
+        border-radius: 50%;
+        border: 2px solid #000;
+        opacity: .3;
+        margin-top: 0px;
+        padding: 0;
+        outline: none;
+        span {
+            position: relative;
+            top: -2px;
+        }
+    }
+    i {
+        margin-right: 5px;
+    }
+    .table-container {
+        width: 100%;
+        max-height: 400px;
+        border: 1px solid rgb(236, 238, 239);
+        overflow: auto;
+        table {
+            margin-bottom: 0;
+            th {
+                text-align: center;
+                vertical-align: middle;
+            }
+        }
+    }
+    .mb-1 {
+        margin-bottom: 15px;
+    }
+}
+
+ul.pagination {
+    margin: 0;  
+}
+
+// 打印
+.printgoods {
+    display: none;
+    position: relative;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    .printHeader {
+        line-height: 21px;
+        padding: 10px; // border: 1px solid #000;
+        border-bottom: 2px solid #000;
+        margin-bottom: 20px;
+        .printTitle {
+            position: absolute;
+            top: 15px;
+            right: 0;
+            font-size: 16px;
+            font-weight: 500;
+        }
+    }
+    .printContnet {
+        ul {
+            list-style: none;
+            margin: 0;
+            padding: 0;
+            li {
+                width: 30%;
+                display: inline-block;
+                padding: 5px 0;
+            }
+        }
+        table {
+            table-layout: fixed;
+            text-align: center;
+            vertical-align: middle;
+            thead {
+                border: 1px solid #000;
+                border-bottom: 0;
+                th {
+                    // word-break: keep-all;
+                    // white-space: nowrap;
+                    text-align: center;
+                    vertical-align: middle;
+                    border: 0;
+                    border-bottom: 1px solid #000;
+                }
+            }
+        }
+    }
+    .printFooter {
+        position: relative;
+        margin-top: 30px;
+        .operator {
+            position: absolute;
+            top: 0;
+            left: 40%;
+        }
+    }
+}

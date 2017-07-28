@@ -1,0 +1,651 @@
+<!--component html goes here -->
+<div class="material-content" @flyIn>
+  <div class="header">
+    <h4 class="title">维修领料</h4>
+    <div class="list-info" dropdown [autoClose]="dropdownShow"   >
+      <a href dropdownToggle (click)="false">
+        <i class="fa fa-list-alt"></i>
+        <span>挂单信息({{hanglogsInfo.totalCount}})</span>
+        <i class="fa fa-angle-up"></i>
+      </a>
+      <div *dropdownMenu class="dropdown-menu">
+        <table class="table table-hover">
+          <thead>
+            <tr>
+              <th>工单号</th>
+              <th>车主</th>
+              <th>车牌号</th>
+              <th>操作</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr *ngFor="let item of hanglogsInfo.result" >
+              <td (click)='showHanglogItem(item)'>{{item.orderNo}}</td>
+              <td (click)='showHanglogItem(item)'>{{item.operUserName}}</td>
+              <td (click)='showHanglogItem(item)'>{{item.customerCarNo}}</td>
+              <td (click)='deletehanglog(item)'>
+                <span class="cursor-pointer" >
+                  <i class="cursor-pointer fa fa-times-circle"></i>
+                  作废
+                </span>
+              </td>
+            </tr>
+            <tr *ngIf="hangOrderListCount>=10" >
+              <td colspan="4">
+                <pagination [totalItems]="hangOrderListCount"  [maxSize]="5" class="pagination-sm" [boundaryLinks]="true" previousText="&lsaquo;" nextText="&rsaquo;" firstText="&laquo;" lastText="&raquo;" (pageChanged)="pageChanged($event,'hang')"></pagination>
+              </td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+    </div>
+  </div>
+  <div class="content">
+    <div class="search">
+
+      <input class="list-search" type="text" (focus)='getmaterial()' [(ngModel)]='materialSearch.OrderNoOrCarNo' (keyup)='getmaterial()'
+        (blur)='blurmaterial()' placeholder="请输入车牌号/工单号"><button class="search-icon" type="button" (click)='getmaterial()'>
+        <i class="cursor-pointer fa fa-search "></i>
+        </button> 注意：已完成的工单，不能再进行领料操作
+      <div class="materialInfo-table" *ngIf="isShow">
+        <table class="table table-hover table-sm table-bordered table-responsive">
+          <thead>
+            <tr>
+              <th>车牌号</th>
+              <th>工单号</th>
+              <th>车主</th>
+              <th>品牌</th>
+              <th>车型</th>
+          </thead>
+          <tbody>
+            <tr *ngFor="let item of materialSearchData" (click)='pitchItem(item)'>
+              <td>{{item.carNo}}</td>
+              <td>{{item.orderNo}}</td>
+              <td>{{item.customerName}}</td>
+              <td>{{item.brandName}}</td>
+              <td>{{item.modelName}}</td>
+            </tr>
+          </tbody>
+        </table>
+        <pagination *ngIf="materialtotal>=10" [totalItems]="materialtotal" [(ngModel)]="materialindex" [maxSize]="10" class="pagination-sm"
+          previousText="上一页" nextText="下一页" firstText="首页" lastText="尾页" [boundaryLinks]="true" [rotate]="false" (numPages)="numPages = $event"
+          (pageChanged)="materialpage($event)"></pagination>
+      </div>
+    </div>
+    <table class="table table-hover table-responsive table-bordered ">
+      <thead>
+        <tr>
+          <th class="tr-left-bold" colspan=4>车辆信息</th>
+        </tr>
+      </thead>
+      <tbody>
+        <tr>
+          <td>工单号</td>
+          <td>{{_orderCar.orderNo}}</td>
+          <td>车主</td>
+          <td>{{_orderCar.name}}</td>
+        </tr>
+        <tr>
+          <td>车型</td>
+          <td>{{_orderCar.modelName}}</td>
+          <td>VIN</td>
+          <td>{{_orderCar.vin}}</td>
+        </tr>
+        <tr>
+          <td>维修类型</td>
+          <td>{{_orderCar.repairName}}</td>
+          <td>开单时间</td>
+          <td>{{_orderCar.createTime}}</td>
+        </tr>
+      </tbody>
+    </table>
+    <div class="table-caption" *ngIf="_materialSearchShow">
+      <i class="fa fa-clone mr-2"></i> 维修项目
+    </div>
+    <div class="table-container" *ngIf="_materialSearchShow">
+      <table class="table table-bordered">
+        <thead>
+          <tr>
+            <th>操作</th>
+            <th>维修项目</th>
+            <th>维修技师</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr *ngFor='let item of orderRepairs'>
+            <td>
+              <button class="btn btn-sm btn-primary" [disabled]='item.isPass || item.repairedUserId==null' (click)="sendMaterial(item)">发料</button>
+            </td>
+            <td>{{item.projectName}}
+              <label class="append-stamp" *ngIf="item.isExtra">
+                增项
+              </label>
+            </td>
+            <td>{{item.repairedUserName}}</td>
+          </tr>
+        </tbody>
+      </table>
+    </div>
+    <div class="table-caption" *ngIf="_newpartstableData.length>0">
+      <i class="fa fa-clone mr-2"></i> 新增维修发料
+    </div>
+    <div class="table-container" *ngIf="_newpartstableData.length>0">
+      <table class="table table-bordered">
+        <thead>
+          <tr>
+            <th>操作</th>
+            <th>序号</th>
+            <th>维修项目</th>
+            <th>配件编码</th>
+            <th>配件分类</th>
+            <th>配件名称</th>
+            <th>品牌</th>
+            <th>规格型号</th>
+            <th>单位</th>
+            <th>适用车型</th>
+            <th>仓库</th>
+            <th>库位</th>
+            <th>数量</th>
+            <th>单价（元）</th>
+            <th>金额（元）</th>
+            <th>备注</th>
+            <th>领料人</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr *ngFor="let item of _newpartstableData;let i = index">
+            <td>
+              <button class="btn btn-sm btn-primary" (click)='deleteSend(i)'>删除</button>
+            </td>
+            <td>{{i+1}}</td>
+            <td>{{item.projectName}}</td>
+            <td>{{item.partsCode}}</td>
+            <td>{{item.partsTypeName}}</td>
+            <td>{{item.partsName}}</td>
+            <td>{{item.brandName}}</td>
+            <td>{{item.partsSpec}}</td>
+            <td>{{item.partsUnit}}</td>
+            <td *ngIf="item.carModels.length!=0">{{item.carModels[0][modelName]}}
+              <div class="carModelList" dropdown (onShown)="onShown()" (onHidden)="onHidden()" (isOpenChange)="isOpenChange()">
+                <a dropdownToggle (click)="true">
+                        ···
+                </a>
+                <ul *dropdownMenu class="dropdown-menu">
+                  <li *ngFor="let item of item.carModels">
+                    {{item.modelName}}
+                  </li>
+                </ul>
+              </div>
+            </td>
+            <td *ngIf="item.carModels.length==0"></td>
+            <td>{{item.depotName}}</td>
+            <td>{{item.depotPosName}}</td>
+            <td>{{item.count}}</td>
+            <td>{{item.sellPrice}}</td>
+            <td>{{item.totalPrice}}</td>
+            <td>{{item.remark}}</td>
+            <td>{{item.repairedUserName}}</td>
+          </tr>
+        </tbody>
+      </table>
+    </div>
+
+    <div class="tabsTable" *ngIf="_materialSearchShow">
+      <tabset>
+        <tab>
+          <ng-template tabHeading>
+            <i class="fa fa-outdent mr-2"></i> 维修发料记录
+          </ng-template>
+          <div class="table-container">
+            <table class="table table-bordered">
+              <thead>
+                <tr>
+                  <th>流水号</th>
+                  <th>维修项目</th>
+                  <th>配件编码</th>
+                  <th>配件分类</th>
+                  <th>配件名称</th>
+                  <th>品牌</th>
+                  <th>规格型号</th>
+                  <th>单位</th>
+                  <th>适用车型</th>
+                  <th>仓库</th>
+                  <th>库位</th>
+                  <th>数量</th>
+                  <th>单价（元）</th>
+                  <th>金额（元）</th>
+                  <th>备注</th>
+                  <th>领料人</th>
+                </tr>
+              </thead>
+              <tbody>
+                <tr *ngFor="let item of repairPackLogs">
+                  <td>{{item.rpCode}}</td>
+                  <td>{{item.projectName}}</td>
+                  <td>{{item.parts.partsCode}}</td>
+                  <td>{{item.parts.partsTypeName}}</td>
+                  <td>{{item.parts.partsName}}</td>
+                  <td>{{item.parts.brandName}}</td>
+                  <td>{{item.parts.partsSpec}}</td>
+                  <td>{{item.parts.partsUnit}}</td>
+                  <td *ngIf="item.parts.carModels.length!=0">{{item.parts.carModels[0][modelName]}}
+                    <div class="carModelList" dropdown (onShown)="onShown()" (onHidden)="onHidden()" (isOpenChange)="isOpenChange()">
+                      <a dropdownToggle (click)="true">
+                        ···
+                      </a>
+                      <ul *dropdownMenu class="dropdown-menu">
+                        <li *ngFor="let item of item.parts.carModels">
+                          {{item.modelName}}
+                        </li>
+                      </ul>
+                    </div>
+                  </td>
+                  <td *ngIf="item.parts.carModels.length==0"></td>
+                  <td>{{item.depotName}}</td>
+                  <td>{{item.depotPosName}}</td>
+                  <td>{{item.count}}</td>
+                  <td>{{item.price}}</td>
+                  <td>{{item.totalPrice}}</td>
+                  <td>{{item.remark}}</td>
+                  <td>{{item.packUserName}}</td>
+                </tr>
+              </tbody>
+            </table>
+          </div>
+        </tab>
+        <tab>
+          <ng-template tabHeading>
+            <i class="fa fa-indent mr-2"></i> 维修退料记录
+          </ng-template>
+          <div class="table-container">
+            <table class="table table-bordered">
+              <thead>
+                <tr>
+                  <th>流水号</th>
+                  <th>维修项目</th>
+                  <th>配件编码</th>
+                  <th>配件分类</th>
+                  <th>配件名称</th>
+                  <th>品牌</th>
+                  <th>规格型号</th>
+                  <th>单位</th>
+                  <th>适用车型</th>
+                  <th>仓库</th>
+                  <th>库位</th>
+                  <th>数量</th>
+                  <th>单价（元）</th>
+                  <th>金额（元）</th>
+                  <th>备注</th>
+                  <th>领料人</th>
+                </tr>
+              </thead>
+              <tbody>
+                <tr *ngFor="let item of repairRetreatRecords">
+                  <td>{{item.serialNumber}}</td>
+                  <td>{{item.projectName}}</td>
+                  <td>{{item.partsCode}}</td>
+                  <td>{{item.partsType}}</td>
+                  <td>{{item.partsName}}</td>
+                  <td>{{item.partsBrand}}</td>
+                  <td>{{item.partsSpec}}</td>
+                  <td>{{item.partsUnit}}</td>
+                  <td>{{item.partsCar}}</td>
+                  <td>{{item.depotName}}</td>
+                  <td>{{item.depotPosName}}</td>
+                  <td>{{item.retreatCount}}</td>
+                  <td>{{item.price}}</td>
+                  <td>{{item.totalPrice}}</td>
+                  <td>{{item.remark}}</td>
+                  <td>{{item.retreatUserNname}}</td>
+                </tr>
+
+              </tbody>
+            </table>
+          </div>
+        </tab>
+      </tabset>
+    </div>
+  </div>
+  <div class="footer">
+    <button type="button" class="btn btn-primary" [disabled]="_newpartstableData.length==0" (click)='staticModal.show()'>生成维修发料单</button>
+    <button type="button" class="btn btn-info btn-suspend" [disabled]="_newpartstableData.length==0" (click)='hangBill()'>挂单</button>
+    <div class="btn-group" dropdown [autoClose]="false" [isDisabled]='repairPackLogs.length==0' [isOpen]="status.isopen" [dropup]='true'>
+      <button type="button" dropdownToggle class="btn btn-export dropdown-toggle">打印</button>
+      <div *dropdownMenu class="dropdown-menu" role="menu">
+        <h3 class="popover-title">选择流水号</h3>
+        <div class="popover-content">
+          <div class="form-check">
+            <label>
+              <input type="checkbox" name="allcheck" (change)="ischeckAll()" value="">全部
+            </label>
+          </div>
+          <div class="form-check" *ngFor="let item of repairPackLogs">
+            <label>
+              <input  type="checkbox" name='check' value="{{item.rpCode}}" (change)="search()">{{item.rpCode}}
+            </label>
+          </div>
+        </div>
+        <div class="btnGroup">
+          <button type="button" class="btn btn-default btn-sm" dropdownToggle>取消</button>
+          <button type="button" class="btn-sm btn btn-success" dropdownToggle (click)='dyHtml($event)'>确定</button>
+        </div>
+      </div>
+    </div>
+  </div>
+  <div bsModal #lgModal="bs-modal" class="modal fade" [config]="{backdrop: 'static'}" tabindex="-1" role="dialog" aria-labelledby="mySmallModalLabel"
+    aria-hidden="true">
+    <div class="modal-dialog modal-lg">
+      <div class="modal-content">
+        <div class="modal-header">
+          <h4 class="modal-title pull-left" style="font-size:1.5rem;font-weight:500;">新增</h4>
+<button type="button" class="close pull-right" (click)="lgModal.hide();closeModal()" aria-label="Close">
+              <span aria-hidden="true">&times;</span>
+            </button>
+</div>
+<div class="modal-body">
+  <div class="newAdd">
+    <form class="card-block row " #form="ngForm" novalidate role="form">
+      <div class="card">
+        <div class="card-left">
+          <div class="form-group">
+            <label class="form-control-label hq-required">
+                      维修项目
+                    </label>
+            <input type="text" class="form-control " [(ngModel)]='newpartsSend.projectName' readonly name="projectName">
+          </div>
+          <div class="form-group">
+            <label class="form-control-label hq-required">
+                      配件编码
+                    </label>
+            <div class="input-group">
+              <input type="text" #pjbm='ngModel' (focus)="focusfindpartsCode()" (blur)='blurfindpartsCode()' (keyup)='focusfindpartsCode()'
+                [(ngModel)]='findpartsCode.partsCode' name="partsCode" class="form-control " required placeholder="请输入配件编码">
+              <span class="input-group-addon" (click)='focusfindpartsCode()'>
+                        <i class="cursor-pointer fa fa-search faCode"></i>
+                      </span>
+            </div>
+            <div *ngIf="pjbm.errors && (pjbm.dirty || pjbm.touched ) " class="errMsg">
+              <div [hidden]='!pjbm.errors.required'>
+                配件编码不能为空
+              </div>
+            </div>
+            <div class="partsCodeSearch" *ngIf="_findpartsCodeShow">
+              <table class="table table-hover table-sm table-bordered table-responsive">
+                <thead>
+                  <tr>
+                    <th>品牌</th>
+                    <th>配件编码</th>
+                    <th>配件分类</th>
+                    <th>配件名称</th>
+                    <th>规格型号</th>
+                    <th>库存量</th>
+                </thead>
+                <tbody>
+                  <tr *ngFor="let item of findpartsCodeData.result" (click)='partsCodeItem(item)'>
+                    <td>{{item.brandName}}</td>
+                    <td>{{item.partsCode}}</td>
+                    <td>{{item.partsTypeName}}</td>
+                    <td>{{item.partsName}}</td>
+                    <td>{{item.partsSpec}}</td>
+                    <td>{{item.inventory}}</td>
+                  </tr>
+                </tbody>
+              </table>
+              <div *ngIf="findpartsCodeData.totalCount>10">
+              {{findpartsCodeData.totalCount}}
+                <pagination [totalItems]="findpartsCodeData.totalCount" [maxSize]="10" class="pagination-sm" previousText="上一页" nextText="下一页"
+                  firstText="首页" lastText="尾页" [boundaryLinks]="true" [rotate]="false" (numPages)="numPages = $event" (pageChanged)="findpartsCodeDatapageChanged($event)"></pagination>
+              </div>
+            </div>
+          </div>
+          <div class="form-group">
+            <label class="form-control-label hq-required">
+                            配件名称
+                    </label>
+            <div class="input-group">
+              <input type="text" class="form-control" #pjmc='ngModel' name="partsName" (focus)="focusfindpartsName()" (blur)='blurfindpartsName()'
+                (keyup)='focusfindpartsName()' [(ngModel)]='findpartsName.partsName' required placeholder="请输入配件名称">
+              <span class="input-group-addon" (click)='focusfindpartsName()'>
+                        <i class="cursor-pointer fa fa-search faName"></i>
+                      </span>
+            </div>
+            <div *ngIf="pjmc.errors && (pjmc.dirty || pjmc.touched) " class="errMsg">
+              <div [hidden]='!pjmc.errors.required'>
+                配件名称不能为空
+              </div>
+            </div>
+            <div class="partsCodeSearch" *ngIf="_findpartsName">
+              <table class="table table-hover table-sm table-bordered table-responsive">
+                <thead>
+                  <tr>
+                    <th>品牌</th>
+                    <th>配件编码</th>
+                    <th>配件分类</th>
+                    <th>配件名称</th>
+                    <th>规格型号</th>
+                    <th>库存量</th>
+                </thead>
+                <tbody>
+                  <tr *ngFor="let item of findpartsNameData.result" (click)='partsCodeItem(item)'>
+                    <td>{{item.brandName}}</td>
+                    <td>{{item.partsCode}}</td>
+                    <td>{{item.partsTypeName}}</td>
+                    <td>{{item.partsName}}</td>
+                    <td>{{item.partsSpec}}</td>
+                    <td>{{item.inventory}}</td>
+                  </tr>
+                </tbody>
+              </table>
+              <div *ngIf="findpartsNameData.totalCount>10">
+                <pagination [totalItems]="findpartsNameData.totalCount" [maxSize]="10" class="pagination-sm" previousText="上一页" nextText="下一页"
+                  firstText="首页" lastText="尾页" [boundaryLinks]="true" [rotate]="false" (numPages)="numPages = $event" (pageChanged)="findpartsNamepageChanged($event)"></pagination>
+              </div>
+            </div>
+          </div>
+          <div class="form-group">
+            <label class="form-control-label hq-required">
+                      配件分类
+                    </label>
+            <input type="text" class="form-control  " [(ngModel)]='newpartsSend.partsTypeName' name="partsTypeName" required readonly>
+          </div>
+          <div class="form-group">
+            <label class="form-control-label hq-required">
+                            品牌
+                            </label>
+            <input type="text" class="form-control  " [(ngModel)]='newpartsSend.brandName' name="brandName" required readonly>
+          </div>
+          <div class="form-group">
+            <label class="form-control-label hq-required">
+                            规格型号
+                            </label>
+            <input type="text" class="form-control  " [(ngModel)]='newpartsSend.partsSpec' name='partsSpec' required readonly>
+          </div>
+          <div class="form-group">
+            <label class="form-control-label ">
+                            适用车型
+                            </label>
+            <input type="text" class="form-control  " name="modelName" [(ngModel)]='carModel.modelName' readonly>
+            <div class="carModelList" dropdown>
+              <a dropdownToggle (click)="true">
+                                ···
+                        </a>
+              <ul *dropdownMenu class="dropdown-menu">
+                <li *ngFor="let item of newpartsSend.carModels">
+                  {{item.modelName}}
+                </li>
+              </ul>
+            </div>
+          </div>
+          <div class="form-group">
+            <label class="form-control-label ">
+                            备注
+                            </label>
+            <input type="text" class="form-control" [(ngModel)]='newpartsSend.remark' name='remark' readonly value="">
+          </div>
+        </div>
+        <div class="card-right">
+          <div class="form-group">
+            <label class="form-control-label hq-required">
+                              仓库
+                            </label>
+            <select class="form-control  " [(ngModel)]='newpartsSend.depotId' (change)='getDepotPosName(newpartsSend.depotId)' name='depotName'
+              required readonly='newpartsSend.depotId'>
+                              <option  *ngFor='let item of newpartsSend.depots' [value]='item.depotId' >{{item.depotName}}</option>
+                            </select>
+          </div>
+          <div class="form-group">
+            <label class="form-control-label ">
+                              库位
+                            </label>
+            <select name="depotposName" class="form-control " [(ngModel)]='newpartsSend.depotPosId' readonly='newpartsSend.depotPosId'>
+                              <option *ngFor="let item of depotPos" [value]='item.depotPosId'>{{item.depotPosName}}</option>
+                            </select>
+          </div>
+          <div class="form-group">
+            <label class="form-control-label hq-required">
+                            库存
+                            </label>
+            <input type="text" class="form-control  " [(ngModel)]='newpartsSend.inventory' name='inventory' required readonly>
+          </div>
+          <div class="form-group">
+            <label class="form-control-label hq-required">
+                              数量
+                            </label>
+            <input type="number" #count='ngModel' class="form-control" (change)="onKeyPress($event)" [(ngModel)]='newpartsSend.count'
+              [ngClass]="{'ng-touched':newpartsSend.count>newpartsSend.inventory,'ng-invalid':newpartsSend.count>newpartsSend.inventory }"
+              name='count' required>
+            <div *ngIf="newpartsSend.count>newpartsSend.inventory" class="errMsg">
+              数量不能大于{{newpartsSend.inventory}}
+            </div>
+            <div *ngIf="count.errors && (count.dirty  || count.valid) " class="errMsg">
+              <div [hidden]='!count.errors.required'>
+                数量不能为空
+              </div>
+            </div>
+          </div>
+          <div class="form-group">
+            <label class="form-control-label hq-required">
+                              单位
+                            </label>
+            <input type="text" class="form-control  " [(ngModel)]='newpartsSend.partsUnit' name='partsUnit' required readonly>
+          </div>
+          <div class="form-group">
+            <label class="form-control-label hq-required">
+                              单价（元）
+                            </label>
+            <input type="number" #sellPrice='ngModel' class="form-control  " [(ngModel)]='newpartsSend.sellPrice' name='sellPrice' required>
+            <div *ngIf="sellPrice.errors && (sellPrice.dirth || sellPrice.touched) " class="errMsg">
+              <div [hidden]='!sellPrice.errors.required'>
+                单价不能为空
+              </div>
+            </div>
+          </div>
+          <div class="form-group">
+            <label class="form-control-label hq-required">
+                              金额（元）
+                            </label>
+            <input type="number" class="form-control  " value='{{newpartsSend.totalPrice}}' name='totalPrice' required readonly>
+          </div>
+          <div class="form-group">
+            <label class="form-control-label hq-required">
+                              领料人
+                            </label>
+            <input type="text" class="form-control  " [(ngModel)]='newpartsSend.repairedUserName' name="repairedUserName" required readonly>
+          </div>
+        </div>
+      </div>
+      <div class="card-botton">
+        <button class="btn btn-primary mr-2" type="button" [disabled]='!form.form.valid && form.form.invalid ' (click)='submitAndClose()'>提交并关闭</button>
+      </div>
+    </form>
+  </div>
+</div>
+</div>
+</div>
+</div>
+<div class="modal fade" bsModal #staticModal="bs-modal" [config]="{backdrop: 'static'}" tabindex="-1" role="dialog" aria-labelledby="mySmallModalLabel"
+  aria-hidden="true">
+  <div class="modal-dialog modal-sm">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h4 class="modal-title pull-left">提示</h4>
+        <button type="button" class="close pull-right" aria-label="Close" (click)="staticModal.hide();submitInit()">
+          <span aria-hidden="true">&times;</span>
+        </button>
+      </div>
+      <div class="modal-body" style="font-size:16px;text-align:center;">
+<div style="margin-bottom:10px;font-weight:700"> 已生成维修退料单，是否需要打印？
+</div>
+<div class="btnGroup">
+  <button class="btn-primary btn-sm btn" (click)='dyHtml($event)'>确定</button>
+  <button class="btn-default btn-sm btn" (click)='newPartsBill()'>取消</button>
+</div>
+</div>
+</div>
+</div>
+</div>
+</div>
+<div class="printgoods">
+  <div class="printHeader">
+    <img src="../../../../../assets/img/login_logo.png" alt="">
+    <span class="printTitle">维修发料单</span>
+  </div>
+  <div class="printContnet">
+    <ul>
+      <li>
+        领料单号：{{print.receiveBill}}
+      </li>
+      <li>
+        流水号：{{print.serialNo}}
+      </li>
+      <li>车牌号：{{print.carName}}</li>
+      <li>开单时间：{{print.openTime | date:'yyyy-MM-dd HH:mm:ss'}}</li>
+    </ul>
+    <table class="table">
+      <thead>
+        <tr>
+          <th>维修项目</th>
+          <th>配件编码</th>
+          <th>配件类型</th>
+          <th>配件名称</th>
+          <th>品牌</th>
+          <th>规格型号</th>
+          <th>单位</th>
+          <th>仓库</th>
+          <th>库位</th>
+          <th>单价（元）</th>
+          <th>数量</th>
+          <th>金额（元）</th>
+          <th>备注</th>
+          <th>领料人</th>
+        </tr>
+      </thead>
+      <tbody>
+        <tr *ngFor="let item of print.printData">
+          <td>{{item.projectName}}</td>
+          <td>{{item.partsCode}}</td>
+          <td>{{item.partsTypeName}}</td>
+          <td>{{item.partsName}}</td>
+          <td>{{item.brandName}}</td>
+          <td>{{item.partsSpec}}</td>
+          <td>{{item.partsUnit}}</td>
+          <td>{{item.depotName}}</td>
+          <td>{{item.depotPosName}}</td>
+          <td>{{item.sellPrice}}</td>
+          <td>{{item.count}}</td>
+          <td>{{item.totalPrice}}</td>
+          <td>{{item.remark}}</td>
+          <td>{{item.repairedUserName}}</td>
+        </tr>
+      </tbody>
+    </table>
+  </div>
+  <div class="printFooter">
+    <div class="printTime">
+      打印时间:{{print.printTime | date:'yyyy-MM-dd HH:mm:ss'}}
+    </div>
+    <div class="operator">
+      操作人：{{print.operators}} 领料人：{{print.operators}}
+    </div>
+  </div>
+</div>

@@ -1,0 +1,54 @@
+<div class="userlogin container allscreen">
+    <div class="typo">
+        <!--<h2>云店管理系统</h2>-->
+        <img src="../../../assets/img/login_logo.png" alt="">
+    </div>
+    <div>
+        <!--用户名的输入-->
+        <form class="form-horizontal" [formGroup]="LoginForm">
+            <div class="form-group">
+                <label class="col-sm-3 control-label">用户名</label>
+                <div class="col-sm-8">
+                    <input type="email" class="form-control" formControlName="username" placeholder="Email">
+                </div>
+
+            </div>
+            <div *ngIf="formErrors.username.error" class="alert alert-danger">
+                {{formErrors.username.error}}
+            </div>
+            <div class="form-group">
+                <label for="inputPassword3" class="col-sm-3 control-label">密码</label>
+                <div class="col-sm-8">
+                    <input type="password" class="form-control" formControlName="password" placeholder="Password">
+                </div>
+
+            </div>
+            <div *ngIf="formErrors.password.error" class="alert alert-danger">
+                {{formErrors.password.error}}
+            </div>
+            <div class="form-group">
+                <div class="col-sm-offset-3 col-sm-8">
+                    <div class="checkbox">
+                        <label>
+          <input type="checkbox"> 自动登录
+        </label>
+                    </div>
+                </div>
+            </div>
+            <div class="form-group">
+                <div class="sign-in">
+                    <button type="button" [disabled]="!LoginForm.valid" class="btn btn-primary" (click)="login()">登 录</button>
+                </div>
+            </div>
+            <div class="form-group">
+                <div class="sign-in">
+                    <span>忘记密码</span>/<span>注册</span>
+                    <!--<button type="button" class="btn btn-primary">登 录</button>-->
+                </div>
+            </div>
+
+        </form>
+    </div>
+    <!--<ba-alert [service]="_alert"></ba-alert>-->
+</div>
+<ba-modal [modal]="modal" (OverModal)="overModal($event)"></ba-modal>

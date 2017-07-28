@@ -1,0 +1,512 @@
+<!--component html goes here -->
+<div id="repair_history" @flyIn>
+    <h4>维修历史</h4>
+    <form action="">
+        <div class="history_top clearfix">
+            <div class="col-md-2">
+                <div class="input-group">
+                    <span class="input-group-addon" id="sizing-addon2">车牌号</span>
+                    <input type="text" class="form-control" [(ngModel)]="historyParams.carNo" name="carNo" (click)="isCollapsed()"  placeholder="请输入车牌号">
+                    <span  class="input-group-addon defBgColor">
+                        <i  class="fa fa-search"></i>
+                    </span>
+                    <div class="historyhide" *ngIf="ishistory" >
+                         <table  class="table table-bordered">
+                            <thead>
+                                <tr>
+                                    <th class="text-center">车牌号</th>
+                                    <th class="text-center">维修人</th>
+                                    <th class="text-center">维修人电话</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                <tr role="menuitem" class="dropdown-item" *ngFor="let item of list" (click)="selectCarsInfo(item)">
+                                     <td>{{item.carNo}}</td>
+                                    <td>{{item.repairUserName}}</td>
+                                    <td>{{item.repairMobile}}</td> 
+                                </tr>
+                            </tbody>
+                             <tfoot >
+                                <tr>
+                                    <td role="menuitem"  colspan="3">
+                                        <pagination [totalItems]="total" [maxSize]="5" class="pagination-sm" [boundaryLinks]="true" previousText="&lsaquo;" nextText="&rsaquo;" firstText="&laquo;" lastText="&raquo;" (pageChanged)="pageChange($event,'carNo')"></pagination>
+                                    </td>
+                                </tr>
+                            </tfoot> 
+                        </table>
+                    </div>
+                </div>
+            </div>
+            <div class="col-md-4">
+                <div class="input-group">
+                    <span class="input-group-addon" id="sizing-addon2">进厂时间</span>
+                    <input type="text" class="form-control" placeholder="请选择开始日期" name="inBeginTime" [(ngModel)]="historyParams.inBeginTime" (valueChanged)="timeChange()" ngui-datetime-picker [close-on-select]="false"  aria-describedby="sizing-addon2">
+                    <span class="input-group-addon" id="sizing-addon2">-</span>
+                    <input type="text" class="form-control" placeholder="请选择结束日期" name="inEndTime" [(ngModel)]="historyParams.inEndTime" (valueChanged)="timeChange()" ngui-datetime-picker [close-on-select]="false" aria-describedby="sizing-addon2">
+                </div>
+                 <div class="formInfo input-group bg-danger" *ngIf="timeError">
+                    无效的查询时间，开始时间要小于结束时间
+                </div>
+            </div>
+            <div class="col-md-4">
+                <div class="input-group">
+                    <span class="input-group-addon" id="sizing-addon2">出厂时间</span>
+                    <input type="text" class="form-control" placeholder="请选择开始日期" name="outBeginTime" [(ngModel)]="historyParams.outBeginTime" (valueChanged)="timeChange()" ngui-datetime-picker [close-on-select]="false"  aria-describedby="sizing-addon2">
+
+                    <span class="input-group-addon" id="sizing-addon2">-</span>
+                    <input type="text" class="form-control" placeholder="请选择开始日期" name="outEndTime" [(ngModel)]="historyParams.outEndTime" (valueChanged)="timeChange()" ngui-datetime-picker [close-on-select]="false"  aria-describedby="sizing-addon2">
+                </div>
+            </div>
+        </div>
+        <div class="input_top_h">
+            
+            <div class="col-md-2">
+                <div class="input-group">
+                <span class="input-group-addon" id="sizing-addon2">服务顾问</span>
+                <input type="text" class="form-control" [(ngModel)]="historyParams.servicerName" name="servicerName" placeholder="请输入服务顾问">
+                </div>
+            </div>
+            <div class="form-group">
+                <button  class="btn btn-primary" type="submit" (click)="historysubmit()" [disabled]='notSubmit'>查询</button>
+            </div>
+        </div>
+    </form>
+    <div class="history_main">
+        <div class="history_main_w">
+            <table class="table table-bordered text-center">
+                <thead>
+                    <tr>
+                        <th>操作</th>
+                        <th>车牌号</th>
+                        <th>工单号</th>
+                        <th>维修类型</th>
+                        <th>进厂时间</th>
+                        <th>出厂时间</th>
+                        <th>超时</th>
+                        <th>车型</th>
+                        <th>VIN</th>
+                        <th>送修人</th>
+                        <th>送修人电话</th>
+                        <th>维修技师</th>
+                        <th>服务顾问</th>
+                        <th>金额(元)</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr *ngFor="let item of list">
+                        <td><button  class="btn btn-info" type="text" (click)="Detail(item.orderId)">详情</button></td>
+                        <td>{{item.carNo}}</td>
+                        <td>{{item.orderNo}}</td>
+                        <td>{{item.repairTypeName}}</td>
+                        <td>{{item.createTime}}</td>
+                        <td>{{item.deliveryTime}}</td>
+                        <td>{{item.overtime}}</td>
+                        <td>{{item.modelName}}</td>
+                        <td>{{item.vin}}</td>
+                        <td>{{item.repairUserNames}}</td>
+                        <td>{{item.repairMobile}}</td>
+                        <td>{{item.repairUserName}}</td>
+                        <td>{{item.servicerName}}</td>
+                        <td>{{item.price}}</td>
+                    </tr>
+                </tbody>
+            </table>
+        </div>
+    </div>
+    <div class="inventory_buttom clearfix">
+
+         <div class="form-group paginate">
+            <label>
+                每页显示
+                <select class="form-control select" (change)="pageChanged($event,'SELECT')">
+                    <option value="10">10</option>
+                    <option value="20">20</option>
+                    <option value="30">30</option>
+                    <option value="50">50</option>
+                    <option value="100">100</option>
+                </select>
+            </label>
+            <pagination [totalItems]="totalItems" [(ngModel)]="index" [maxSize]="10" [itemsPerPage]="historyParams.pageSize" [boundaryLinks]="true" previousText="上一页" nextText="下一页" firstText="首页" lastText="尾页" (pageChanged)="pageChanged($event)"></pagination>
+            <label class="contorl-label">
+                跳转到<input type="number" class="form-control" min="1" [max]="maxPageSize" [(ngModel)]="choosePage">页
+            </label>
+            <button class="btn btn-default" (click)="pageChanged($event,'BUTTON')">GO</button>
+        </div>
+    </div>
+    <div class="history_footer">
+        <button  class="btn btn-primary" type="submit">导出</button>
+    </div>
+</div>
+
+
+<!--详情 模态框 start-->
+<div bsModal #lgModal="bs-modal" class="modal fade" tabindex="-1" role="dialog" aria-labelledby="myLargeModalLabel" aria-hidden="true">
+  <div class="modal-dialog modal-lg">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h4 class="modal-title pull-left"> 维修历史</h4>
+        <button type="button" class="close pull-right" (click)="lgModal.hide()" aria-label="Close">
+          <span aria-hidden="true">&times;</span>
+        </button>
+      </div>
+      <div class="modal-body">
+        <div class="modal_main clearfix">
+            <div class="inventory_modal">
+                
+                <div class="repair_his_content">
+                     <table class="table table-bordered text-center">
+                        <tbody>
+                            <tr>
+                                <td width="25%">车牌号</td>
+                                <td width="25%">{{historyinfo.carNo}}</td>
+                                <td width="25%">车型描述</td>
+                                <td width="25%">{{historyinfo.modelName}}
+                                </td>
+                            </tr>
+                            <tr>
+                                <td>维修类型</td>
+                                <td>{{historyinfo.repairType}}</td>
+                                <td>VIN</td>
+                                <td>{{historyinfo.vin}}</td>
+                            </tr>
+                            <tr>
+                                <td>送修人</td>
+                                <td>{{historyinfo.repairName}}</td>
+                                <td>送修人手机</td>
+                                <td>{{historyinfo.repairMobile}}</td>
+                            </tr> 
+                            <tr>
+                                <td>服务顾问</td>
+                                <td>{{historyinfo.servicerName}}</td>
+                                <td>工单号</td>
+                                <td>{{historyinfo.orderNo}}</td>
+                            </tr>                           
+                            <tr>
+                                <td>结算员</td>
+                                <td>{{historyinfo.settlementUserName}}</td>
+                                <td>结算单号</td>
+                                <td>{{historyinfo.settlement_no}}</td>
+                            </tr>
+                            <tr>
+                                <td>结算方</td>
+                                <td>{{historyinfo.settlementName}}</td>
+                                <td>结算时间</td>
+                                <td>{{historyinfo.settlementTime}}</td>
+                            </tr>
+                            <tr>
+                                <td>进厂里程</td>
+                                <td>{{historyinfo.mileage }}</td>
+                                <td>进厂时间</td>
+                                <td>{{historyinfo.createTime }}</td>
+                            </tr>
+
+                            <tr>
+                                <td>出厂里程</td>
+                                <td>{{historyinfo.factoryMileage}}</td>
+                                <td>出厂时间</td>
+                                <td>{{historyinfo.deliveryTime}}</td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
+                <!--收费结算单 start-->
+                <div class="repair_his_bill">
+                    <h3>收费结算单</h3>
+                     <table class="table table-bordered text-center">
+                        <thead>
+                            <tr>
+                                <th>序号</th>
+                                <th>名称</th>
+                                <th>金额(元)</th>
+                                <th>备注</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <tr>
+                                <td>1</td>
+                                <td>{{hisTolllist.manHourFee}}</td>
+                                <td>{{historyinfo.manHourReceivableAmount }}</td>
+                                <td>{{hisTolllist.manHourRemark}}</td>
+                            </tr>
+                            <tr>
+                                <td>2</td>
+                                <td>{{hisTolllist.materialFee}}</td>
+                                <td>{{historyinfo.materialReceivableAmount}}</td>
+                                <td>{{hisTolllist.materialRemark}}</td>
+                            </tr>
+                            <tr class="nonB">
+                                <td colspan="2">金额合计：{{hisTolllist.totalPrice}}</td>
+                                <td>优惠：{{hisTolllist.discountAmount}}</td>
+                                <td>应收金额：{{hisTolllist.receivableAmount}}</td>
+                            </tr>
+                        </tbody>
+                        
+                    </table>
+                </div>
+                 <!--收费结算单 end-->
+                  <!--表一工时明细 start-->
+                <div class="repair_his_bill">
+                    <h3>表一：工时明细</h3>
+                     <table class="table table-bordered text-center">
+                        <thead>
+                            <tr>
+                                <th>序号</th>
+                                <th>维修项目</th>
+                                <th>结算工时</th>
+                                <th>单价(元/工时)</th>
+                                <th>折扣率(%)</th>
+                                <th>金额(元)</th>
+                                <th>备注</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <tr *ngFor="let item of historymanHour;let i = index;" >
+                                <td>{{i+1}}</td>
+                                <td>{{item.projectName}}</td>
+                                <td>{{item.repairHour}}</td>
+                                <td>{{item.hourPrice}}</td>
+                                <td>{{item.discount}}</td>
+                                <td>{{item.discount}}</td>
+                                <td>{{item.remark}}</td>
+                            </tr>
+                            
+                            <tr class="nonB">
+                                <td colspan="5">金额合计：{{historyinfo.manHourTotalPrice }}</td>
+                                <td>优惠：{{historyinfo.manHourDiscount}}</td>
+                                <td>应收金额：{{historyinfo.manHourReceivableAmount }}</td>
+                            </tr>
+                        </tbody>
+                        
+                    </table>
+                </div>
+                 <!--表一工时明细 end-->
+                  <!--表二材料明细 start-->
+                <div class="repair_his_bill">
+                    <h3>表二：材料明细</h3>
+                     <table class="table table-bordered text-center">
+                        <thead>
+                            <tr>
+                                <th>序号</th>
+                                <th>配件名称</th>
+                                <th>单价(元)</th>
+                                <th>数量</th>
+                                <th>金额(元)</th>
+                                <th>备注</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <tr *ngFor="let Material of historyMaterial;let i = index;" >
+                                <td>{{i+1}}</td>
+                                <td>{{Material.partsName}}</td>
+                                <td>{{Material.price}}</td>
+                                <td>{{Material.count}}</td>
+                                <td>{{Material.count}}</td>
+                                <td>{{Material.remark}}</td>
+                            </tr>
+                            <tr class="nonB">
+                                <td colspan="6" class="text-right">应收金额：{{historyinfo.materialReceivableAmount }}</td>
+                                
+                            </tr>
+                        </tbody>
+                        
+                    </table>
+                </div>
+                 <!--表二材料明细 end-->
+                <div class="button clearfix">
+                    <button class="btn btn-primary" type="submit" (click)="lgModal.hide();orderPrint()">打印</button>
+                </div>
+               
+            </div>
+            
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+<!--详情 模态框 end-->
+
+<div class="printgoods">
+    <div class="printHeader">
+        <img src="../../../../../assets/img/login_logo.png" alt="">
+        <span class="printTitle">维修工单</span>
+    </div>
+    <div class="printContnet">
+        <div class="printtop">
+            <div class="printtop-row">
+                <p>
+                    <span>车牌号：{{historyinfo.carNo}}</span>
+                </p>
+                <p>
+                    <span>车型描述：{{historyinfo.modelName}}</span>
+                </p>
+                <p>
+                    <span>VIN：{{historyinfo.vin}}</span>
+                </p>
+            </div>
+            <div class="printtop-row">
+                <p>
+                    <span>送修人：{{historyinfo.repairName}}</span>
+                </p>
+                <p>
+                    <span>送修人手机：{{historyinfo.repairMobile}}</span>
+                </p>
+                <p>
+                    <span>结算单号：{{historyinfo.settlement_no}}</span>
+                </p>
+            </div>
+             <div class="printtop-row">
+                <p>
+                    <span>工单号：{{historyinfo.orderNo}}</span>
+                </p>
+                <p>
+                    <span>结算员：{{historyinfo.settlementUserName}}</span>
+                </p>
+                <p>
+                    <span>结算时间：{{historyinfo.settlementTime}}</span>
+                </p>
+            </div>
+             <div class="printtop-row">
+                <p>
+                    <span>结算方：{{historyinfo.settlementName}}</span>
+                </p>
+                <p>
+                    <span>服务顾问：{{historyinfo.servicerName}}</span>
+                </p>
+            
+            </div>
+        </div>
+         <div class="printcenter">
+             <div class="printtop-row">
+                <p>
+                    <span>维修类型：{{historyinfo.repairType}}</span>
+                </p>
+                <p>
+                    <span>进厂时间：{{historyinfo.createTime }}</span>
+                </p>
+                <p>
+                    <span>进厂里程：{{historyinfo.mileage }}</span>
+                </p>
+            </div>
+             <div class="printtop-row">
+                <p>
+                    <span>出厂时间：{{historyinfo.deliveryTime}}</span>
+                </p>
+                <p>
+                    <span>出厂里程：{{historyinfo.factoryMileage}}</span>
+                </p>
+            
+            </div>
+        </div>
+        <div class="printbuttom">
+              <!--收费结算单 start-->
+            <div class="repair_his_bill">
+                <h3>收费结算单</h3>
+                    <table class="table table-bordered text-center">
+                    <thead>
+                        <tr>
+                            <th>序号</th>
+                            <th>名称</th>
+                            <th>金额(元)</th>
+                            <th>备注</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr>
+                            <td>1</td>
+                            <td>{{hisTolllist.manHourFee}}</td>
+                            <td>{{historyinfo.manHourReceivableAmount }}</td>
+                            <td>{{hisTolllist.manHourRemark}}</td>
+                        </tr>
+                        <tr>
+                            <td>2</td>
+                            <td>{{hisTolllist.materialFee}}</td>
+                            <td>{{historyinfo.materialReceivableAmount}}</td>
+                            <td>{{hisTolllist.materialRemark}}</td>
+                        </tr>
+                        <tr class="nonB">
+                            <td colspan="2">金额合计：{{hisTolllist.totalPrice}}</td>
+                            <td>优惠：{{hisTolllist.discountAmount}}</td>
+                            <td>应收金额：{{hisTolllist.receivableAmount}}</td>
+                        </tr>
+                    </tbody>
+                    
+                </table>
+            </div>
+                <!--收费结算单 end-->
+                <!--表一工时明细 start-->
+            <div class="repair_his_bill">
+                <h3>表一：工时明细</h3>
+                    <table class="table table-bordered text-center">
+                    <thead>
+                        <tr>
+                            <th>序号</th>
+                            <th>维修项目</th>
+                            <th>结算工时</th>
+                            <th>单价(元/工时)</th>
+                            <th>折扣率(%)</th>
+                            <th>金额(元)</th>
+                            <th>备注</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr *ngFor="let item of historymanHour;let i = index;" >
+                            <td>{{i+1}}</td>
+                            <td>{{item.projectName}}</td>
+                            <td>{{item.repairHour}}</td>
+                            <td>{{item.hourPrice}}</td>
+                            <td>{{item.discount}}</td>
+                            <td>{{item.discount}}</td>
+                            <td>{{item.remark}}</td>
+                        </tr>
+                        
+                        <tr class="nonB">
+                            <td colspan="3">金额合计：{{historyinfo.manHourTotalPrice }}</td>
+                            <td colspan="2">优惠：{{historyinfo.manHourDiscount}}</td>
+                            <td colspan="2">应收金额：{{historyinfo.manHourReceivableAmount }}</td>
+                        </tr>
+                    </tbody>
+                    
+                </table>
+            </div>
+                <!--表一工时明细 end-->
+                <!--表二材料明细 start-->
+            <div class="repair_his_bill">
+                <h3>表二：材料明细</h3>
+                    <table class="table table-bordered text-center">
+                    <thead>
+                        <tr>
+                            <th>序号</th>
+                            <th>配件名称</th>
+                            <th>单价(元)</th>
+                            <th>数量</th>
+                            <th>金额(元)</th>
+                            <th>备注</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr *ngFor="let Material of historyMaterial;let i = index;" >
+                            <td>{{i+1}}</td>
+                            <td>{{Material.partsName}}</td>
+                            <td>{{Material.price}}</td>
+                            <td>{{Material.count}}</td>
+                            <td>{{Material.count}}</td>
+                            <td>{{Material.remark}}</td>
+                        </tr>
+                        <tr class="nonB">
+                            <td colspan="6" class="text-right">应收金额：{{historyinfo.materialReceivableAmount }}</td>
+                            
+                        </tr>
+                    </tbody>
+                    
+                </table>
+            </div>
+                <!--表二材料明细 end-->
+        </div>
+    </div>
+     <div class="printFooter">
+       <span>操作人：{{historyinfo.servicerName}}</span>
+        <span>打印时间：{{printDate}}</span>
+        <span class="customer">客户签名：</span>
+        <span class="customer">日期：</span>
+    </div> 
+</div>

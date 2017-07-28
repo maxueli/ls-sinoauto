@@ -1,0 +1,520 @@
+<!--component html goes here -->
+<div class="material-content" @flyIn>
+  <div class="header">
+    <h4 class="title">维修退料</h4>
+    <div class="list-info" dropdown [autoClose]='dropdownShow'>
+      <a href dropdownToggle (click)="false">
+        <i class="fa fa-list-alt"></i>
+        <span>挂单信息({{_hanglogsParams.totalCount}})</span>
+        <i class="fa fa-angle-up"></i>
+      </a>
+      <div *dropdownMenu class="dropdown-menu">
+        <table class="table table-hover">
+          <thead>
+            <tr>
+              <th>工单号</th>
+              <th>车主</th>
+              <th>车牌号</th>
+              <th>操作</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr *ngFor="let item of _hanglogsParams.tablelist">
+              <td (click)="gethanglogsdetail(item)">{{item.orderNo}}</td>
+              <td (click)="gethanglogsdetail(item)">{{item.customerName}}</td>
+              <td (click)="gethanglogsdetail(item)">{{item.customerCarNo}}</td>
+              <td (click)='giveuphanglogs(item)'>
+                <span class="cursor-pointer">
+                                    <i class="cursor-pointer fa fa-times-circle"></i>
+                                    作废
+                                 </span>
+              </td>
+            </tr>
+            <tr *ngIf="hangOrderListCount>=10" >
+              <td colspan="4">
+                <pagination [totalItems]="hangOrderListCount"  [maxSize]="5" class="pagination-sm" [boundaryLinks]="true" previousText="&lsaquo;" nextText="&rsaquo;" firstText="&laquo;" lastText="&raquo;" (pageChanged)="pageChanged($event,'hang')"></pagination>
+              </td>
+            </tr>
+          </tbody>
+        </table>
+
+      </div>
+    </div>
+  </div>
+  <div class="content">
+    <div class="search">
+      <input class="list-search" type="text" placeholder="请输入车牌号/工单号" [(ngModel)]="mainUnmaerSearch.OrderNoOrCarNo" (focus)="partsSellReFocus('mainUntable')"
+        (blur)="partsSellReBlur('mainUntable')" (keyup)="partsSellReKeyUp($event,'mainUntable')">
+      <button class="search-icon"><i class="cursor-pointer fa fa-search"></i></button>
+      <maintenance-unmaterial-table [mainUnTable]="_mainUnTable" (gobackItem)="gobackItem($event)"></maintenance-unmaterial-table>
+      
+    </div>
+    <div class="carinfotable">
+      <table class="table table-hover table-responsive table-bordered ">
+        <thead>
+          <tr>
+            <th class="tr-left-bold" colspan=4>车辆信息</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr>
+            <td>工单号</td>
+            <td>{{mainUnmaParams.orderCarDto.orderNo}}</td>
+            <td>车主</td>
+            <td>{{mainUnmaParams.orderCarDto.name}}</td>
+          </tr>
+          <tr>
+            <td>车型</td>
+            <td>{{mainUnmaParams.orderCarDto.modelName}}</td>
+            <td>VIN</td>
+            <td>{{mainUnmaParams.orderCarDto.vin}}</td>
+          </tr>
+          <tr>
+            <td>维修类型</td>
+            <td>{{mainUnmaParams.orderCarDto.repairType}}</td>
+            <td>开单时间</td>
+            <td>{{mainUnmaParams.orderCarDto.createTime}}</td>
+          </tr>
+        </tbody>
+      </table>
+    </div>
+    <div class="table-caption" *ngIf="mainUnmaParams.repairProjectDtos.length!=0">
+      <i class="fa fa-clone mr-2"></i> 维修项目
+    </div>
+    <div class="maintentable">
+      <table class="table table-bordered" *ngIf="mainUnmaParams.repairProjectDtos.length!=0">
+        <thead>
+          <tr>
+            <th>维修项目</th>
+            <th>维修技师</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr *ngFor="let item of mainUnmaParams.repairProjectDtos">
+            <td>{{item.projectName}}</td>
+            <td>{{item.repairedUserName}}</td>
+          </tr>
+        </tbody>
+      </table>
+    </div>
+    <div class="table-caption" *ngIf="mainUnmaParams.repairPackInfoDtos.length!=0">
+      <i class="fa fa-outdent mr-2"></i> 维修发料信息
+    </div>
+    <div class="table-container" *ngIf="mainUnmaParams.repairPackInfoDtos.length!=0">
+      <table class="table table-bordered">
+        <thead>
+          <tr>
+            <th>操作</th>
+            <th>流水号</th>
+            <th>维修项目</th>
+            <th>配件编码</th>
+            <th>配件分类</th>
+            <th>配件名称</th>
+            <th>品牌</th>
+            <th>规格型号</th>
+            <th>单位</th>
+            <th>适用车型</th>
+            <th>仓库</th>
+            <th>库位</th>
+            <th>数量</th>
+            <th>已退数量</th>
+            <th>单价（元）</th>
+            <th>金额（元）</th>
+            <th>备注</th>
+            <th>领料人</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr *ngFor="let item of mainUnmaParams.repairPackInfoDtos">
+            <td>
+              <button class="btn btn-sm btn-primary" [disabled]='item.count==item.returnCount' (click)="lgModal.show();Return_mainten_unmaterial(item);">退料</button>
+            </td>
+            <td>{{item.serialNumber}}</td>
+            <td>{{item.projectName}}</td>
+            <td>{{item.partsCode}}</td>
+            <td>{{item.partsTypeName}}</td>
+            <td>{{item.partsName}}</td>
+            <td>{{item.partsBrandName}}</td>
+            <td>{{item.partsSpec}}</td>
+            <td>{{item.partsUnit}}</td>
+            <td>
+              <span *ngFor="let partscar of item.partsCars">{{partscar.modelName}}</span>
+            </td>
+            <td>{{item.depotName}}</td>
+            <td>{{item.depotPosName}}</td>
+            <td>{{item.count}}</td>
+            <td>{{item.returnCount}}</td>
+            <td>{{item.price}}</td>
+            <td>{{item.totalPrice}}</td>
+            <td>{{item.remark}}</td>
+            <td>{{item.packUserName}}</td>
+          </tr>
+        </tbody>
+      </table>
+    </div>
+    <div class="table-caption" *ngIf="newOutmaterial.length!=0">
+      <i class="fa fa-outdent mr-2"></i> 新增维修退料
+    </div>
+    <div class="table-container" *ngIf="newOutmaterial.length!=0">
+      <table class="table table-bordered">
+        <thead>
+          <tr>
+            <th>操作</th>
+            <th>序号</th>
+            <th>维修项目</th>
+            <th>配件编码</th>
+            <th>配件分类</th>
+            <th>配件名称</th>
+            <th>品牌</th>
+            <th>规格型号</th>
+            <th>单位</th>
+            <th>适用车型</th>
+            <th>仓库</th>
+            <th>库位</th>
+            <th>数量</th>
+            <th>单价（元）</th>
+            <th>金额（元）</th>
+            <th>备注</th>
+            <th>领料人</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr *ngFor="let item of newOutmaterial;let i = index">
+            <td>
+              <button class="btn btn-sm btn-danger" (click)='delete_mainten_unmaterial(i)'>删除</button>
+            </td>
+            <td>{{i+1}}</td>
+            <td>{{item.projectName}}</td>
+            <td>{{item.partsCode}}</td>
+            <td>{{item.partsTypeName}}</td>
+            <td>{{item.partsName}}</td>
+            <td>{{item.partsBrandName}}</td>
+            <td>{{item.partsSpec}}</td>
+            <td>{{item.partsUnit}}</td>
+            <td>
+              <span *ngFor="let partscar of item.partsCars">{{partscar.modelName}}</span>
+            </td>
+            <td>{{item.depotName}}</td>
+            <td>{{item.depotPosName}}</td>
+            <td>{{item.count}}</td>
+            <td>{{item.price}}</td>
+            <td>{{item.totalPrice}}</td>
+            <td>{{item.remark}}</td>
+            <td>{{item.packUserName}}</td>
+          </tr>
+        </tbody>
+      </table>
+    </div>
+    <div class="table-caption" *ngIf="mainUnmaParams.repairRetreatRecordDto.length!=0">
+      <i class="fa fa-indent mr-2"></i> 维修退料记录
+    </div>
+    <div class="table-container" *ngIf="mainUnmaParams.repairRetreatRecordDto.length!=0">
+      <table class="table table-bordered">
+        <thead>
+          <tr>
+            <th>流水号</th>
+            <th>维修项目</th>
+            <th>配件编码</th>
+            <th>配件分类</th>
+            <th>配件名称</th>
+            <th>品牌</th>
+            <th>规格型号</th>
+            <th>单位</th>
+            <th>适用车型</th>
+            <th>仓库</th>
+            <th>库位</th>
+            <th>数量</th>
+            <th>单价（元）</th>
+            <th>金额（元）</th>
+            <th>备注</th>
+            <th>领料人</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr *ngFor="let item of mainUnmaParams.repairRetreatRecordDto">
+            <td>{{item.serialNumber}}</td>
+            <td>{{item.projectName}}</td>
+            <td>{{item.partsCode}}</td>
+            <td>{{item.partsTypeName}}</td>
+            <td>{{item.partsName}}</td>
+            <td>{{item.partsBrandName}}</td>
+            <td>{{item.partsSpec}}</td>
+            <td>{{item.partsUnit}}</td>
+            <td>
+              <ng-template #tolTemplate>
+                <table>
+                  <tbody>
+                    <tr *ngFor="let partscar of item.partsCars">
+                      <td>{{partscar.brandName}}</td>
+                      <td>{{partscar.seriesName}}</td>
+                      <td>{{partscar.modelName}}</td>
+                    </tr>
+                  </tbody>
+                </table>
+                <!--<span *ngFor="let partscar of item.partsCars">{{partscar.modelName}}</span>-->
+              </ng-template>
+              <span *ngIf="item.partsCars!=null && item.partsCars.length!=0">{{ item.partsCars[0].modelName}}</span>
+              <span *ngIf="item.partsCars==null"></span>
+              <!-- <template id="{{item.partsCars[0]}}">
+                <table>
+                  <tbody>
+                    <tr *ngFor="let partscar of item.partsCars">
+                      <td>{{partscar.brandName}}</td>
+                      <td>{{partscar.seriesName}}</td>
+                      <td>{{partscar.modelName}}</td>
+                    </tr>
+                  </tbody>
+                </table>
+              </template>
+              <button type="button" class="btn btn-warning" [popover]="item.partsCars[0]" popoverTitle="Template ref content inside">
+  TemplateRef binding
+</button> -->
+            </td>
+            <td>{{item.depotName}}</td>
+            <td>{{item.depotPosName}}</td>
+            <td>{{item.retreatCount}}</td>
+            <td>{{item.price}}</td>
+            <td>{{item.totalPrice}}</td>
+            <td>{{item.remark}}</td>
+            <td>{{item.retreatUserNname}}</td>
+          </tr>
+
+        </tbody>
+      </table>
+    </div>
+
+  </div>
+  <div class="footer">
+    <button type="button" class="btn btn-primary" [disabled]="newOutmaterial.length==0" (click)='add_mainten_unmaterial()'>生成维修退料单</button>
+    <button type="button" class="btn btn-info btn-suspend" [disabled]="newOutmaterial.length==0" (click)='posters_mainten_unmaterial()'>挂单</button>
+    <div class="btn-group" dropdown [autoClose]="false" [isDisabled]='mainUnmaParams.repairRetreatRecordDto.length==0' [isOpen]="status.isopen"
+      [dropup]='true'>
+      <button type="button" dropdownToggle class="btn btn-export dropdown-toggle">打印</button>
+      <div *dropdownMenu class="dropdown-menu" role="menu">
+        <h3 class="popover-title">选择流水号</h3>
+        <div class="popover-content">
+          <div class="form-check">
+            <label>
+              <input type="checkbox" name="allcheck" (change)="ischeckAll()" value="">全部
+            </label>
+          </div>
+          <div class="form-check checkData " *ngFor="let item of mainUnmaParams.repairRetreatRecordDto">
+            <label>
+              <input  type="checkbox" name='check' value="{{item.serialNumber}}" (change)="search()">{{item.serialNumber}}
+            </label>
+          </div>
+        </div>
+        <div class="btnGroup">
+          <button type="button" class="btn btn-default btn-sm" dropdownToggle>取消</button>
+          <button type="button" class="btn-sm btn btn-success" dropdownToggle (click)='dyHtml($event)'>确定</button>
+        </div>
+      </div>
+    </div>
+  </div>
+  <div bsModal #lgModal="bs-modal" class="modal fade" [config]="{backdrop: 'static'}" tabindex="-1" role="dialog" aria-labelledby="mySmallModalLabel"
+    aria-hidden="true">
+    <div class="modal-dialog modal-lg">
+      <div class="modal-content">
+        <div class="modal-header">
+          <h4 class="modal-title pull-left" style="font-size:1.5rem;font-weight:500;">新增</h4>
+<button type="button" class="close pull-right" (click)="lgModal.hide()" aria-label="Close">
+          <span aria-hidden="true">&times;</span>
+        </button>
+</div>
+<div class="modal-body">
+  <div class="newAdd">
+    <form class="card-block row ">
+      <div class="card">
+        <div class="card-left">
+          <div class="form-group">
+            <label class="form-control-label ">
+                    维修项目
+                    </label>
+            <input type="text" class="form-control " name="projectName" [(ngModel)]='repairPackInfodata.projectName' readonly>
+          </div>
+          <div class="form-group">
+            <label class="form-control-label ">
+                    配件编码
+                    </label>
+            <input type="text" class="form-control " [(ngModel)]='repairPackInfodata.partsCode' name="partsCode">
+          </div>
+          <div class="form-group">
+            <label class="form-control-label ">
+                    配件名称
+                    </label>
+            <input type="text" class="form-control " [(ngModel)]='repairPackInfodata.partsName' name="partsName">
+          </div>
+          <div class="form-group">
+            <label class="form-control-label ">
+                    配件分类
+                    </label>
+            <input type="text" class="form-control " readonly [(ngModel)]='repairPackInfodata.partsTypeName' name="partsTypeName">
+          </div>
+          <div class="form-group">
+            <label class="form-control-label ">
+                    品牌
+                    </label>
+            <input type="text" class="form-control " readonly [(ngModel)]='repairPackInfodata.partsBrandName' name="partsBrandName">
+          </div>
+          <div class="form-group">
+            <label class="form-control-label ">
+                    规格型号
+                    </label>
+            <input type="text" class="form-control " readonly [(ngModel)]='repairPackInfodata.partsSpec' name="partsSpec">
+          </div>
+          <div class="form-group">
+            <label class="form-control-label ">
+                    单价（元）
+                    </label>
+            <input type="text" class="form-control " readonly [(ngModel)]='repairPackInfodata.price' name="price">
+          </div>
+          <div class="form-group">
+            <label class="form-control-label ">
+                    备注
+                    </label>
+            <input type="text" class="form-control " readonly [(ngModel)]='repairPackInfodata.remark' name="remark">
+          </div>
+        </div>
+        <div class="card-right">
+          <div class="form-group">
+            <label class="form-control-label ">
+                      适用车型
+                    </label>
+            <input type="text" class="form-control " name="partsCars" readonly [(ngModel)]='partscar.modelName'>
+          </div>
+          <div class="form-group">
+            <label class="form-control-label ">
+                      仓库
+                    </label>
+            <input type="text" class="form-control " readonly [(ngModel)]='repairPackInfodata.depotName' name="depotName">
+          </div>
+          <div class="form-group">
+            <label class="form-control-label ">
+                      仓位
+                    </label>
+            <input type="text" class="form-control " readonly [(ngModel)]='repairPackInfodata.depotPosName' name="depotPosName">
+          </div>
+          <div class="form-group" [formGroup]="partsShowModel">
+            <label class="form-control-label hq-required">
+                      数量（可退数量：{{returnCount}}）
+                    </label>
+            <input type="number" class="form-control " [(ngModel)]='repairPackInfodata.count' formControlName="count" name="count" (keyup)='countChange($event.target.value)'>
+            <div *ngIf="formErrors.count.error" class="errMsg">
+              {{formErrors.count.error}}
+            </div>
+          </div>
+          <div class="form-group">
+            <label class="form-control-label ">
+                      单位
+                    </label>
+            <input type="text" class="form-control " readonly [(ngModel)]='repairPackInfodata.partsUnit' name="partsUnit">
+          </div>
+          <div class="form-group">
+            <label class="form-control-label ">
+                      金额（元）
+                    </label>
+            <input type="text" class="form-control " readonly [(ngModel)]='repairPackInfodata.totalPrice' name="totalPrice">
+          </div>
+          <div class="form-group">
+            <label class="form-control-label ">
+                      领料人
+                    </label>
+            <input type="text" class="form-control " readonly [(ngModel)]='repairPackInfodata.packUserName' name="packUserName">
+          </div>
+        </div>
+      </div>
+      <div class="card-botton">
+        <button class="btn btn-primary mr-2" [disabled]='!partsShowModel.valid' (click)='submitAndClose()'>提交并关闭</button>
+      </div>
+    </form>
+  </div>
+</div>
+</div>
+</div>
+</div>
+<div class="modal fade" bsModal #staticModal="bs-modal" [config]="{backdrop: 'static'}" tabindex="-1" role="dialog" aria-labelledby="mySmallModalLabel"
+  aria-hidden="true">
+  <div class="modal-dialog modal-sm">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h4 class="modal-title pull-left">提示</h4>
+        <button type="button" class="close pull-right" aria-label="Close" (click)="offprint()">
+          <span aria-hidden="true">&times;</span>
+        </button>
+      </div>
+      <div class="modal-body" style="font-size:16px;text-align:center;">
+<div style="margin-bottom:10px;font-weight:700"> 已生成维修退料单，是否需要打印？
+</div>
+<div class="btnGroup">
+  <button class="btn-primary btn-sm btn" (click)='dyHtml($event)'>确定</button>
+  <button class="btn-default btn-sm btn" (click)='offprint()'>取消</button>
+</div>
+</div>
+</div>
+</div>
+</div>
+</div>
+<div class="printgoods">
+  <div class="printHeader">
+    <img src="../../../../../assets/img/login_logo.png" alt="">
+    <span class="printTitle">维修退料单</span>
+  </div>
+  <div class="printContnet">
+    <ul>
+      <li>
+        退料单号： {{print.receiveBill}}
+      </li>
+      <li>
+        流水号：{{print.serialNo}}
+      </li>
+      <li>车牌号：{{print.carName}}</li>
+      <li>开单时间：{{print.openTime | date:'yyyy-MM-dd HH:mm:ss'}}</li>
+    </ul>
+    <table class="table">
+      <thead>
+        <tr>
+          <th>维修项目</th>
+          <th>配件编码</th>
+          <th>配件类型</th>
+          <th>配件名称</th>
+          <th>品牌</th>
+          <th>规格型号</th>
+          <th>单位</th>
+          <th>仓库</th>
+          <th>库位</th>
+          <th>单价（元）</th>
+          <th>数量</th>
+          <th>金额（元）</th>
+          <th>备注</th>
+          <th>领料人</th>
+        </tr>
+      </thead>
+      <tbody>
+        <tr *ngFor="let item of print.printData">
+          <td>{{item.projectName}}</td>
+          <td>{{item.partsCode}}</td>
+          <td>{{item.partsTypeName}}</td>
+          <td>{{item.partsName}}</td>
+          <td>{{item.partsBrandName}}</td>
+          <td>{{item.partsSpec}}</td>
+          <td>{{item.partsUnit}}</td>
+          <td>{{item.depotName}}</td>
+          <td>{{item.depotPosName}}</td>
+          <td>{{item.price}}</td>
+          <td>{{item.retreatCount?item.retreatCount:item.count}}</td>
+          <td>{{item.totalPrice}}</td>
+          <td>{{item.remark}}</td>
+          <td>{{item.retreatUserNname?item.retreatUserNname:item.retreatUserName}}</td>
+        </tr>
+      </tbody>
+    </table>
+  </div>
+  <div class="printFooter">
+    <div class="printTime">
+      打印时间:{{print.printTime | date:'yyyy-MM-dd HH:mm:ss'}}
+    </div>
+    <div class="operator">
+      操作人：老魏 领料人：{{print.operators}}
+    </div>
+  </div>
+</div>

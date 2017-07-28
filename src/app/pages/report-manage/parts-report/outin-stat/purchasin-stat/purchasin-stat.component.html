@@ -1,0 +1,271 @@
+<!--component html goes here -->
+<div class="container" @flyIn>
+    <h4>采购入库统计</h4>
+    <div class="select">
+        <div class="form-inline">
+            <div class="input-group dateError">
+                <label class="input-group-addon">查询日期</label>
+                <div>
+                    <input class="form-control" name="beginTime" type="text" ngui-datetime-picker [close-on-select]="false" date-only="true"
+                        max-date="maxDate" [(ngModel)]="purchasinparams.beginTime" placeholder="请输入开始时间" (valueChanged)="timeChange()">
+                </div>
+                <label class="input-group-addon">-</label>
+                <div>
+                    <input class="form-control" name="endTime" type="text" ngui-datetime-picker [close-on-select]="false" date-only="true" max-date="maxDate"
+                        [(ngModel)]="purchasinparams.endTime" placeholder="请输入结束时间" (valueChanged)="timeChange()">
+                </div>
+                <div class="formInfo input-group bg-danger" *ngIf="timeError">
+                    无效的销售时间，开始时间要小于截止时间
+                </div>
+            </div>
+            <div class="input-group">
+                <label class="input-group-addon">供应商</label>
+                <div class="input-group selectModal">
+                    <input type="text" class="form-control" [(ngModel)]="supplierName" (focus)='partsNameinfo()' (click)='partsNameinfo(1)' (keyup)="reloadSupplierInfo($event,'supplier')"
+                        name="supplierName" placeholder="请输入供应商">
+                        <span class="input-group-addon defBgColor"><i class="fa fa-search"></i></span>
+                        <div class="stockhideinfo" *ngIf="supplierisShow">
+                            <table class="table table-hover table-sm table-bordered table-responsive">
+                                <span class="closeSel" (click)="closeSelDiv(1)">&times;</span>
+                                <thead>
+                                    <tr>
+                                        <th style="width:50%">名字</th>
+                                        <th style="width:50%">联系人</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    <tr *ngFor="let item of supplier" (click)='stockitem(1,item);blurflowinfo(1)'>
+                                        <td>{{item.supplierName}}</td>
+                                        <td>{{item.contacts}}</td>
+                                    </tr>
+                                    <tr role="menuitem" *ngIf="totalItemss[0]>10">
+                                        <td colspan="2" class="menuPaginate">
+                                            <pagination [totalItems]="totalItemss[0]" [maxSize]="3" class="pagination-sm" [boundaryLinks]="true" previousText="&lsaquo;"
+                                                nextText="&rsaquo;" firstText="&laquo;" lastText="&raquo;" (pageChanged)="pageChanged2($event,'supplier')"></pagination>
+                                        </td>
+                                    </tr>
+                                </tbody>
+                            </table>
+                        </div>
+                </div>
+            </div>
+            <div class="input-group">
+                <label class="input-group-addon">门店</label>
+                <div class="input-group selectModal">
+                    <input type="text" class="form-control" [(ngModel)]="orgName" (focus)='partsNameinfo()' (click)='partsNameinfo(2)' (keyup)="reloadSupplierInfo($event,'store')"
+                        name="orgName" placeholder="请选择...">
+                        <span class="input-group-addon defBgColor"><i class="fa fa-search"></i></span>
+                        <div class="stockhideinfo" *ngIf="storeisShow">
+                            <table class="table table-hover table-sm table-bordered table-responsive">
+                                <span class="closeSel" (click)="closeSelDiv(2)">&times;</span>
+                                <tbody>
+                                    <tr *ngFor="let item of store" (click)='stockitem(2,item);blurflowinfo(2)'>
+                                        <td>{{item.orgName}}</td>
+                                        <!--<td style="width:50%">{{item.orgNatureDesc}}</td>-->
+                                    </tr>
+                                    <tr role="menuitem" *ngIf="totalItemss[1]>10">
+                                        <td class="menuPaginate">
+                                            <pagination [totalItems]="totalItemss[1]" [maxSize]="3" class="pagination-sm" [boundaryLinks]="true" previousText="&lsaquo;"
+                                                nextText="&rsaquo;" firstText="&laquo;" lastText="&raquo;" (pageChanged)="pageChanged2($event,'store')"></pagination>
+                                        </td>
+                                    </tr>
+                                </tbody>
+                            </table>
+                        </div>
+                </div>
+            </div>
+            <div class="input-group">
+                <button type="submit" class="btn btn-success" (click)="search()" [disabled]="notSubmit">查询</button>
+                <button type="reset" class="btn btn-warning" (click)="reset()">重置</button>
+            </div>
+        </div>
+    </div>
+    <hr>
+    <p _ngcontent-c8="">温馨提示：系统为您找到 <span _ngcontent-c8="" style="font-size:16px;color:red;font-weight:bold;">{{totalItems}}</span> 条记录</p>
+    <div class="table-container clearfix">
+        <table class="table table-bordered">
+            <thead>
+                <tr>
+                    <th>操作</th>
+                    <th>供应商名称</th>
+                    <th>单号</th>
+                    <th>含税金额（元）</th>
+                    <th>不含税金额（元）</th>
+                    <th>开单时间</th>
+                    <th>操作人</th>
+                </tr>
+            </thead>
+            <tbody>
+                <tr *ngFor="let item of list">
+                    <td>
+                        <button class="btn btn-sm btn-info" type="button" (click)="detail.show();getInfoDetail(item.purchCode)">详情</button>
+                    </td>
+                    <td>{{item.supplierName}}</td>
+                    <td>{{item.purchCode}}</td>
+                    <td>{{item.totalPrice}}</td>
+                    <td>{{item.totalTaxPrice}}</td>
+                    <td>{{item.createTime}}</td>
+                    <td>{{item.userName}}</td>
+                </tr>
+            </tbody>
+        </table>
+    </div>
+    <div class="form-group paginate">
+        <label>
+            每页显示
+            <select class="form-control select" (change)="pageChanged($event,'SELECT')">
+                <option value="10">10</option>
+                <option value="20">20</option>
+                <option value="30">30</option>
+                <option value="50">50</option>
+                <option value="100">100</option>
+            </select>
+        </label>
+        <pagination [totalItems]="totalItems" [(ngModel)]="index" [maxSize]="10" [itemsPerPage]="purchasinparams.pageSize" [boundaryLinks]="true"
+            previousText="上一页" nextText="下一页" firstText="首页" lastText="尾页" (pageChanged)="pageChanged($event)"></pagination>
+            <label class="contorl-label">
+                跳转到<input type="number" class="form-control" min="1" [max]="maxPageSize" [(ngModel)]="choosePage">页
+            </label>
+            <button class="btn btn-default" (click)="pageChanged($event,'BUTTON')">GO</button>
+    </div>
+    <button _ngcontent-c8="" class="btn btn-primary btn-export" type="button" (click)="exportInfo()">导出</button>
+</div>
+
+<div bsModal #detail="bs-modal" class="modal fade" tabindex="-1" role="dialog" aria-labelledby="myLargeModalLabel" aria-hidden="true"
+    [config]="{backdrop: 'static'}">
+    <div class="modal-dialog modal-lg">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h4 class="modal-title pull-left">采购入库详情</h4>
+                <button type="button" class="close pull-right" (click)="detail.hide()" aria-label="Close">
+                    <span aria-hidden="true">&times;</span>
+                </button>
+            </div>
+            <div class="modal-body">
+                <div>
+                    <table class="table table-order-info table-bordered">
+                        <tbody>
+                            <tr>
+                                <td class="fixed-width">单号：</td>
+                                <td>{{listInfo.purchCode}}</td>
+                                <td class="fixed-width">供应商：</td>
+                                <td>{{listInfo.supplierName}}</td>
+                            </tr>
+                            <tr>
+                                <td class="fixed-width">开单时间：</td>
+                                <td>{{listInfo.createTime}}</td>
+                                <td class="fixed-width">操作人：</td>
+                                <td>{{listInfo.operUserName}}</td>
+                            </tr>
+                        </tbody>
+                    </table>
+                    <div class="table-container mb-1">
+                        <table class="table table-bordered" style="white-space: nowrap">
+                            <thead>
+                                <tr>
+                                    <th>仓库</th>
+                                    <th>库位</th>
+                                    <th>配件编码</th>
+                                    <th>配件分类</th>
+                                    <th>配件名称</th>
+                                    <th>品牌</th>
+                                    <th>规格型号</th>
+                                    <th>单位</th>
+                                    <th>数量</th>
+                                    <th>含税单价（元）</th>
+                                    <th>含税金额（元）</th>
+                                    <th>不含税单价（元）</th>
+                                    <th>不含税金额（元）</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                <tr>
+                                    <td>{{listInfo.depotName}}</td>
+                                    <td>{{listInfo.depotPosName}}</td>
+                                    <td>{{partsInfo.partsCode}}</td>
+                                    <td>{{partsInfo.partsTypeName}}</td>
+                                    <td>{{partsInfo.partsName}}</td>
+                                    <td>{{partsInfo.brandName}}</td>
+                                    <td>{{partsInfo.partsSpec}}</td>
+                                    <td>{{partsInfo.partsUnit}}</td>
+                                    <td>{{listInfo.count}}</td>
+                                    <td class="text-right">{{listInfo.price}}</td>
+                                    <td class="text-right">{{listInfo.totalPrice}}</td>
+                                    <td class="text-right">{{listInfo.taxPrice}}</td>
+                                    <td class="text-right">{{listInfo.totalTaxPrice}}</td>
+                                </tr>
+                            </tbody>
+                        </table>
+                    </div>
+                    <div class="text-center">
+                        <button type="button" class="btn btn-primary" (click)="detail.hide();dyHtml()">
+                            打印
+                        </button>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+    </div>
+
+    <div class="printgoods">
+        <div class="printHeader">
+            <img src="../../../../../../assets/img/login_logo.png" alt="">
+            <span class="printTitle">采购入库统计</span>
+        </div>
+        <div class="printContnet">
+            <ul>
+                <li>
+                    单号： {{listInfo.purchCode}}
+                </li>
+                <li>
+                    供应商：
+                </li>
+                <li>开单时间：{{listInfo.createTime}}</li>
+            </ul>
+            <table class="table">
+                <thead>
+                    <tr>
+                        <th>配件编码</th>
+                        <th>配件分类</th>
+                        <th>配件名称</th>
+                        <th>品牌</th>
+                        <th>规格型号</th>
+                        <th>单位</th>
+                        <th>仓库</th>
+                        <th>库位</th>
+                        <th>数量</th>
+                        <th>含税单价(元)</th>
+                        <th>含税金额(元)</th>
+                        <th>不含税单价(元)</th>
+                        <th>不含税金额(元)</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr>
+                        <td>{{partsInfo.partsCode}}</td>
+                        <td>{{partsInfo.partsTypeName}}</td>
+                        <td>{{partsInfo.partsName}}</td>
+                        <td>{{partsInfo.brandName}}</td>
+                        <td>{{partsInfo.partsSpec}}</td>
+                        <td>{{partsInfo.partsUnit}}</td>
+                        <td>{{listInfo.depotName}}</td>
+                        <td>{{listInfo.depotPosName}}</td>
+                        <td>{{listInfo.count}}</td>
+                        <td class="text-right">{{listInfo.price}}</td>
+                        <td class="text-right">{{listInfo.totalPrice}}</td>
+                        <td class="text-right">{{listInfo.taxPrice}}</td>
+                        <td class="text-right">{{listInfo.totalTaxPrice}}</td>
+                    </tr>
+                </tbody>
+            </table>
+        </div>
+        <div class="printFooter">
+            <div class="printTime">
+                打印时间:{{openTime | date:'yyyy-MM-dd HH:mm:ss'}}
+            </div>
+            <div class="operator">
+                操作人：{{listInfo.operUserName}}
+            </div>
+        </div>
+    </div>

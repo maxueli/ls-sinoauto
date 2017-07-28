@@ -1,0 +1,113 @@
+<!--component html goes here -->
+<div class="wrap" @flyIn>
+    <h4>仓库列表</h4>
+    <div class="wrap-block">
+        <form class="form-inline mb-3">
+            <div class="form-inline">
+                <div class="input-group mr-1">
+                    <label class="input-group-addon">仓库代码</label>
+                    <input class="form-control" maxlength="15" name="billCode" type="text" [(ngModel)]="depotparams.depotCode" placeholder="请输入仓库代码">
+                </div>
+                <div class="input-group mr-1">
+                    <label class="input-group-addon">仓库名称</label>
+                    <input class="form-control" maxlength="25" name="customerName" type="text" [(ngModel)]="depotparams.depotName" placeholder="请输入仓库名称">
+                </div>
+                <div class="input-group mr-2">
+                    <button type="button" class="btn btn-success" (click)="search()">查询</button>
+                </div>
+                <div class="input-group">
+                    <button type="button" class="btn btn-info" (click)="workModal.show()">新增</button>
+                </div>
+            </div>
+        </form>
+        <div class="table-container">
+            <table class="table table-bordered">
+                <thead>
+                    <tr>
+                        <th>仓库代码</th>
+                        <th>仓库名称</th>
+                        <th>备注</th>
+                        <th>操作时间</th>
+                        <th>操作人</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr *ngFor="let item of list">
+                        <td class="text-center">{{item.depotCode}}</td>
+                        <td>{{item.depotName}}</td>
+                        <td>{{item.remark}}</td>
+                        <td class="text-center">{{item.createTime}}</td>
+                        <td>{{item.createUserName}}</td>
+                    </tr>
+                </tbody>
+            </table>
+        </div>
+        <div class="form-group paginate">
+            <label>
+            每页显示
+            <select class="form-control select" (change)="pageChanged($event,'SELECT')">
+                <option value="10">10</option>
+                <option value="20">20</option>
+                <option value="30">30</option>
+                <option value="50">50</option>
+                <option value="100">100</option>
+            </select>
+        </label>
+            <pagination [totalItems]="totalItems" [(ngModel)]="index" [maxSize]="10" [itemsPerPage]="depotparams.pageSize" [boundaryLinks]="true"
+                previousText="上一页" nextText="下一页" firstText="首页" lastText="尾页" (pageChanged)="pageChanged($event)"></pagination>
+                <label class="contorl-label">
+                跳转到<input type="number" class="form-control" min="1" [max]="maxPageSize" [(ngModel)]="choosePage">页
+            </label>
+                <button class="btn btn-default" (click)="pageChanged($event,'BUTTON')">GO</button>
+        </div>
+    </div>
+</div>
+<div bsModal #workModal="bs-modal" class="modal fade" tabindex="-1" role="dialog" aria-labelledby="myLargeModalLabel" aria-hidden="true"
+    [config]="{backdrop: 'static'}">
+    <div class="modal-dialog modal-lg">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h4 class="modal-title pull-left">新增仓库</h4>
+                <button type="button" class="close pull-right" (click)="workModal.hide();reset()" aria-label="Close">
+          <span  aria-hidden="true">&times;</span>
+        </button>
+            </div>
+            <div class="modal-body">
+                <div class="card">
+                     <!--*ngIf="addError"-->
+                    <div class="formAddInfo input-group bg-danger dis">
+                        此仓库已存在，无法重复添加
+                    </div>
+                    <form class="card-block ng-untouched ng-pristine ng-invalid" [formGroup]="addForm">
+                        <div class="form-group">
+                            <label class="form-control-label hq-required"><span style="color: red">*</span> 仓库代码</label>
+                            <input class="form-control ng-untouched ng-pristine ng-invalid" maxlength="15" formControlName="code" label="仓库代码" type="text" [(ngModel)]="depotaddparams.depotCode">
+                            <div class="form-inline" *ngIf="addFormErrors.code.error">
+                                <div [hidden]="!addFormErrors.code.error" class="formInfo input-group">
+                                    {{addFormErrors.code.error}}
+                                </div>
+                            </div>
+                        </div>
+                        <div class="form-group">
+                            <label class="form-control-label hq-required"><span style="color: red">*</span> 仓库名称</label>
+                            <input class="form-control ng-untouched ng-pristine ng-invalid" maxlength="15" formControlName="name" label="仓库名称" type="text" [(ngModel)]="depotaddparams.depotName">
+                            <div class="form-inline" *ngIf="addFormErrors.name.error">
+                                <div [hidden]="!addFormErrors.name.error" class="formInfo input-group">
+                                    {{addFormErrors.name.error}}
+                                </div>
+                            </div>
+                        </div>
+                        <div class="form-group">
+                            <label class="form-control-label">备注</label>
+                            <input class="form-control ng-untouched ng-pristine ng-valid" maxlength="25" formControlName="description" label="备注" type="text" [(ngModel)]="depotaddparams.remark">
+                        </div>
+                        <div class="form-group">
+                            <button class="btn btn-success mr-3" type="button" [disabled]="!addForm.valid" (click)="addDepotInfo()">提交</button>
+                            <button class="btn btn-warning mr-3" type="button" (click)="reset()">重置</button>
+                        </div>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div>
+    </div>

@@ -1,0 +1,310 @@
+// component css goes here
+.container {
+    width: 100%;
+    background: #fff;
+    h4 {
+        border-bottom: 1px solid #ccc;
+        line-height: 40px;
+    }
+    .select {
+        .input-group .form-control,
+        .form-control {
+            width: initial;
+        }
+        .gdStatus div {
+            padding-top: 4px;
+        }
+        .input-group .form-check-box {
+            display: inline-block;
+            margin: 0 15px 0 0;
+            label {
+                margin-bottom: 0;
+                padding-left: 20px;
+                position: relative;
+                font-weight: normal;
+                input {
+                    position: absolute;
+                    top: 0px;
+                    left: 4px;
+                }
+            }
+        }
+        >.form-inline {
+            margin-bottom: 10px;
+            >.input-group {
+                margin: 10px 10px 0 0;
+                .btn {
+                    margin: 0 5px;
+                }
+            }
+        }
+        .dateError {
+            position: relative;
+            .formInfo {
+                color: #a94442;
+                position: absolute;
+                top: 45px;
+                left: 90px;
+            }
+        }
+    }
+    .table-container {
+        width: 100%;
+        max-height: 400px;
+        overflow: auto;
+        table {
+            width: 130% !important;
+            min-width: 115% !important;
+            margin-top: 20px;
+            th,
+            td {
+                text-align: center;
+                vertical-align: middle;
+            }
+            th {
+                background: #f3f3f4;
+            }
+            tr>td:first-child {
+                button {
+                    margin: 5px 0;
+                }
+            }
+        }
+    }
+}
+
+.modal {
+    .modal-header button {
+        width: 24px;
+        height: 24px;
+        border-radius: 50%;
+        border: 2px solid #000;
+        opacity: .3;
+        margin-top: 0px;
+        padding: 0;
+        span {
+            position: relative;
+            top: -2px;
+        }
+    }
+    .modal-body {
+        .text-center {
+            button {
+                padding: 9px 30px;
+            }
+            .btn:disabled {
+                background-color: #dcdddd !important;
+                opacity: 1;
+                border-color: #dcdddd;
+            }
+        }
+        form {
+            margin-bottom: 20px;
+            .form-inline {
+                button {
+                    background-color: #27b394 !important;
+                }
+                .formInfo {
+                    color: #a94442;
+                    position: relative;
+                    top: 5px;
+                    left: 115px;
+                }
+            }
+            select {
+                width: 200px;
+            }
+        }
+        >table {
+            td {
+                width: 35%;
+            }
+            td.fixed-width {
+                width: 15%;
+            }
+        }
+        .tabCard {
+            i {
+                margin-right: 5px;
+            }
+            table {
+                margin: 10px 0 0 0;
+                th,
+                td {
+                    vertical-align: middle;
+                }
+                th {
+                    text-align: center;
+                    background: #f3f3f4;
+                }
+            }
+        }
+        .card {
+            border: 1px solid rgba(0, 0, 0, .125);
+            border-radius: .25rem;
+        }
+        .cardItem {
+            background-color: #fcf8e3 !important;
+            border: 1px solid #dcdddd;
+            font-size: 1rem;
+            height: 40px;
+            line-height: 40px;
+            padding-left: 27px;
+            margin: 15px auto;
+            >span {
+                color: #8a6d3b;
+                font-size: 16px;
+                margin-right: 1.5rem;
+                >span {
+                    color: #eb5267;
+                    font-size: 20px;
+                    margin-left: 2px;
+                }
+            }
+        }
+    }
+}
+
+.complete {
+    .icon {
+        width: 40px !important;
+        height: 40px !important;
+        line-height: 40px !important;
+        color: rgba(39, 179, 148, 0.59);
+        font-size: 30px !important;
+        text-align: center;
+        border: 4px solid rgba(39, 179, 148, 0.57);
+        border-radius: 50%;
+        margin: 6px auto 14px !important;
+        padding: 0;
+        position: relative;
+        box-sizing: content-box;
+    }
+    .content {
+        text-align: center;
+        margin: 10px 0;
+        font-size: 16px;
+    }
+    .infoButton {
+        text-align: center;
+        margin: 25px 0 10px 0;
+        button {
+            padding: 7px 28px !important;
+        }
+        button:last-child {
+            border: 1px solid #ccc;
+        }
+    }
+}
+
+.printgoods {
+    display: none;
+    position: relative;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    .printHeader {
+        line-height: 21px;
+        padding: 10px;
+        border-bottom: 2px solid #000;
+        margin-bottom: 20px;
+        .printTitle {
+            font-size: 16px;
+            font-weight: 500;
+            position: absolute;
+            top: 10px;
+            right: 0;
+        }
+    }
+    .printContnet {
+        ul {
+            list-style: none;
+            margin: 0;
+            padding: 0;
+            li {
+                display: inline-block;
+                padding: 5px 0;
+                margin-right: 10px;
+            }
+        }
+        table {
+            th,
+            td {
+                vertical-align: middle;
+            }
+            th {
+                text-align: center;
+            }
+        }
+        table.basicInfo {
+            caption {
+                width: 58px;
+                padding-left: 8px;
+                border-bottom: 3px solid #000;
+            }
+            td {
+                border-color: transparent;
+            }
+            td.basicInfo_title {
+                width: 100px;
+                text-align: left;
+            }
+        }
+        table.project span {
+            margin-right: 20px;
+        }
+    }
+    .printFooter {
+        position: relative;
+        margin-top: 20px;
+        span {
+            margin-right: 15px;
+            color: #000;
+        }
+        span.customer {
+            margin: 0 80px 0 0;
+        }
+    }
+}
+
+.input-group-addon,
+.form-control,
+.form-inline button {
+    height: 40px;
+    font-size: 16px;
+    border-color: #e8e8e8;
+}
+
+.form-control:disabled {
+    background-color: #f7f8f8;
+}
+
+.input-group {
+    .defBgColor {
+        background: #fff;
+    }
+    .icon-sm {
+        float: left;
+        color: red;
+        font-size: 20px;
+        font-style: normal;
+        margin-right: 5px;
+    }
+}
+
+.text-right {
+    text-align: right !important;
+}
+
+.btn-primary {
+    background-color: #27b394 !important;
+    border: 0;
+    transition: .8s;
+    margin-left: 10px;
+}
+
+.btn-primary:hover {
+    background-color: #22cda7 !important;
+    border: 0;
+}

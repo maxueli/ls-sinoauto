@@ -1,0 +1,346 @@
+// component css goes here
+.material-content{
+  position: relative;
+  display: flex;
+  flex-direction: column;
+  background: #fff;
+  width: 98%;
+  padding-left: 25px;
+  .header{
+    flex: 1;
+    .title{
+      float: left;
+      line-height: 40px;
+    }
+    .list-info{
+      float: right;
+      margin-left: .3em;
+      color: #1c84c6;
+      font-size: 14px;
+      position: relative;
+      a{
+        color: #337ab7 !important;
+      }
+      .dropdown-menu{
+        position: absolute;
+        top: 22px;
+        left:-250px;
+        width: 380px;
+      }
+    }
+    &:after{
+      content: '';
+      display: table;
+      clear: both;
+    }
+  }
+  .content{
+    padding: 20px 0px;
+    font-size: 1rem;
+    width: 100%;
+    border: 1px solid #ddd;
+    // border-top: 1px solid rgba(0,0,0,.125);
+    border-left: 0;
+    border-right: 0;
+    .search{
+      width: 100%;
+      color: #727171;
+      font-size: 16px;
+      font-weight: 400;
+    margin-bottom: 20px;
+    position: relative;
+      .list-search{
+        width: 365px;
+        height: 38px;
+        color: #727171;
+        padding: 8px 12px;
+        font-size: 16px;
+        font-weight: 400;
+        border: 1px solid #e8e8e8;
+        outline: none;
+      }
+      .search-icon{
+        width: 38px;
+        height: 38px;
+        border: 1px solid #e8e8e8;
+        border-left: 0;
+        background: #fff;
+        color: #727171;
+        border-top-right-radius:4px;
+        border-bottom-right-radius: 4px;
+        cursor: pointer;
+        outline: none;
+      }
+    }
+    .table{
+        font-size: 16px;
+        font-weight: 400;
+        text-align: center;
+        .btn{
+          border-radius: 5px;
+          padding: 6px 22px;
+        }
+        th{
+          border-bottom: 0;
+          background: #f3f3f4;
+          color: #727171;
+          font-weight: 700;
+          text-align: center;
+        }
+        td{
+          vertical-align: middle;
+        }
+        .tr-left-bold{
+          border-bottom: 0;
+          background: #f3f3f4;
+          color: #727171;
+          font-weight: 700;
+        }
+    }
+    .table-caption{
+      border: 1px solid #ddd;
+      width: 150px;
+      padding: 0 10px;
+      text-align: center;
+      height: 37px;
+      line-height: 37px;
+      border-bottom: 0;
+      border-radius: 5px;
+      font-size: 1.5rem;
+    };
+    .carinfotable{
+       .table tr td{
+         width: 25%
+       }
+    }
+    .maintentable{
+      .table tr td{
+        width: 50%
+      }
+    }
+    .table-container{
+      position: relative;
+      overflow: auto;
+      max-height: 500px;
+      width: 100%;
+      min-width: 100%;
+      border: 1px solid rgb(236,238,239);
+      margin-bottom: 20px;
+      table{
+        border-collapse: collapse;
+        background: transparent;
+        width: 110% !important;
+        min-width: 130% !important;
+      }
+      .table{
+        margin: 0;
+        border: 0 !important;
+        // width: 100%;
+        // max-width: 100%;
+        // text-align: center;
+        th{
+          background: #f3f3f4;
+          color: #727171;
+          border-color: #dcdddd;
+          font-size: 1.5rem;
+          font-weight: 500;
+          text-align: center;
+
+        }
+      }
+    }
+
+
+  }
+  .footer{
+      width: 100%;
+      padding: 20px 0px;
+      .btn{
+        padding: 9px 30px;
+        display: inline-block;
+        font-weight: 400;
+        line-height: 1.25;
+        text-align: center;
+        white-space: normal;
+        vertical-align: middle;
+        user-select: none;
+        font-size: 16px;
+        border-radius: .25rem;
+      }
+      .dropdown-menu{
+        width:200px;
+        .checkData{
+          max-height: 500px;
+          overflow-y: scroll;
+          overflow-x: auto;
+        }
+        .btnGroup{
+          .btn-sm{
+            float: right;
+            padding: 1px 5px !important;
+            font-size: 12px;
+            line-height: 1.5;
+            border-radius: 3px;
+            margin-right: 5px;
+          }
+        }
+      }
+      .btn:disabled{
+        background: #dcdddd !important;
+        opacity: 1;
+        border-color: #dcdddd;
+        cursor: not-allowed;
+      }
+      .btn-export{
+        background:#1c84c6 !important;
+        color: #fff;
+        border-color: #dcdddd;
+      }
+  }
+  .newAdd{
+    border: 1px solid #ddd;
+    border-radius: 5px;
+    position: relative;
+    display: flex;
+    -moz-box-orient: vertical;
+    -moz-box-direction: normal;
+    flex-direction: column;
+    background: #fff;
+    .card-block{
+      // -moz-box-flex: 1;
+      flex: 1;
+      padding: 1.25rem;
+      .form-control{
+          &:disabled{
+            background: #f7f7f8;
+          }
+        }
+        .errMsg{
+          color: #a94442;
+        }
+        input{
+          border-radius: 3px;
+          font-size: 1.3rem;
+          font-weight: 450;
+          &.ng-touched.ng-invalid {
+              border: 1px solid #a94442;
+            }
+          &:focus{
+            border-color: #27b394 !important;
+          }
+        }
+      .card{
+        flex: 1;
+        display: flex;
+
+        .input-group-addon{
+          background: #fff;
+          border-top-right-radius: 3px;
+          border-bottom-right-radius: 3px;
+        }
+        .card-left{
+          flex: 1;
+          max-width: 50%;
+          margin: 0;
+          padding: 0 15px;
+        }
+        .card-right{
+          flex: 1;
+          padding: 0 15px;
+          max-width: 50%;
+        }
+        .hq-required{
+            &::before{
+              content: "*";
+              color: #eb5267;
+              padding-right: 2px;
+            }
+        }
+        .form-control-label{
+          font-size: 1.5rem;
+          font-weight: 400;
+        }
+      }
+      .card-botton{
+        // -moz-box-flex: 0;
+        // flex: 0 0 100%;
+        max-width: 100%;
+        display: block;
+        padding: 0 15px;
+        .form-control-label{
+          font-size: 1.5rem;
+          font-weight: 400;
+        }
+        .btn{
+          padding: 9px 30px;
+          font-weight: 400;
+          font-size: 1.3rem;
+          border-radius: 4px;
+
+        }
+
+      }
+    }
+  }
+
+}
+.printgoods {
+    display: none;
+    position: relative;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    .printHeader {
+        line-height: 21px;
+        padding: 10px; // border: 1px solid #000;
+        border-bottom: 2px solid #000;
+        margin-bottom: 20px;
+        .printTitle {
+            position: absolute;
+            top: 15px;
+            right: 0;
+            font-size: 16px;
+            font-weight: 500;
+        }
+    }
+    .printContnet {
+        ul {
+            list-style: none;
+            margin: 0;
+            padding: 0;
+            li {
+                display: inline-block;
+                padding: 5px 0;
+                margin-right: 10px;
+            }
+        }
+        table {
+            width: 100%;
+            height: 100%;
+            text-align: center;
+            vertical-align: middle;
+            thead {
+                border: 1px solid #000;
+                border-bottom: 0;
+                th {
+                    word-break: keep-all;
+                    white-space: nowrap;
+                    text-align: center;
+                    vertical-align: middle;
+                    border: 0;
+                    border-bottom: 1px solid #000;
+                }
+            }
+        }
+    }
+    .printFooter {
+        position: relative;
+        margin-top: 100px;
+        .operator {
+            position: absolute;
+            top: 0;
+            right: 0;
+        }
+    }
+}

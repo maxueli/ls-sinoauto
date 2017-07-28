@@ -1,0 +1,308 @@
+<div class="purchans-content" @flyIn>
+    <div class="header">
+        <h4 class="title">销售退库</h4>
+        <div class="list-info" dropdown (onShown)="onShown()" (onHidden)="onHidden()">
+            <a href dropdownToggle (click)="false">
+                <i class="fa fa-list-alt"></i>
+                <span>挂单信息（{{hangOrderCount}}）</span>
+                <i class="fa fa-angle-up"></i>
+            </a>
+            <div *dropdownMenu class="dropdown-menu">
+                <table class="table table-hover">
+                    <thead>
+                        <tr>
+                            <th>客户姓名</th>
+                            <th>操作人</th>
+                            <th>操作</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr *ngFor="let item of hangOrder" (click)="gethanglogsdetail(item.orderNo)">
+                            <td>{{item.customerName}}</td>
+                            <td>{{item.operUserName}}</td>
+                            <td>
+                                <span class="cursor-pointer" (click)="setDeleteHangOrder(item.hangId)">
+                                    <i class="cursor-pointer fa fa-times-circle"></i> 作废
+                                </span>
+                            </td>
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    </div>
+    <div class="content">
+        <div class="form-inline">
+            <div class="form-group">
+                <label class="sr-only" for="customerName"></label>
+                <div class="input-group">
+                    <div class="input-group-addon">客户名称</div>
+                    <input type="text" class="form-control" id="customerName" placeholder="客户名称" [(ngModel)]="sellRetreatInfo.sellRetreatSelectDto.name">
+                </div>
+            </div>
+            <div class="form-group">
+                <label class="sr-only" for="purchansPhone"></label>
+                <div class="input-group">
+                    <div class="input-group-addon">手机号</div>
+                    <input type="text" class="form-control" [(ngModel)]="sellRetreatInfo.sellRetreatSelectDto.mobile">
+                </div>
+            </div>
+            <div class="form-group">
+                <label class="sr-only" for="outDepot"></label>
+                <div class="input-group">
+                    <div class="input-group-addon">销售出库单</div>
+                    <input type="text" class="form-control" id="outDepot" [(ngModel)]="findallselloutcodeparams.sellOutCode" placeholder="请输入出库单号" (focus)="partsSellReFocus('findallselloutcode')" (blur)="partsSellReBlur('findallselloutcode')" (keyup)="partsSellReKeyUp($event,'findallselloutcode')">
+                    <div class="input-icon input-group-addon">
+                        <i class="cursor-pointer fa fa-search"></i>
+                    </div>
+                    <maintenance-unmaterial-table [findallselloutcode]="findallselloutcode" (goSellOutCode)="goSellOutCode($event)"></maintenance-unmaterial-table>
+                </div>
+            </div>
+        </div>
+        <div class="table-caption"> 销售出库信息</div>
+        <div class="table-container">
+            <table class="table table-bordered">
+                <thead>
+                    <tr>
+                        <th>操作</th>
+                        <th>配件编码</th>
+                        <th>配件分类</th>
+                        <th>配件名称</th>
+                        <th>品牌</th>
+                        <th>规格型号</th>
+                        <th>单位</th>
+                        <th>仓库</th>
+                        <th>库位</th>
+                        <th>库存量</th>
+                        <th>单价（元）</th>
+                        <th>数量</th>
+                        <th>已退数量</th>
+                        <th>金额（元）</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr *ngIf="hasSellInfo">
+                        <td>
+                            <button class="btn btn-info" [disabled]="sellRetreatInfo.sellOutInfoDtos.count == sellRetreatInfo.sellOutInfoDtos.returnCount" (click)="lgModal.show()">退库</button>
+                        </td>
+                        <td>{{sellRetreatInfo.sellOutInfoDtos.partsCode}}</td>
+                        <td>{{sellRetreatInfo.sellOutInfoDtos.partsTypeName}}</td>
+                        <td>{{sellRetreatInfo.sellOutInfoDtos.partsName}}</td>
+                        <td>{{sellRetreatInfo.sellOutInfoDtos.partsBrandName}}</td>
+                        <td>{{sellRetreatInfo.sellOutInfoDtos.partsSpec}}</td>
+                        <td>{{sellRetreatInfo.sellOutInfoDtos.partsUnit}}</td>
+                        <td>{{sellRetreatInfo.sellOutInfoDtos.depotName}}</td>
+                        <td>{{sellRetreatInfo.sellOutInfoDtos.depotPosName}}</td>
+                        <td>{{sellRetreatInfo.sellOutInfoDtos.inventory}}</td>
+                        <td>{{sellRetreatInfo.sellOutInfoDtos.price}}</td>
+                        <td>{{sellRetreatInfo.sellOutInfoDtos.count}}</td>
+                        <td>{{sellRetreatInfo.sellOutInfoDtos.returnCount}}</td>
+                        <td>{{sellRetreatInfo.sellOutInfoDtos.totalPrice}}</td>
+                    </tr>
+                </tbody>
+            </table>
+        </div>
+        <div *ngIf="sellRetreatInfo.sellOutInfoDtos.length == 0 || sellRetreatInfo.sellOutInfoDtos == null">没有数据</div>
+        <div class="loading" size=3 [hidden]="isLoad">
+            <i class="fa fa-spinner fa-fw fa-spin fa-3x d-none"></i>
+        </div>
+        <hr>
+        <div class="table-caption">销售退库信息</div>
+        <div class="table-container">
+            <table class="table table-bordered">
+                <thead>
+                    <tr>
+                        <th>操作</th>
+                        <th>序号</th>
+                        <th>配件编码</th>
+                        <th>配件分类</th>
+                        <th>配件名称</th>
+                        <th>品牌</th>
+                        <th>规格型号</th>
+                        <th>单位</th>
+                        <th>仓库</th>
+                        <th>库位</th>
+                        <th>库存量</th>
+                        <th>单价（元）</th>
+                        <th>数量</th>
+                        <th>金额（元）</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <!-- <tbody *ngIf="hasReturnSellInfo"> -->
+                    <tr *ngFor="let item of sellRetreatInfo.sellRetreatRecordDtos; let i = index">
+                        <td>
+                            <button class="btn btn-danger" (click)="deleteSell(i)">删除</button>
+                        </td>
+                        <td>{{i+1}}</td>
+                        <td>{{item.partsCode}}</td>
+                        <td>{{item.partsTypeName}}</td>
+                        <td>{{item.partsName}}</td>
+                        <td>{{item.partsBrandName}}</td>
+                        <td>{{item.partsSpec}}</td>
+                        <td>{{item.partsUnit}}</td>
+                        <td>{{item.depotName}}</td>
+                        <td>{{item.depotPosName}}</td>
+                        <td>{{item.inventory}}</td>
+                        <td>{{item.price}}</td>
+                        <td>{{item.retreatCount}}</td>
+                        <td>{{item.totalPrice}}</td>
+                    </tr>
+                </tbody>
+            </table>
+
+        </div>
+    </div>
+    <div class="footer">
+        <button class="btn btn-primary" [disabled]="isSave" (click)="saveGenerateSellRetreat()">生成销售退库单</button>
+        <button class="btn btn-success btn-suspend" [disabled]="isSave" (click)="saveHangOrder()">挂单</button>
+    </div>
+
+    <div bsModal #lgModal="bs-modal" class="modal fade" [config]="{backdrop: 'static'}" tabindex="-1" role="dialog" aria-labelledby="mySmallModalLabel" aria-hidden="true">
+        <div class="modal-dialog modal-lg">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h4 class="modal-title pull-left">退库</h4>
+                    <button type="button" class="close pull-right" (click)="lgModal.hide()" aria-label="Close">
+                        <span aria-hidden="true">&times;</span>
+                    </button>
+                </div>
+                <div class="modal-body">
+                    <div class="newAdd">
+                        <form class="card-block row">
+                            <div class="col-sm-6">
+                                <div class="form-group">
+                                    <label class="form-control-label">配件编码</label>
+                                    <input class="form-control" name="productCode" readonly [(ngModel)]="sellRetreatInfo.sellOutInfoDtos.partsCode">
+                                </div>
+                                <div class="form-group">
+                                    <label class="form-control-label">配件名称</label>
+                                    <input class="form-control" name="productName" readonly [(ngModel)]="sellRetreatInfo.sellOutInfoDtos.partsName">
+                                </div>
+                                <div class="form-group">
+                                    <label class="form-control-label">品牌</label>
+                                    <input class="form-control" name="brandName" readonly [(ngModel)]="sellRetreatInfo.sellOutInfoDtos.partsBrandName">
+                                </div>
+                                <div class="form-group">
+                                    <label class="form-control-label">规格型号</label>
+                                    <input class="form-control" name="productSpecification" readonly [(ngModel)]="sellRetreatInfo.sellOutInfoDtos.partsSpec">
+                                </div>
+                                <div class="form-group">
+                                    <label class="form-control-label">单位</label>
+                                    <input class="form-control" name="unit" readonly [(ngModel)]="sellRetreatInfo.sellOutInfoDtos.partsUnit">
+                                </div>
+                                <div class="form-group">
+                                    <label class="form-control-label">单价（元）</label>
+                                    <input class="form-control" name="price" readonly [(ngModel)]="sellRetreatInfo.sellOutInfoDtos.price">
+                                </div>
+                            </div>
+                            <div class="col-sm-6">
+                                <div class="form-group">
+                                    <label class="form-control-label">配件分类</label>
+                                    <input class="form-control" name="productCategory" readonly [(ngModel)]="sellRetreatInfo.sellOutInfoDtos.partsTypeName">
+                                </div>
+                                <div class="form-group">
+                                    <label class="form-control-label">仓库</label>
+                                    <input class="form-control" name="storeName" readonly [(ngModel)]="sellRetreatInfo.sellOutInfoDtos.depotName">
+                                </div>
+                                <div class="form-group">
+                                    <label class="form-control-label">库位</label>
+                                    <input class="form-control" name="locationName" readonly [(ngModel)]="sellRetreatInfo.sellOutInfoDtos.depotPosName">
+                                </div>
+                                <div class="form-group">
+                                    <label class="form-control-label">数量（可退数量 <span>{{canBackNumber || 0}}</span>）</label>
+                                    <input class="form-control" name="counts" type="number" min="1" max="{{canBackNumber}}" [(ngModel)]="sellReturnCount" (change)="returnNumChange($event)">
+                                </div>
+                                <div class="form-group">
+                                    <label class="form-control-label">金额（元）</label>
+                                    <input class="form-control" name="amount" readonly [(ngModel)]="stSellRetreats.totalPrice">
+                                </div>
+                                <div class="form-group">
+                                    <label class="form-control-label invisible">提交</label>
+                                    <div>
+                                        <button class="btn btn-primary" type="button" (click)="lgModal.hide();saveSellRetreats()">提交</button>
+                                    </div>
+                                </div>
+                            </div>
+                        </form>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+    <div bsModal #complete="bs-modal" class="modal fade complete" tabindex="-1" role="dialog" aria-labelledby="mySmallModalLabel" aria-hidden="true" [config]="{backdrop: 'static'}">
+        <div class="modal-dialog modal-sm">
+            <div class="modal-content">
+                <div class="modal-body">
+                    <button type="button" class="close pull-right" aria-label="Close" (click)="complete.hide()">
+                        <span aria-hidden="true">&times;</span>
+                    </button>
+                    <div>
+                        <div class="icon">?</div>
+                        <div class="content">已生成销售退库单，是否需要打印？</div>
+                        <div class="infoButton">
+                            <button type="button" class="btn btn-primary" (click)="complete.hide();print()">确定</button>
+                            <button type="button" class="btn btn-default" (click)="complete.hide();clearInfo()">取消</button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<div class="printgoods">
+    <div class="printHeader">
+        <img src="../../../../../assets/img/login_logo.png" alt="">
+        <span class="printTitle">销售退库单</span>
+    </div>
+    <div class="printContnet">
+        <ul>
+            <li>
+                退库单号：{{sellRetreatInfo.sellRetreatSelectDto.srCode}}
+            </li>
+            <li>
+                客户名称：{{sellRetreatInfo.sellRetreatSelectDto.customerName}}
+            </li>
+            <li>销售员：{{sellRetreatInfo.sellRetreatSelectDto.customerName}}</li>
+            <li>开单时间：{{printDate}}</li>
+        </ul>
+        <table class="table">
+            <thead>
+                <tr>
+                    <th>配件编码</th>
+                    <th>配件类型</th>
+                    <th>配件名称</th>
+                    <th>品牌</th>
+                    <th>规格型号</th>
+                    <th>单位</th>
+                    <th>仓库</th>
+                    <th>库位</th>
+                    <th>单价(元)</th>
+                    <th>数量</th>
+                    <th>金额(元)</th>
+                </tr>
+            </thead>
+            <tbody>
+                <tr *ngFor="let item of sellRetreatInfo.sellRetreatRecordDtos">
+                    <td>{{item.partsCode}}</td>
+                    <td>{{item.partsTypeName}}</td>
+                    <td>{{item.partsName}}</td>
+                    <td>{{item.partsBrandName}}</td>
+                    <td>{{item.partsSpec}}</td>
+                    <td>{{item.partsUnit}}</td>
+                    <td>{{item.depotName}}</td>
+                    <td>{{item.depotPosName}}</td>
+                    <td>{{item.price}}</td>
+                    <td>{{item.retreatCount}}</td>
+                    <td>{{item.totalPrice}}</td>
+                </tr>
+            </tbody>
+        </table>
+    </div>
+    <div class="printFooter">
+        <span>金额：￥{{totalPrice}}</span>
+        <span>打印时间：{{printDate}}</span>
+        <span>操作人：{{sellRetreatInfo.sellRetreatSelectDto.customerName}}</span>
+    </div>
+</div>

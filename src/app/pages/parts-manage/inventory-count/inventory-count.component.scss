@@ -1,0 +1,110 @@
+// component css goes here
+#parts_price{
+    width: 98%;
+    padding-left: 20px;
+    h4{
+        border-bottom: 1px solid #eceeef;
+        line-height: 40px;
+    }
+    .parts_top{
+        margin-top: 10px;
+         .row{
+            .input-group{
+                .form-control{
+                    height: 40px;
+                }
+                .btn{
+                    border: none;
+                    padding: 6px 30px;
+                }
+            }
+        }
+    }
+    .parts_main{
+        .inventort_wrap{
+            border: 1px solid #eceeef;
+            max-height: 500px;
+            overflow-y: scroll;
+            .table{
+                margin-bottom: 0px!important;
+                tr th{
+                    text-align: center;
+                    background: #f3f3f4;
+                    padding: 10px 0px!important;
+                    font-size: 16px!important;
+                }
+                tr td{
+                    padding: 5px 0px;
+                    border: 1px solid #eceeef;
+                    vertical-align: middle !important;
+                    color: #292b2c!important;
+                    .btn{
+                        border: none;
+                        width: 75px;
+                        padding: 6px 12px;
+                    }
+                }
+            }
+            
+        }
+    }
+    .inventory_buttom{
+        border-bottom:1px solid #ccc;
+        
+    }
+    .inventory_foot{
+        button{
+            margin-top: 20px;
+            padding: 9px 20px;
+        }
+    }
+}
+// 模态框start
+.modal{
+    .modal-header{
+        .close{
+            border-radius: 100%!important;
+            padding: 0px 3px 2px!important;
+            border: 2px solid #727171!important;
+            .times{
+                font-weight: 700;
+                color: #000;
+            }
+        }
+    }
+    .inventory_modal{
+        border: 1px solid rgba(0,0,0,.125);
+        padding: 35px;
+        border-radius: 6px;
+        .col-md-5{
+            padding-left: 0px;
+        }
+        .in_content{
+            width: 100%;
+            overflow: auto;
+            border: 1px solid rgba(0,0,0,.125);
+            
+            .table{
+                width: 1000px;
+                margin-bottom: 0px!important;
+                th{
+                    background: #f3f3f4;
+                    text-align: center;
+                }
+            }
+        }
+    }
+
+    
+}
+// 滚动条样式
+::-webkit-scrollbar {
+    width: 8px; 
+    height: 8px;
+    background-color: rgba(68, 36, 36, 0.07);
+}
+::-webkit-scrollbar-thumb {
+    border-radius: 10px;
+    -webkit-box-shadow: inset 0 0 6px rgba(0,0,0,.3);
+    background-color: rgba(149, 151, 154, 0.31);
+}

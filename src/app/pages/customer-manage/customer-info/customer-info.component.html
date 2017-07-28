@@ -1,0 +1,219 @@
+<!--component html goes here -->
+<div class="container" @flyIn>
+    <h4>客户信息</h4>
+    <form>
+        <div class="form-inline" [ngClass]="{'form-inline-dateError': timeError}">
+            <div class="input-group">
+                <label for="name" class="input-group-addon">车主</label>
+                <input class="form-control" name="name" id="name" maxlength="15" type="text" [(ngModel)]="searchParams.name">
+            </div>
+            <div class="input-group">
+                <label for="mobile" class="input-group-addon">车主电话</label>
+                <input type="tel" class="form-control" name="mobile" id="mobile" maxlength="11" [(ngModel)]="searchParams.mobile">
+            </div>
+            <div class="input-group">
+                <label for="sourceChannel" class="input-group-addon">来源渠道</label>
+                <select class="form-control" name="sourceChannel" id="sourceChannel" [(ngModel)]="searchParams.sourceChannel">
+                    <option style="display:none"></option>
+                    <option value="1">网络平台</option>
+                    <option value="2">宣传广告</option>
+                    <option value="3">直接到店</option>
+                    <option value="4">朋友介绍</option>
+                    <option value="5">微信</option>
+                    <option value="6">店铺活动</option>
+                </select>
+            </div>
+            <div class="input-group dateError">
+                <label for="beginTime" class="input-group-addon">建档日期</label>
+                <div>
+                    <input type="text" class="form-control" name="beginTime" id="beginTime" [(ngModel)]="searchParams.beginTime" ngui-datetime-picker [close-on-select]="false" date-only="true" [max-date]="maxDate" (valueChanged)="timeValueChanged('start')">
+                </div>
+                <label for="endTime" class="input-group-addon">-</label>
+                <div>
+                    <input type="text" class="form-control" name="endTime" id="endTime" [(ngModel)]="searchParams.endTime" ngui-datetime-picker [close-on-select]="false" date-only="true" [max-date]="maxDate" (valueChanged)="timeValueChanged('end')">
+                </div>
+                <div class="formInfo input-group" *ngIf="timeError">
+                    无效的建档日期，开始时间要小于截止时间
+                </div>
+            </div>
+            <div class="input-group">
+                <button type="button" class="btn btn-success" [disabled]="timeError" (click)="loadCustomer()">查询</button>
+                <button type="button" class="btn btn-warning" (click)="cancelLoadCustomer()">清空</button>
+                <button type="button" class="btn btn-primary" (click)="customerExport()">
+                    <i class="fa fa-spinner fa-fw fa-spin fa-none-size d-none" [hidden]="searchLoad"></i>导出                    
+                </button>
+            </div>
+        </div>
+    </form>
+    <div class="table-container">
+        <table class="table table-bordered">
+            <thead>
+                <tr>
+                    <th>操作</th>
+                    <th>建档日期</th>
+                    <th>车主</th>
+                    <th>手机号</th>
+                    <th>来源渠道</th>
+                    <th>首次进厂时间</th>
+                    <th>末次进厂时间</th>
+                    <th>创建人</th>
+                </tr>
+            </thead>
+            <tbody>
+                <tr *ngFor="let item of customer">
+                    <td>
+                        <button type="button" class="btn btn-sm btn-success" (click)="localpage(1, item.customerId)">编辑</button>
+                        <button type="button" class="btn btn-sm btn-info" (click)="customerDetail(item.customerId)">
+                            <i class="fa fa-spinner fa-fw fa-spin fa-none-size d-none" [hidden]="tableLoad"></i>
+                            详情
+                        </button>
+                    </td>
+                    <td>{{item.createTime}}</td>
+                    <td>{{item.name}}</td>
+                    <td>{{item.mobile}}</td>
+                    <td [ngSwitch]="item.sourceChannel">
+                        <template [ngSwitchCase]="1">网络平台</template>
+                        <template [ngSwitchCase]="2">宣传广告</template>
+                        <template [ngSwitchCase]="3">直接到店</template>
+                        <template [ngSwitchCase]="4">朋友介绍</template>
+                        <template [ngSwitchCase]="5">微信</template>
+                        <template [ngSwitchCase]="6">店铺活动</template>
+                    </td>
+                    <td>{{item.firstExpenseTime}}</td>
+                    <td>{{item.endExpenseTime}}</td>
+                    <td>{{item.createName}}</td>
+                </tr>
+            </tbody>
+        </table>
+    </div>
+    <div class="form-group paginate">
+        <label>
+            每页显示
+            <select class="form-control select" (change)="pageChanged($event,'SELECT')">
+                <option value="10">10</option>
+                <option value="20">20</option>
+                <option value="30">30</option>
+                <option value="50">50</option>
+                <option value="100">100</option>
+            </select>
+        </label>
+        <pagination [totalItems]="totalItems" [(ngModel)]="index" [maxSize]="10" [itemsPerPage]="searchParams.pageSize" [boundaryLinks]="true" previousText="上一页" nextText="下一页" firstText="首页" lastText="尾页" (pageChanged)="pageChanged($event)"></pagination>
+        <label class="contorl-label">
+            跳转到<input type="number" class="form-control" min="1" [max]="maxPageSize" [(ngModel)]="choosePage">页
+        </label>
+        <button class="btn btn-default" (click)="pageChanged($event,'BUTTON')">GO</button>
+    </div>
+    <div class="text-center add">
+        <button class="btn btn-link btn-default" (click)="localpage(2, '')">
+            <i aria-hidden="true" class="fa fa-plus-circle text-success"></i>
+            新增车主
+        </button>
+    </div>
+</div>
+
+<div bsModal #viewDetail="bs-modal" class="modal fade" tabindex="-1" role="dialog" aria-labelledby="myLargeModalLabel" aria-hidden="true">
+    <div class="modal-dialog modal-lg">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h4 class="modal-title pull-left">车主信息详情</h4>
+                <button type="button" class="close pull-right" aria-label="Close" (click)="viewDetail.hide()">
+                    <span aria-hidden="true">&times;</span>
+                </button>
+            </div>
+            <div class="modal-body">
+                <table class="table table-bordered">
+                    <tbody>
+                        <tr>
+                            <td class="fixed-width">车主</td>
+                            <td>{{userDetail.info.name}}</td>
+                            <td class="fixed-width">性别</td>
+                            <td>{{userDetail.info.gender}}</td>
+                        </tr>
+                        <tr>
+                            <td class="fixed-width">生日</td>
+                            <td>{{userDetail.info.birthday}}</td>
+                            <td class="fixed-width">身份证号</td>
+                            <td>{{userDetail.info.idNumber}}</td>
+                        </tr>
+                        <tr>
+                            <td class="fixed-width">手机号</td>
+                            <td>{{userDetail.info.mobile}}</td>
+                            <td class="fixed-width">座机</td>
+                            <td>{{userDetail.info.landline}}</td>
+                        </tr>
+                        <tr>
+                            <td class="fixed-width">传真</td>
+                            <td>{{userDetail.info.fax}}</td>
+                            <td class="fixed-width">Email</td>
+                            <td>{{userDetail.info.email}}</td>
+                        </tr>
+                        <tr>
+                            <td class="fixed-width">来源渠道</td>
+                            <td [ngSwitch]="userDetail.info.sourceChannel">
+                                <template [ngSwitchCase]="1">网络平台</template>
+                                <template [ngSwitchCase]="2">宣传广告</template>
+                                <template [ngSwitchCase]="3">直接到店</template>
+                                <template [ngSwitchCase]="4">朋友介绍</template>
+                                <template [ngSwitchCase]="5">微信</template>
+                                <template [ngSwitchCase]="6">店铺活动</template>
+                            </td>
+                            <td class="fixed-width">省份</td>
+                            <td>{{areaName[0]}}</td>
+                        </tr>
+                        <tr>
+                            <td class="fixed-width">城市</td>
+                            <td>{{areaName[1]}}</td>
+                            <td class="fixed-width">区县</td>
+                            <td>{{areaName[2]}}</td>
+                        </tr>
+                        <tr>
+                            <td class="fixed-width">详细地址</td>
+                            <td colspan="3">{{userDetail.info.address}}</td>
+                        </tr>
+                    </tbody>
+                </table>
+                <tabset class="tabCard">
+                    <tab>
+                        <template tabHeading>
+                            <i aria-hidden="true" class="fa fa-car"></i>车辆信息
+                        </template>
+                        <div class="table-container">
+                            <table class="table table-bordered">
+                                <thead>
+                                    <tr>
+                                        <th>车牌号</th>
+                                        <th>品牌</th>
+                                        <th>车系</th>
+                                        <th>车型</th>
+                                        <th>动机号</th>
+                                        <th>VIN</th>
+                                        <th>车身颜色</th>
+                                        <th>购车日期</th>
+                                        <th>验车时间</th>
+                                        <th>保险到期日期</th>
+                                        <th>保险公司</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    <tr *ngFor="let item of userDetail.cars">
+                                        <td>{{item.carNo}}</td>
+                                        <td>{{item.brandName}}</td>
+                                        <td>{{item.seriesName}}</td>
+                                        <td>{{item.modelName}}</td>
+                                        <td>{{item.engineNo}}</td>
+                                        <td>{{item.vin}}</td>
+                                        <td>{{item.carColor}}</td>
+                                        <td>{{item.buyDate}}</td>
+                                        <td>{{item.vehicleDate}}</td>
+                                        <td>{{item.insuranceExpireDate}}</td>
+                                        <td>{{item.insuranceCompanyId}}</td>
+                                    </tr>
+                                </tbody>
+                            </table>
+                        </div>
+                    </tab>
+                </tabset>
+            </div>
+        </div>
+    </div>
+</div>

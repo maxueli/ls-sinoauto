@@ -1,0 +1,138 @@
+.container {
+    width: 100%;
+    background: #fff;
+    h4 {
+        border-bottom: 1px solid #ccc;
+        line-height: 40px;
+    }
+    form {
+        .form-inline {
+            margin-bottom: 15px;
+            .defBgColor {
+                background: #fff;
+            }
+            button {
+                padding: 6px 30px;
+                margin-right: 5px;
+            }
+            .dateError {
+                position: relative;
+                .formInfo {
+                    color: #a94442;
+                    position: absolute;
+                    top: 45px;
+                    left: 90px;
+                }
+            }
+        }
+        .form-inline-dateError {
+            margin-bottom: 35px;
+        }
+        .input-group-addon,
+        .form-control,
+        button {
+            height: 40px;
+            font-size: 16px;
+            border-color: #e8e8e8;
+        }
+    }
+    .table-container {
+        width: 100%;
+        max-height: 400px;
+        overflow: auto;
+        table {
+            width: 110% !important;
+            min-width: 110% !important;
+            margin-bottom: 0;
+            th,
+            td {
+                text-align: center;
+                vertical-align: middle;
+            }
+            th {
+                background: #f3f3f4;
+            }
+            tr>td:first-child .btn {
+                margin: 5px 0;
+            }
+        }
+    }
+    .add {
+        padding: 15px 0;
+        border-top: 1px solid rgba(0, 0, 0, .125);
+        button {
+            color: #727171;
+            font-weight: bold;
+            font-size: 15px;
+            border: none;
+            border-radius: 4px;
+            padding: 6px 30px;
+            i {
+                color: #27b394;
+                font-size: 20px;
+                margin-right: 5px;
+                position: relative;
+                top: 2px;
+            }
+        }
+        .btn-default:active,
+        .btn-default:hover {
+            color: #292b2c;
+            background-color: #e6e6e6;
+            background-image: none;
+            border-color: #adadad;
+        }
+    }
+}
+
+.modal {
+    .modal-header button {
+        width: 24px;
+        height: 24px;
+        border-radius: 50%;
+        border: 2px solid #000;
+        opacity: .3;
+        margin-top: 0px;
+        span {
+            position: relative;
+            top: -2px;
+        }
+    }
+    .modal-body {
+        >table {
+            td {
+                width: 35%;
+            }
+            td.fixed-width {
+                width: 15%;
+            }
+        }
+    }
+    .tabCard .table-container {
+        width: 100%;
+        max-height: 400px;
+        overflow: auto;
+        table {
+            width: 110% !important;
+            min-width: 110% !important;
+            margin: 10px 0 0 0;
+        }
+    }
+}
+
+table {
+    th,
+    td {
+        text-align: center;
+        vertical-align: middle;
+    }
+    th {
+        background: #f3f3f4;
+    }
+}
+
+button {
+    text-decoration: none !important;
+    outline: none !important;
+    transition: .8s !important;
+}

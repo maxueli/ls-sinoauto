@@ -1,0 +1,597 @@
+<!--component html goes here -->
+<div id="stock" @flyIn>
+    <h4 clas="stock_title">库存管理</h4>
+    <div class="stock_top">
+        <form action="">
+            <div class="row">
+                <div class="col-md-2">
+                    <div class="input-group">
+                        
+                        <span class="input-group-addon" id="sizing-addon2">仓库</span>
+                        <select class="form-group" name="roleId" [(ngModel)]="storeParmas.depotId" class="form-control" >
+                          <option *ngFor="let item of depotlist;"  [value]="item.depotId" >{{item.depotName}}</option>  
+                        </select>
+                    </div>
+                </div>
+                <div class="col-md-2">
+                    <div class="input-group">
+                        <span class="input-group-addon" id="sizing-addon2">库位</span>
+                        <input type="text" class="form-control" [(ngModel)]="storeParmas.depotPosName" name="depotPosName" placeholder="请输入库位" aria-describedby="sizing-addon2">
+                    </div>
+                </div>
+                <div class="col-md-2">
+                    <div class="input-group">
+                        <span class="input-group-addon" id="sizing-addon2">配件编码</span>
+                        <input type="text" class="form-control" [(ngModel)]="storeParmas.partsCode" name="partsCode" placeholder="请输入配件编码" aria-describedby="sizing-addon2">
+                    </div>
+                </div>
+                <div class="col-md-2">
+                    <div class="input-group">
+                        <span class="input-group-addon" id="sizing-addon2">配件名称</span>
+                        <input type="text" class="form-control" [(ngModel)]="storeParmas.partsName" name="partsName" placeholder="请输入配件名称" aria-describedby="sizing-addon2">
+                    </div>
+                </div>
+                <div class="col-md-2">
+                    <div class="input-group">
+                        <span class="input-group-addon" id="sizing-addon2">适用车型</span>
+                        <input type="text" class="form-control" [(ngModel)]="storeParmas.modelName" name="modelName" placeholder="请输入适用车型" aria-describedby="sizing-addon2">
+                    </div>
+                </div>
+                <div class="form-group mb-2">
+                    <button class="btn btn-primary" type="submit" (click)="storeserach()">查询</button>
+                </div>
+
+            </div>
+        </form>
+    </div>
+
+    <div class="history_main">
+        <div class="history_main_w">
+            <table class="table table-bordered text-center">
+                <thead>
+                    <tr>
+                        <th width="40px;"><input type="checkbox" name="allselect" (change)="ischeckAll()"></th>
+                        <th>操作</th>
+                        <th>状态</th>
+                        <th>仓库</th>
+                        <th>库位</th>
+                        <th>配件编码</th>
+                        <th>配件分类</th>
+                        <th>配件名称</th>
+                        <th>品牌</th>
+                        <th>规格型号</th>
+                        <th>库存量</th>
+                        <th>适用车型</th>
+                        <th>单位</th>
+                        <th>成本（元）</th>
+                        <th>成本总金额（元）</th>
+                        <th>销售价（元）</th>
+                        <th>最新进价（元）</th>
+                        <th>最大库存</th>
+                        <th>最小库存</th>
+                        <th>包装规格</th>
+                        <th>产地</th>
+                        <th>备注</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr *ngFor="let item of storelist">
+                        <td><input type="checkbox" name="radios" (change)="isRadio($event,item);selelctradio()"></td>
+
+                        <td><button class="btn btn-sm btn-info" (click)="lgModal.show();editstock(item.stockId)">编辑</button></td>
+                        <td>{{item.stockStatus?'启用':'未启用'}}</td>
+                        <td>{{item.depotName}}</td>
+                        <td>{{item.depotPosName}}</td>
+                        <td>{{item.parts.partsCode}}</td>
+                        <td>{{item.parts.partsTypeName}}</td>
+                        <td>{{item.parts.partsName}}</td>
+                        <td>{{item.parts.brandName}}</td>
+                        <td>{{item.parts.partsSpec}}</td>
+                        <td>{{item.inventory}}</td>
+                        
+                         <td><span *ngIf="item.parts.carModels.length!=0" >{{item.parts.carModels[0].modelName}} </span>
+                         <span  *ngIf="item.parts.carModels.length!=0"  class="hideinfo"  dropdown (onShown)="onShown()" (onHidden)="onHidden()" (isOpenChange)="isOpenChange()">
+                                <a href dropdownToggle (click)="false">
+                                    ···
+                                </a>
+                                <ul *dropdownMenu class="dropdown-menu">
+                                    <li *ngFor="let list of item.parts.carModels" >
+                                         {{list.modelName}}
+                                    </li>
+                                </ul>
+                            </span>
+                        
+                        </td>  
+                        <td>{{item.parts.partsUnit}}</td>
+                        <td>{{item.cost}}</td>
+                        <td>{{item.parts.totalCost}}</td>
+                        <td>{{item.parts.sellPrice}}</td>
+                        <td>{{item.lastBid}}</td>
+                        <td>{{item.maxStock}}</td>
+                        <td>{{item.minStock}}</td>
+                        <td>{{item.parts.packSpec}}</td>
+                        <td>{{item.parts.originPlace}}</td>
+                        <td>{{item.remark}}</td>
+                    </tr>
+
+                </tbody>
+            </table>
+        </div>
+    </div>
+
+    <div class="inventory_buttom clearfix">
+        <div class="form-group paginate">
+            <label>
+                每页显示
+                <select class="form-control select" (change)="pageChanged($event,'SELECT')">
+                    <option value="10">10</option>
+                    <option value="20">20</option>
+                    <option value="30">30</option>
+                    <option value="50">50</option>
+                    <option value="100">100</option>
+                </select>
+            </label>
+            <pagination [totalItems]="TotalCount" [(ngModel)]="index" [maxSize]="10" [itemsPerPage]="storeParmas.pageSize" [boundaryLinks]="true"
+                previousText="上一页" nextText="下一页" firstText="首页" lastText="尾页" (pageChanged)="pageChanged($event)"></pagination>
+            <label class="contorl-label">
+                跳转到<input type="number" class="form-control" min="1" [max]="maxPageSize" [(ngModel)]="choosePage">页
+            </label>
+            <button class="btn btn-default" (click)="pageChanged($event,'BUTTON')">GO</button>
+        </div>
+    </div>
+    <div class="stock_foot">
+        <!-- Single button -->
+        <button type="button" class="btn btn-primary" (click)="addstore.show();">
+           新增
+        </button>
+        <button type="button" class="btn btn-default" [disabled]="disabled" (click)="Enable()">
+           启用/停用
+        </button>
+        <button type="button" class="btn btn-default" data-toggle="modal" data-target="#myModal">
+           导出
+        </button>
+    </div>
+</div>
+
+<!--新增 模态框 start-->
+<div bsModal #addstore="bs-modal" class="modal fade" tabindex="-1" role="dialog" aria-labelledby="myLargeModalLabel" aria-hidden="true">
+    <div class="modal-dialog modal-lg">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h4 class="modal-title pull-left">新增配件</h4>
+                <button type="button" class="close pull-right" (click)="addstore.hide()" aria-label="Close">
+          <span aria-hidden="true" class="times">&times;</span>
+        </button>
+            </div>
+            <div class="modal-body">
+                <div class="modal_main clearfix">
+
+                    <div class="modal_left pull-left">
+                        <div class="form-group">
+                            <label><i>*</i>仓库：</label>
+                            <select class="form-group" name="roleId" [(ngModel)]='stockParmas.depotId' class="form-control" (change)="changerdepot(stockParmas.depotId)">
+                          <option *ngFor="let item of depotlist;"   [value]="item.depotId" >{{item.depotName}}</option>  
+                    </select>
+                        </div>
+                        <label><i>*</i>配件编码：</label>
+                        <div class="input-group bianma">
+                            <input type="text" class="form-control" [(ngModel)]="partsParams.partsCode" (focus)='getflowinfo()' (blur)='blurflowinfo()'
+                                (click)='getflowinfo()' name="partsCode" placeholder="请输入配件编码">
+                            <span class="input-group-addon defBgColor">
+                        <i  class="fa fa-search"></i>
+                    </span>
+                            <!--隐藏内容 start  -->
+                            <div class="stockhideinfo" *ngIf="isShow">
+                                <table class="table table-hover table-sm table-bordered table-responsive">
+                                    <thead>
+                                        <tr>
+                                            <th style="width:20%">品牌</th>
+                                            <th style="width:20%">配件编码</th>
+                                            <th style="width:20%">配件分类</th>
+                                            <th style="width:20%">配件名称</th>
+                                            <th style="width:20%">规格型号</th>
+                                        </tr>
+                                    </thead>
+                                    <tbody>
+                                        <tr *ngFor="let item of partslist" (click)='stockitem(2,item);'>
+                                            <td>{{item.brandName}}</td>
+                                            <td>{{item.partsCode}}</td>
+                                            <td>{{item.partsTypeName}}</td>
+                                            <td>{{item.partsName}}</td>
+                                            <td>{{item.partsSpec}}</td>
+                                        </tr>
+                                    </tbody>
+                                </table>
+                                <!--分页 start  -->
+                                <div class="form-group paginate">
+                                    <pagination [totalItems]="totalItems[3]" [maxSize]="10" class="pagination-sm" [boundaryLinks]="true" previousText="&lsaquo;"
+                                        nextText="&rsaquo;" firstText="&laquo;" lastText="&raquo;" (pageChanged)="paging($event,'partsinfo')"></pagination>
+                                </div>
+                                <!--分页 end  -->
+                            </div>
+                            <!--隐藏内容 end  -->
+                        </div>
+                        <label><i>*</i>配件分类：</label>
+                        <div class="input-group bianma">
+                            <input type="text" class="form-control" [(ngModel)]="partsParams.partsTypeName" (focus)='TypeName()' (blur)='blurflowinfo()'
+                                (click)='TypeName()' name="modelName" name="partsTypeName" placeholder="请输入配件分类">
+                            <span class="input-group-addon defBgColor">
+                        <i  class="fa fa-search"></i>
+                    </span>
+                            <div class="stockhideinfo" *ngIf="TypeisShow">
+                                <ul class="stocklist">
+                                    <li *ngFor="let item of partstypelist" (click)='stockitem(4,item);'>
+                                        {{item.partsTypeName}}
+                                    </li>
+                                    <!--分页 start  -->
+                                    <div class="form-group paginate">
+                                        <pagination [totalItems]="totalItems[1]" [maxSize]="10" class="pagination-sm" [boundaryLinks]="true" previousText="&lsaquo;"
+                                            nextText="&rsaquo;" firstText="&laquo;" lastText="&raquo;" (pageChanged)="paging($event,'partsTypeName')"></pagination>
+                                    </div>
+                                    <!--分页 end  -->
+                                </ul>
+                            </div>
+                        </div>
+                        <label><i>*</i>配件名称：</label>
+                        <div class="input-group bianma">
+                            <input type="text" class="form-control" [(ngModel)]="partsParams.partsName" (focus)='partsNameinfo()' (blur)='blurflowinfo()'
+                                (click)='partsNameinfo()' name="partsName" placeholder="请输入配件名称">
+                            <span class="input-group-addon defBgColor">
+                        <i  class="fa fa-search"></i>
+                    </span>
+                            <!--隐藏内容 start  -->
+                            <div class="stockhideinfo" *ngIf="nameisShow">
+                                <table class="table table-hover table-sm table-bordered table-responsive">
+                                    <thead>
+                                        <tr>
+                                            <th style="width:20%">品牌</th>
+                                            <th style="width:20%">配件编码</th>
+                                            <th style="width:20%">配件分类</th>
+                                            <th style="width:20%">配件名称</th>
+                                            <th style="width:20%">规格型号</th>
+                                        </tr>
+                                    </thead>
+                                    <tbody>
+                                        <tr *ngFor="let item of partslist" (click)='stockitem(2,item);'>
+                                            <td>{{item.brandName}}</td>
+                                            <td>{{item.partsCode}}</td>
+                                            <td>{{item.partsTypeName}}</td>
+                                            <td>{{item.partsName}}</td>
+                                            <td>{{item.partsSpec}}</td>
+                                        </tr>
+                                    </tbody>
+                                </table>
+                            </div>
+                            <!--隐藏内容 end  -->
+                        </div>
+                        <label><i>*</i>品牌：</label>
+                        <div class="input-group bianma">
+                         
+                            <input type="text" class="form-control" [(ngModel)]="partsParams.partsBrandName" (focus)='brandName()' (blur)='blurflowinfo()'
+                                (click)='brandName()' name="brandName" placeholder="请输入品牌">
+                            <span class="input-group-addon defBgColor">
+                                <i  class="fa fa-search"></i>
+                            </span>
+                            <div class="stockhideinfo" *ngIf="brandNameinshow">
+                                <ul class="stocklist">
+                                    <li *ngFor="let item of partsbrandslist" (click)='stockitem(3,item);'>
+                                        {{item.partsBrandName}}
+                                    </li>
+                                </ul>
+                                <!--分页 start  -->
+                                <div class="form-group paginate">
+                                    <pagination [totalItems]="totalItems[2]" [maxSize]="10" class="pagination-sm" [boundaryLinks]="true" previousText="&lsaquo;"
+                                        nextText="&rsaquo;" firstText="&laquo;" lastText="&raquo;" (pageChanged)="paging($event,'partsBrand')"></pagination>
+                                </div>
+                                <!--分页 end  -->
+                            </div>
+                        </div>
+                        <label><i>*</i>规格型号：</label>
+                        <input type="text" class="form-control" [(ngModel)]="partsParams.partsSpec" name="partsSpec" placeholder="请输入规格型号">
+
+                        <div class="form-group">
+                            <label><i>*</i>单位：</label>
+                            <select class="form-group" name="partsUnit" class="form-control" [(ngModel)]="partsParams.partsId">
+                                <option *ngFor="let item of partslist"  [value]="item.partsId">{{item.partsUnit}}</option>  
+                             </select>
+                        </div>
+
+                    </div>
+                    <div class="modal_right pull-right">
+                        <label>库位：</label>
+                        <div class="input-group bianma">
+                            <input type="text" class="form-control" [(ngModel)]="partsParams.depotPosName" (focus)='PosName()' (blur)='blurflowinfo()'
+                                (click)='PosName()' name="depotPosName" placeholder="请输入库位">
+                            <span class="input-group-addon defBgColor">
+                        <i  class="fa fa-search"></i>
+                    </span>
+                            <div class="stockhideinfo" *ngIf="PosNameisShow">
+                                <ul class="stocklist">
+                                    <li *ngFor="let item of depotPoslist" (click)='stockitem(5,item);'>
+                                        {{item.depotPosName}}
+                                    </li>
+                                </ul>
+                            </div>
+                        </div>
+                        <div class="input_group">
+                            <label>最大库存：</label>
+                            <input type="number" class="form-control" name="maxStock" [(ngModel)]="partsParams.maxStock" placeholder="请输入最大库存">
+                        </div>
+                        <div class="input_group">
+                            <label>最小库存：</label>
+                            <input type="number" class="form-control" name="minStock" [(ngModel)]="partsParams.minStock" placeholder="请输入最小库存">
+                        </div>
+                        <div class="input_group">
+                            <label>产地：</label>
+                            <input type="text" class="form-control" [(ngModel)]="partsParams.originPlace" name="originPlace" placeholder="请输入产地">
+                        </div>
+                        <div class="input_group">
+                            <label>包装规格：</label>
+                            <input type="text" class="form-control" [(ngModel)]="partsParams.packSpec" name="packSpec" placeholder="请输入包装规格">
+                        </div>
+                        <div class="input_group">
+                            <label>备注：</label>
+                            <input type="text" class="form-control" name="remark" [(ngModel)]="tijiaoParmas.remark" placeholder="请输入备注">
+                        </div>
+                        <label>适用车型：</label>
+                        <div class="input-group bianma">
+                            <input type="text" class="form-control" (click)='carModel()' name="remark" placeholder="请选择使用车型">
+                            <span class="input-group-addon defBgColor">
+                                <i  class="fa fa-search"></i>
+                            </span>
+
+                            <div class="stockhideinfo cartype" *ngIf="carModelisShow">
+
+                                <table class="table table-hover table-sm table-bordered table-responsive">
+                                    <span class="RClose" (click)="RClose()">X</span>
+                                    <thead>
+                                        <tr>
+                                            <th colspan="2" style="width:100%;color:#000;text-align:center; letter-spacing:2px;font-weight:bold!important;">适用车型</th>
+                                        </tr>
+                                    </thead>
+                                    <tbody>
+                                        <tr *ngFor="let item of cartypelist">
+                                            <th><input type="checkbox" name="radios" style="cursor:pointer;" (change)="addcartype($event,item)"></th>
+                                            <td style="cursor:pointer;">{{item.value}}</td>
+                                        </tr>
+                                    </tbody>
+                                </table>
+                                <!--分页 start  -->
+                                <div class="form-group paginate">
+                                    <pagination [totalItems]="totalItems[0]" [maxSize]="10" class="pagination-sm" [boundaryLinks]="true" previousText="&lsaquo;"
+                                        nextText="&rsaquo;" firstText="&laquo;" lastText="&raquo;" (pageChanged)="paging($event,'carModel')"></pagination>
+                                </div>
+                                <!--分页 end  -->
+                            </div>
+                        </div>
+
+                    </div>
+                    <div class="clearfix"></div>
+                    <div class="cardes pull-right">
+                        <p *ngFor="let item of cardesvalue" class="cardesinfo"> {{item}} <i class="cardesclose" (click)="cardesclose()">X</i></p>
+                    </div>
+                    <div class="button clearfix">
+                        <button class="btn btn-primary" type="submit" (click)="stocksubmit()">提交</button>
+                        
+                    </div>
+
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+<!--新增 模态框 end-->
+<!--编辑 模态框 start-->
+<div bsModal #lgModal="bs-modal" class="modal fade" tabindex="-1" role="dialog" aria-labelledby="myLargeModalLabel" aria-hidden="true">
+    <div class="modal-dialog modal-lg">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h4 class="modal-title pull-left">编辑配件</h4>
+                <button type="button" class="close pull-right" (click)="lgModal.hide()" aria-label="Close">
+          <span aria-hidden="true" class="times">&times;</span>
+        </button>
+            </div>
+            <div class="modal-body">
+                <div class="modal_main clearfix">
+
+                    <div class="modal_left pull-left">
+                        <div class="form-group">
+                            <label><i>*</i>仓库：</label>
+                            <select class="form-group" name="roleId" [(ngModel)]='stockParmas.depotId' class="form-control" (change)="changerdepot(stockParmas.depotId)">
+                          <option *ngFor="let item of depotlist;"   [value]="item.depotId" >{{item.depotName}}</option>  
+                    </select>
+                        </div>
+                        <label><i>*</i>配件编码：</label>
+                        <div class="input-group bianma">
+                            <input type="text" class="form-control" [(ngModel)]="editParams.partsCode"  name="partsCode" placeholder="请输入配件编码">
+                            <span class="input-group-addon defBgColor">
+                        <i  class="fa fa-search"></i>
+                    </span>
+                        </div>
+                        <label><i>*</i>配件分类：</label>
+                        <div class="input-group bianma">
+                            <input type="text" class="form-control" [(ngModel)]="editParams.partsTypeName" (focus)='TypeName()' (blur)='blurflowinfo()'
+                                (click)='TypeName()' name="modelName" name="partsTypeName" placeholder="请输入配件分类">
+                            <span class="input-group-addon defBgColor">
+                        <i  class="fa fa-search"></i>
+                    </span>
+                            <div class="stockhideinfo" *ngIf="TypeisShow">
+                                <ul class="stocklist">
+                                    <li *ngFor="let item of partstypelist" (click)='stockitem(4,item);'>
+                                        {{item.partsTypeName}}
+                                    </li>
+                                    <!--分页 start  -->
+                                    <div class="form-group paginate">
+                                        <pagination [totalItems]="totalItems[1]" [maxSize]="10" class="pagination-sm" [boundaryLinks]="true" previousText="&lsaquo;"
+                                            nextText="&rsaquo;" firstText="&laquo;" lastText="&raquo;" (pageChanged)="paging($event,'partsTypeName')"></pagination>
+                                    </div>
+                                    <!--分页 end  -->
+                                </ul>
+                            </div>
+                        </div>
+                        <label><i>*</i>配件名称：</label>
+                        <div class="input-group bianma">
+                            <input type="text" class="form-control" [(ngModel)]="editParams.partsName"  name="partsName" placeholder="请输入配件名称">
+                            <span class="input-group-addon defBgColor">
+                        <i  class="fa fa-search"></i>
+                    </span>
+                           
+                        </div>
+                        <label><i>*</i>品牌：</label>
+                        <div class="input-group bianma">
+                            <input type="text" class="form-control" [(ngModel)]="editParams.partsBrandName" (focus)='brandName()' (blur)='blurflowinfo()'
+                                (click)='brandName()' name="brandName" placeholder="请输入品牌">
+                            <span class="input-group-addon defBgColor">
+                                <i  class="fa fa-search"></i>
+                            </span>
+                            <div class="stockhideinfo" *ngIf="brandNameinshow">
+                                <ul class="stocklist">
+                                    <li *ngFor="let item of partsbrandslist" (click)='stockitem(3,item);'>
+                                        {{item.partsBrandName}}
+                                    </li>
+                                </ul>
+                                <!--分页 start  -->
+                                <div class="form-group paginate">
+                                    <pagination [totalItems]="totalItems[2]" [maxSize]="10" class="pagination-sm" [boundaryLinks]="true" previousText="&lsaquo;"
+                                        nextText="&rsaquo;" firstText="&laquo;" lastText="&raquo;" (pageChanged)="paging($event,'partsBrand')"></pagination>
+                                </div>
+                                <!--分页 end  -->
+                            </div>
+                        </div>
+                        <label><i>*</i>规格型号：</label>
+                        <input type="text" class="form-control" [(ngModel)]="editParams.partsSpec" name="partsSpec" placeholder="请输入规格型号">
+
+                        <div class="form-group">
+                            <label><i>*</i>单位：</label>
+                            <select class="form-group" name="partsUnit" class="form-control" [(ngModel)]="partsParams.partsId">
+                                <option *ngFor="let item of partslist"  [value]="item.partsId">{{item.partsUnit}}</option>  
+                             </select>
+                        </div>
+
+                    </div>
+                    <div class="modal_right pull-right">
+                        <label>库位：</label>
+                        <div class="input-group bianma">
+                            <input type="text" class="form-control" [(ngModel)]="editParams.depotPosName" (focus)='PosName()' (blur)='blurflowinfo()'
+                                (click)='PosName()' name="depotPosName" placeholder="请输入库位">
+                            <span class="input-group-addon defBgColor">
+                        <i  class="fa fa-search"></i>
+                    </span>
+                            <div class="stockhideinfo" *ngIf="PosNameisShow">
+                                <ul class="stocklist">
+                                    <li *ngFor="let item of depotPoslist" (click)='stockitem(5,item);'>
+                                        {{item.depotPosName}}
+                                    </li>
+                                </ul>
+                            </div>
+                        </div>
+                        <div class="input_group">
+                            <label>最大库存：</label>
+                            <input type="number" class="form-control" name="maxStock" [(ngModel)]="editParams.maxStock" placeholder="请输入最大库存">
+                        </div>
+                        <div class="input_group">
+                            <label>最小库存：</label>
+                            <input type="number" class="form-control" name="minStock" [(ngModel)]="editParams.minStock" placeholder="请输入最小库存">
+                        </div>
+                        <div class="input_group">
+                            <label>产地：</label>
+                            <input type="text" class="form-control" [(ngModel)]="editParams.originPlace" name="originPlace" placeholder="请输入产地">
+                        </div>
+                        <div class="input_group">
+                            <label>包装规格：</label>
+                            <input type="text" class="form-control" [(ngModel)]="editParams.packSpec" name="packSpec" placeholder="请输入包装规格">
+                        </div>
+                        <div class="input_group">
+                            <label>备注：</label>
+                            <input type="text" class="form-control" name="remark" [(ngModel)]="editParams.remark" placeholder="请输入备注">
+                        </div>
+                        <label>适用车型：</label>
+                        <div class="input-group bianma">
+                            <input type="text" class="form-control" (click)='carModel()' name="remark" placeholder="请选择使用车型">
+                            <span class="input-group-addon defBgColor">
+                                <i  class="fa fa-search"></i>
+                            </span>
+
+                            <div class="stockhideinfo cartype" *ngIf="carModelisShow">
+
+                                <table class="table table-hover table-sm table-bordered table-responsive">
+                                    <span class="RClose" (click)="RClose()">X</span>
+                                    <thead>
+                                        <tr>
+                                           
+                                            <th colspan="2" style="width:100%;color:#000;text-align:center; letter-spacing:2px;font-weight:bold!important;">适用车型</th>
+                                        </tr>
+                                    </thead>
+                                    <tbody>
+                                        <tr *ngFor="let item of cartypelist">
+                                            <th><input type="checkbox" name="radios" style="cursor:pointer;" (change)="addcartype($event,item)"></th>
+                                            <td style="cursor:pointer;">{{item.value}}</td>
+                                        </tr>
+                                    </tbody>
+                                </table>
+                                <!--分页 start  -->
+                                <div class="form-group paginate">
+                                    <pagination [totalItems]="totalItems[0]" [maxSize]="10" class="pagination-sm" [boundaryLinks]="true" previousText="&lsaquo;"
+                                        nextText="&rsaquo;" firstText="&laquo;" lastText="&raquo;" (pageChanged)="paging($event,'carModel')"></pagination>
+                                </div>
+                                <!--分页 end  -->
+                            </div>
+                        </div>
+
+                    </div>
+                    <div class="clearfix"></div>
+                    <div class="cardes pull-right">
+                        <p *ngFor="let item of cardesvalue" class="cardesinfo"> {{item}} <i class="cardesclose" (click)="cardesclose()">X</i></p>
+                    </div>
+                    <div class="button clearfix">
+                        <button class="btn btn-primary" type="submit" (click)="stockedit()">提交</button>
+                         <button class="btn btn-default" type="submit" (click)="lgModal.hide()">返回</button>
+                    </div>
+
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+<!--编辑end  -->
+
+<!--新增提示  -->
+<div bsModal #addhint="bs-modal" class="modal modal-tishi fade tishi" tabindex="-1" role="dialog" aria-labelledby="mySmallModalLabel" aria-hidden="true" [config]="{backdrop: 'static'}">
+    <div class="modal-dialog modal-sm">
+        <div class="modal-content">
+            <div class="modal-body">
+                <button type="button" class="close pull-right" aria-label="Close" (click)="addhint.hide()">
+                    <span aria-hidden="true">&times;</span>
+                </button>
+                <div>
+                    <div class="icon">√</div>
+                    <div class="content">新增成功</div>
+                    <div class="infoButton">
+                        <button type="button" class="btn btn-primary" (click)="addhint.hide()">确定</button>
+                       
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+<!--新增提示  -->
+<div bsModal #editmodal="bs-modal" class="modal modal-tishi fade tishi" tabindex="-1" role="dialog" aria-labelledby="mySmallModalLabel" aria-hidden="true" [config]="{backdrop: 'static'}">
+    <div class="modal-dialog modal-sm">
+        <div class="modal-content">
+            <div class="modal-body">
+                <button type="button" class="close pull-right" aria-label="Close" (click)="addhint.hide()">
+                    <span aria-hidden="true">&times;</span>
+                </button>
+                <div>
+                    <div class="icon">√</div>
+                    <div class="content">编辑成功</div>
+                    <div class="infoButton">
+                        <button type="button" class="btn btn-primary" (click)="editmodal.hide()">确定</button>
+                       
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>

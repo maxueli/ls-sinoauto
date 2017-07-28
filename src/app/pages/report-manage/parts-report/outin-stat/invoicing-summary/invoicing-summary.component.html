@@ -1,0 +1,225 @@
+<!--component html goes here -->
+<div class="container" @flyIn>
+    <h4>进销存汇总</h4>
+    <form>
+        <div class="form-inline">
+            <div class="input-group">
+                <label for="" class="input-group-addon">进厂时间</label>
+                <select class="form-control" formcontrolname="">
+                    <option value="">全部仓库</option>
+                    <option value="">测试仓</option>
+                    <option value="">南京本道仓库</option>
+                    <option value="">破损仓</option>
+                    <option value="">南京本道仓库（测试）</option>
+                    <option value="">测试库</option>
+                    <option value="">通用件仓库</option>
+                </select>
+            </div>
+            <div class="input-group">
+                <label for="" class="input-group-addon">仓库</label>
+                <div>
+                    <input class="form-control" name="" type="text">
+                </div>
+                <label for="" class="input-group-addon">-</label>
+                <div>
+                    <input class="form-control" name="" type="text">
+                </div>
+            </div>
+            <div class="input-group">
+                <button type="submit" class="btn btn-primary">查询</button>
+            </div>
+        </div>
+    </form>
+    <hr>
+    <p>温馨提示：系统为您找到 <span>9</span> 条记录</p>
+    <div class="table-container">
+        <table class="table table-bordered">
+            <thead>
+                <tr>
+                    <th width="100">操作</th>
+                    <th>仓库</th>
+                    <th>期初金额</th>
+                    <th>期末金额</th>
+                    <th>入库金额</th>
+                    <th>出库成本<br>金额</th>
+                    <th>出库销售<br>金额</th>
+                    <th>采购入库<br>成本金额</th>
+                    <th>维修领料<br>成本金额</th>
+                    <th>维修领料<br>销售金额</th>
+                    <th>配件销售<br>成本金额</th>
+                    <th>配件销售<br>销售金额</th>
+                    <th>内部领料<br>成本金额</th>
+                    <th>内部领料<br>销售金额</th>
+                </tr>
+            </thead>
+            <tbody>
+                <tr>
+                    <td width="100">
+                        <button type="button" class="btn btn-info" (click)="localPage()">
+                            <!--<i class="fa fa-spinner fa-fw fa-spin fa-none-size d-none"></i>-->
+                            查看明细
+                        </button>
+                    </td>
+                    <td class="text-left">测试仓</td>
+                    <td>0.00</td>
+                    <td>0.00</td>
+                    <td>20770.00</td>
+                    <td>1880.64</td>
+                    <td>4516.60</td>
+                    <td>14615.23</td>
+                    <td>0.00</td>
+                    <td>2316.60</td>
+                    <td>0.00</td>
+                    <td>2316.60</td>
+                    <td>0.00</td>
+                    <td>0.00</td>
+                </tr>
+                <tr>
+                    <td width="100">
+                        <button type="button" class="btn btn-info" (click)="localPage()">
+                            <!--<i class="fa fa-spinner fa-fw fa-spin fa-none-size d-none"></i>-->
+                            查看明细
+                        </button>
+                    </td>
+                    <td class="text-left">破损仓</td>
+                    <td>0.00</td>
+                    <td>0.00</td>
+                    <td>12000.00</td>
+                    <td>0.00</td>
+                    <td>0.00</td>
+                    <td>10256.40</td>
+                    <td>0.00</td>
+                    <td>0.00</td>
+                    <td>0.00</td>
+                    <td>0.00</td>
+                    <td>0.00</td>
+                    <td>0.00</td>
+                </tr>
+                <tr>
+                    <td width="100">
+                        <button type="button" class="btn btn-info" (click)="localPage()">
+                            <!--<i class="fa fa-spinner fa-fw fa-spin fa-none-size d-none"></i>-->
+                            查看明细
+                        </button>
+                    </td>
+                    <td class="text-left">南京本道仓库（测试）</td>
+                    <td>0.00</td>
+                    <td>0.00</td>
+                    <td>20205.00</td>
+                    <td>3418.00</td>
+                    <td>4951.00</td>
+                    <td>13672.00</td>
+                    <td>0.00</td>
+                    <td>525.00</td>
+                    <td>0.00</td>
+                    <td>525.00</td>
+                    <td>0.00</td>
+                    <td>78.00</td>
+                </tr>
+                <tr>
+                    <td width="100">
+                        <button type="button" class="btn btn-info" (click)="localPage()">
+                            <!--<i class="fa fa-spinner fa-fw fa-spin fa-none-size d-none"></i>-->
+                            查看明细
+                        </button>
+                    </td>
+                    <td class="text-left">南京本道仓库</td>
+                    <td>0.00</td>
+                    <td>0.00</td>
+                    <td>20309.60</td>
+                    <td>5130.00</td>
+                    <td>7799.20</td>
+                    <td>11608.57</td>
+                    <td>0.00</td>
+                    <td>858.00</td>
+                    <td>0.00</td>
+                    <td>858.00</td>
+                    <td>0.00</td>
+                    <td>894.40</td>
+                </tr>
+                <tr>
+                    <td width="100">
+                        <button type="button" class="btn btn-info" (click)="localPage()">
+                            <!--<i class="fa fa-spinner fa-fw fa-spin fa-none-size d-none"></i>-->
+                            查看明细
+                        </button>
+                    </td>
+                    <td class="text-left">测试库</td>
+                    <td>0.00</td>
+                    <td>0.00</td>
+                    <td>0.00</td>
+                    <td>0.00</td>
+                    <td>0.00</td>
+                    <td>0.00</td>
+                    <td>0.00</td>
+                    <td>0.00</td>
+                    <td>0.00</td>
+                    <td>0.00</td>
+                    <td>0.00</td>
+                    <td>0.00</td>
+                </tr>
+                <tr>
+                    <td width="100">
+                        <button type="button" class="btn btn-info" (click)="localPage()">
+                            <!--<i class="fa fa-spinner fa-fw fa-spin fa-none-size d-none"></i>-->
+                            查看明细
+                        </button>
+                    </td>
+                    <td class="text-left">通用件仓库</td>
+                    <td>0.00</td>
+                    <td>0.00</td>
+                    <td>31411.00</td>
+                    <td>350.35</td>
+                    <td>15413.50</td>
+                    <td>26138.58</td>
+                    <td>0.00</td>
+                    <td>13000.00</td>
+                    <td>0.00</td>
+                    <td>13000.00</td>
+                    <td>0.00</td>
+                    <td>19.50</td>
+                </tr>
+            </tbody>
+        </table>
+    </div>
+    <table class="table table-bordered text-center">
+        <thead>
+            <tr>
+                <th>合计</th>
+                <th>期初金额</th>
+                <th>期末金额</th>
+                <th>入库金额</th>
+                <th>出库成本<br>金额</th>
+                <th>出库销售<br>金额</th>
+                <th>采购入库<br>成本金额</th>
+                <th>维修领料<br>成本金额</th>
+                <th>维修领料<br>销售金额</th>
+                <th>配件销售<br>成本金额</th>
+                <th>配件销售<br>销售金额</th>
+                <th>内部领料<br>成本金额</th>
+                <th>内部领料<br>销售金额</th>
+            </tr>
+        </thead>
+        <tbody>
+            <tr>
+                <td></td>
+                <td>0.00</td>
+                <td>0.00</td>
+                <td>166345.60</td>
+                <td>11710.61</td>
+                <td>37917.30</td>
+                <td>138428.69</td>
+                <td>0.00</td>
+                <td>17349.60</td>
+                <td>0.00</td>
+                <td>17349.60</td>
+                <td>0.00</td>
+                <td>2421.90</td>
+            </tr>
+        </tbody>
+    </table>
+    <hr>
+    <div>
+        <button type="button" class="btn btn-primary">导出</button>
+    </div>
+</div>

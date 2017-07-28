@@ -1,0 +1,509 @@
+<div class="container" @flyIn>
+    <h4>维修结算</h4>
+    <form class="select">
+        <div class="input-group gdStatus">
+            <label class="input-group-addon">工单状态</label>
+            <div class="form-control">
+                <div class="form-check-box">
+                    <label>
+                        <input type="checkbox" name="stauts" [(ngModel)]="checkBox[0]" value="6">待收银（已结算）
+                    </label>
+                </div>
+                <div class="form-check-box">
+                    <label>
+                        <input type="checkbox" name="stauts" [(ngModel)]="checkBox[1]" value="5">待结算（已验收）
+                    </label>
+                </div>
+            </div>
+        </div>
+        <div class="form-inline">
+            <div class="input-group">
+                <label for="settlementNo" class="input-group-addon">结算单号</label>
+                <input class="form-control" maxlength="15" name="settlementNo" id="settlementNo" type="text" [(ngModel)]="searchParams.settlementNo" placeholder="请输入结算单号">
+            </div>
+            <div class="input-group">
+                <label for="orderNo" class="input-group-addon">工单号</label>
+                <input class="form-control" maxlength="25" name="orderNo" id="orderNo" type="text" [(ngModel)]="searchParams.orderNo" placeholder="请输入工单号">
+            </div>
+            <div class="input-group">
+                <label for="carNo" class="input-group-addon">车牌号</label>
+                <input class="form-control" maxlength="12" name="carNo" id="carNo" type="text" [(ngModel)]="searchParams.carNo" placeholder="请输入车牌号">
+            </div>
+            <div class="input-group dateError">
+                <label for="startTime" class="input-group-addon">进厂时间</label>
+                <div>
+                    <input class="form-control" name="startTime" id="startTime" type="text" placeholder="请选择开始时间" [(ngModel)]="searchParams.startTime" ngui-datetime-picker [close-on-select]="false" max-date="maxDate" (valueChanged)="timeValueChanged('start')">
+                </div>
+                <label for="endTime" class="input-group-addon">-</label>
+                <div>
+                    <input class="form-control" name="endTime" id="endTime" type="text" placeholder="请选择截止时间" [(ngModel)]="searchParams.endTime" ngui-datetime-picker [close-on-select]="false" max-date="maxDate" (valueChanged)="timeValueChanged('end')">
+                </div>
+                <div class="formInfo input-group" *ngIf="timeError">
+                    无效的进厂时间，开始时间要小于结束时间
+                </div>
+            </div>
+            <div class="input-group">
+                <button type="submit" class="btn btn-primary" [disabled]="timeError" (click)="loadSettlementList()">查询</button>
+                <button type="submit" class="btn btn-warning" (click)="cancelLoadSettlementList()">取消</button>
+            </div>
+        </div>
+    </form>
+    <div class="table-container">
+        <table class="table table-bordered">
+            <thead>
+                <tr>
+                    <th>操作</th>
+                    <th>状态</th>
+                    <th>车牌号</th>
+                    <th>结算单号</th>
+                    <th>工单号</th>
+                    <th>应收金额</th>
+                    <th>维修类型</th>
+                    <th>预计交车时间</th>
+                    <th>车型</th>
+                    <th>送修人</th>
+                    <th>服务顾问</th>
+                    <th>结算时间</th>
+                </tr>
+            </thead>
+            <tbody>
+                <tr *ngFor="let item of repairSettlement">
+                    <td>
+                        <button type="button" class="btn btn-primary" *ngIf="item.orderStatus != 6" (click)="settlement.show();detailSettlement(item.orderId, 'settle')">
+                            <i class="fa fa-spinner fa-fw fa-spin fa-none-size d-none" [hidden]="settlementLoad"></i> 结算
+                        </button>
+                        <button type="button" class="btn btn-danger" *ngIf="item.orderStatus == 6" (click)="complete.show();revokeSettlementOrderId(item.orderId)">撤销结算</button>
+                        <button type="button" class="btn btn-info" (click)="settlement.show();detailSettlement(item.orderId, 'detail')">
+                            <i class="fa fa-spinner fa-fw fa-spin fa-none-size d-none" [hidden]="detailLoad"></i> 详情
+                        </button>
+                    </td>
+                    <td [ngSwitch]="item.orderStatus">
+                        <template [ngSwitchCase]="5">待结算（已验收）</template>
+                        <template [ngSwitchCase]="6">待收银（已结算）</template>
+                    </td>
+                    <td>{{item.carNo}}</td>
+                    <td>{{item.settlementNo}}</td>
+                    <td>{{item.orderNo}}</td>
+                    <td class="text-right">
+                        <span *ngIf="item.amountDue">¥</span>{{item.amountDue}}
+                    </td>
+                    <td [ngSwitch]="item.repairType">
+                        <template [ngSwitchCase]="1">一般维修</template>
+                        <template [ngSwitchCase]="2">定期保养</template>
+                        <template [ngSwitchCase]="3">保险维修</template>
+                        <template [ngSwitchCase]="4">事故维修</template>
+                        <template [ngSwitchCase]="5">维修索赔</template>
+                        <template [ngSwitchCase]="6">出厂返修</template>
+                        <template [ngSwitchCase]="7">内部返修</template>
+                    </td>
+                    <td>{{item.estimatedDeliveryTime}}</td>
+                    <td>{{item.modelName}}</td>
+                    <td>{{item.repairName}}</td>
+                    <td>{{item.servicerName}}</td>
+                    <td>{{item.settlementTime}}</td>
+                </tr>
+            </tbody>
+        </table>
+    </div>
+    <div class="form-group paginate" [hidden]="true">
+        <label>每页显示</label>
+        <select class="form-control select">
+            <option value="10">10</option>
+            <option value="20">20</option>
+            <option value="30">30</option>
+            <option value="50">50</option>
+            <option value="100">100</option>
+        </select>
+        <pagination [totalItems]="175" [maxSize]="10" [boundaryLinks]="true" previousText="上一页" nextText="下一页" firstText="首页" lastText="尾页" (pageChanged)="pageChanged($event)"></pagination>
+        <label class="contorl-label">
+            跳转到<input type="number" class="form-control" min="1" max="4">页
+        </label>
+    </div>
+</div>
+
+<div bsModal #settlement="bs-modal" class="modal fade userAndCustomer" tabindex="-1" role="dialog" aria-labelledby="myLargeModalLabel" aria-hidden="true" [config]="{backdrop: 'static'}">
+    <div class="modal-dialog modal-lg">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h4 class="modal-title pull-left" [hidden]="flag == 'detail'">维修结算</h4>
+                <h4 class="modal-title pull-left" [hidden]="flag == 'settle'">维修结算详情</h4>
+                <button type="button" class="close pull-right" (click)="settlement.hide();cencelSaveSettlement()" aria-label="Close">
+                    <span aria-hidden="true">&times;</span>
+                </button>
+            </div>
+            <div class="modal-body">
+                <form *ngIf="flag == 'settle'">
+                    <div class="form-inline">
+                        <div class="input-group">
+                            <label for="amountDue" class="input-group-addon">应收金额(元)</label>
+                            <input type="text" class="form-control" name="amountDue" id="amountDue" [(ngModel)]="settlementParams.amountDue" (keyup)="amountDueChange()" pattern="^([1-9]\d*|0)$" required #amountDue="ngModel">
+                        </div>
+                        <div class="input-group">
+                            <label for="settlementType" class="input-group-addon">结算方式</label>
+                            <select class="form-control" name="settlementType" id="settlementType" required [(ngModel)]="settlementParams.settlementType">
+                                <option value="1">现结</option>
+                                <option value="2">挂账</option>
+                            </select>
+                        </div>
+                        <div class="input-group">
+                            <button type="button" class="btn btn-primary" [disabled]="isSave" (click)="complete.show()">确定</button>
+                        </div>
+                    </div>
+                    <div *ngIf="amountDue.errors && (amountDue.dirty || amountDue.touched)" class="form-inline">
+                        <div [hidden]="!amountDue.errors.pattern" class="formInfo input-group">
+                            无效的应收金额
+                        </div>
+                    </div>
+                    <div *ngIf="settlementParams.amountDue > detailOrderInfo.settlementAmountDue" class="form-inline">
+                        <div class="formInfo input-group">
+                            输入金额不能大于应收金额
+                        </div>
+                    </div>
+                </form>
+                <table class="table table-bordered">
+                    <tbody>
+                        <tr>
+                            <td class="fixed-width">车牌号</td>
+                            <td>{{detailOrderInfo.carNo}}</td>
+                            <td class="fixed-width">车型</td>
+                            <td>{{detailOrderInfo.carModel}}</td>
+                        </tr>
+                        <tr>
+                            <td class="fixed-width">VIN</td>
+                            <td>{{detailOrderInfo.vin}}</td>
+                            <td class="fixed-width">送修人</td>
+                            <td>{{detailOrderInfo.repairName}}</td>
+                        </tr>
+                        <tr>
+                            <td class="fixed-width">送修人手机</td>
+                            <td>{{detailOrderInfo.repairMobile}}</td>
+                            <td class="fixed-width">工单号</td>
+                            <td>{{detailOrderInfo.orderNo}}</td>
+                        </tr>
+                        <tr>
+                            <td class="fixed-width">车主</td>
+                            <td>{{detailOrderInfo.name}}</td>
+                            <td class="fixed-width">车主电话</td>
+                            <td>{{detailOrderInfo.mobile}}</td>
+                        </tr>
+                        <tr>
+                            <td class="fixed-width">购车日期</td>
+                            <td>{{detailOrderInfo.buyDate}}</td>
+                            <td class="fixed-width">验车日期</td>
+                            <td>{{detailOrderInfo.vehicleDate}}</td>
+                        </tr>
+                        <tr>
+                            <td class="fixed-width">预计交车时间</td>
+                            <td>{{detailOrderInfo.estimatedDeliveryTime}}</td>
+                            <td class="fixed-width">维修技师</td>
+                            <td>
+                                <span *ngFor="let item of detailOrderInfo.detailProjectDtos">{{item.repairUserName}} </span>
+                            </td>
+                        </tr>
+                        <tr>
+                            <td class="fixed-width">服务顾问</td>
+                            <td>{{detailOrderInfo.servicerName}}</td>
+                            <td class="fixed-width">介绍人</td>
+                            <td>{{detailOrderInfo.recommender}}</td>
+                        </tr>
+                        <tr>
+                            <td class="fixed-width">介绍人电话</td>
+                            <td>{{detailOrderInfo.recommenderMobile}}</td>
+                            <td class="fixed-width">维修类型</td>
+                            <td [ngSwitch]="detailOrderInfo.repairType">
+                                <template [ngSwitchCase]="1">一般维修</template>
+                                <template [ngSwitchCase]="2">定期保养</template>
+                                <template [ngSwitchCase]="3">保险维修</template>
+                                <template [ngSwitchCase]="4">事故维修</template>
+                                <template [ngSwitchCase]="5">维修索赔</template>
+                                <template [ngSwitchCase]="6">出厂返修</template>
+                                <template [ngSwitchCase]="7">内部返修</template>
+                            </td>
+                        </tr>
+                        <tr>
+                            <td class="fixed-width">超时</td>
+                            <td>{{detailOrderInfo.overtime}}</td>
+                            <td class="fixed-width">结算方</td>
+                            <td>{{detailOrderSettlement.settlementUserName}}</td>
+                        </tr>
+                        <tr>
+                            <td class="fixed-width">结算时间</td>
+                            <td>{{detailSettlement.settlementTime}}</td>
+                            <td class="fixed-width">进厂时间</td>
+                            <td>{{detailOrderInfo.createTime}}</td>
+                        </tr>
+                        <tr>
+                            <td class="fixed-width">进厂里程(KM)</td>
+                            <td>{{detailOrderInfo.mileage}}</td>
+                            <td class="fixed-width">出厂里程(KM)</td>
+                            <td>{{detailOrderInfo.factoryMileage}}</td>
+                        </tr>
+                    </tbody>
+                </table>
+                <tabset class="tabCard">
+                    <tab>
+                        <template tabHeading>
+                            <i aria-hidden="true" class="fa fa-clone"></i>维修项目
+                        </template>
+                        <table class="table table-bordered">
+                            <thead>
+                                <tr>
+                                    <th>维修项目名称</th>
+                                    <th>维修工时</th>
+                                    <th>工时单价(元)</th>
+                                    <th>折扣率(%)</th>
+                                    <th>金额(元)</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                <tr *ngFor="let item of detailOrderInfo.detailProjectDtos">
+                                    <td>
+                                        {{item.projectName}}
+                                        <span class="accept-stamp" *ngIf="item.isPass"></span>
+                                        <label class="append-stamp" *ngIf="item.isExtra">增项</label>
+                                    </td>
+                                    <td>{{item.repairHour}}</td>
+                                    <td class="text-right">{{item.hourPrice}}</td>
+                                    <td class="text-right">{{item.discount}}</td>
+                                    <td class="text-right">{{item.totalCount}}</td>
+                                </tr>
+                            </tbody>
+                        </table>
+                    </tab>
+                    <tab *ngIf="detailOrderRepairPack.length > 0">
+                        <template tabHeading>
+                            <i aria-hidden="true" class="fa fa-wrench"></i>维修配件
+                        </template>
+                        <table class="table table-bordered">
+                            <thead>
+                                <tr>
+                                    <th>维修工项</th>
+                                    <th>配件名称</th>
+                                    <th>品牌</th>
+                                    <th>规格型号</th>
+                                    <th>数量</th>
+                                    <th>单价(元)</th>
+                                    <th>金额(元)</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                <tr *ngFor="let item of detailOrderRepairPack">
+                                    <td>{{item.repairProject}}</td>
+                                    <td>{{item.partsName}}</td>
+                                    <td>{{item.partsBrandName}}</td>
+                                    <td>{{item.partsSpec}}</td>
+                                    <td>{{item.count}}</td>
+                                    <td class="text-right">{{item.price}}</td>
+                                    <td class="text-right">{{item.totalPrice}}</td>
+                                </tr>
+                            </tbody>
+                        </table>
+                    </tab>
+                </tabset>
+                <div [ngClass]="{'card': flag == 'settle'}">
+                    <div class="cardItem">
+                        <span>
+                            工时费：<span>¥ {{detailOrderInfo.totalHourCost || 0}}</span>
+                        </span>
+                        <span>
+                            材料费：<span>¥ {{detailOrderInfo.totalMaterialsCost || 0}}</span>
+                        </span>
+                        <span>
+                            优惠：<span>¥ {{detailOrderInfo.totalDiscountPrice || 0}}</span>
+                        </span>
+                        <span class="pull-right">
+                            应收金额：<span>¥ {{detailOrderInfo.settlementAmountDue || 0}}</span>
+                        </span>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+<div bsModal #complete="bs-modal" class="modal fade complete" tabindex="-1" role="dialog" aria-labelledby="mySmallModalLabel" aria-hidden="true" [config]="{backdrop: 'static'}">
+    <div class="modal-dialog modal-sm">
+        <div class="modal-content">
+            <div class="modal-body">
+                <button type="button" class="close pull-right" aria-label="Close" *ngIf="isInfoCode != 'revoke'" (click)="complete.hide()">
+                    <span aria-hidden="true">&times;</span>
+                </button>
+                <button type="button" class="close pull-right" aria-label="Close" *ngIf="isInfoCode == 'revoke'" (click)="complete.hide();cencelRevokeSettlement()">
+                    <span aria-hidden="true">&times;</span>
+                </button>
+                <div [ngSwitch]="isInfoCode">
+                    <template [ngSwitchCase]="'settlement'">
+                        <div class="icon">?</div>
+                        <div class="content">是否生成维修结算单？</div>
+                        <div class="infoButton">
+                            <button type="button" class="btn btn-primary" (click)="settlement.hide();saveSettlement()">确定</button>
+                            <button type="button" class="btn btn-default" (click)="complete.hide()">取消</button>
+                        </div>
+                    </template>
+                    <template [ngSwitchCase]="'print'">
+                        <div class="icon">?</div>
+                        <div class="content">已生成维修结算单，是否需要打印？</div>
+                        <div class="infoButton">
+                            <button type="button" class="btn btn-primary" (click)="complete.hide();printSettlement()">确定</button>
+                            <button type="button" class="btn btn-default" (click)="complete.hide()">取消</button>
+                        </div>
+                    </template>
+                    <template [ngSwitchCase]="'revoke'">
+                        <div class="icon">?</div>
+                        <div class="content">确定要撤销结算吗？</div>
+                        <div class="infoButton">
+                            <button type="button" class="btn btn-primary" (click)="complete.hide();revokeSettlement()">确定</button>
+                            <button type="button" class="btn btn-default" (click)="complete.hide();cencelRevokeSettlement()">取消</button>
+                        </div>
+                    </template>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<div class="printgoods">
+    <div class="printHeader">
+        <img src="../../../../../assets/img/login_logo.png" alt="">
+        <span class="printTitle">维修结算单</span>
+    </div>
+    <div class="printContnet">
+        <ul>
+            <li>门店名称：</li>
+            <li class="pull-right">门店地址：</li><br>
+            <li>电话：</li>
+            <li class="pull-right">24小时救援电话：</li>
+        </ul>
+        <table class="table basicInfo">
+            <caption>托修方</caption>
+            <tr>
+                <td class="basicInfo_title">工单号</td>
+                <td>{{detailOrderInfo.orderNo}}</td>
+                <td class="basicInfo_title">车主</td>
+                <td>{{detailOrderInfo.name}}</td>
+                <td class="basicInfo_title">车牌号</td>
+                <td>{{detailOrderInfo.carNo}}</td>
+            </tr>
+            <tr>
+                <td class="basicInfo_title">送修人</td>
+                <td>{{detailOrderInfo.repairName}}</td>
+                <td class="basicInfo_title">送修人手机</td>
+                <td>{{detailOrderInfo.repairMobile}}</td>
+                <td class="basicInfo_title">VIN</td>
+                <td>{{detailOrderInfo.vin}}</td>
+            </tr>
+            <tr>
+                <td class="basicInfo_title">车型</td>
+                <td colspan="5">{{detailOrderInfo.carModel}}</td>
+            </tr>
+        </table>
+        <table class="table basicInfo">
+            <caption>承修方</caption>
+            <tr>
+                <td class="basicInfo_title">维修类型</td>
+                <td [ngSwitch]="detailOrderInfo.repairType">
+                    <template [ngSwitchCase]="1">一般维修</template>
+                    <template [ngSwitchCase]="2">定期保养</template>
+                    <template [ngSwitchCase]="3">保险维修</template>
+                    <template [ngSwitchCase]="4">事故维修</template>
+                    <template [ngSwitchCase]="5">维修索赔</template>
+                    <template [ngSwitchCase]="6">出厂返修</template>
+                    <template [ngSwitchCase]="7">内部返修</template>
+                </td>
+                <td class="basicInfo_title">结算员</td>
+                <td>{{detailOrderSettlement.settlementUserName}}</td>
+                <td class="basicInfo_title">服务顾问</td>
+                <td>{{detailOrderInfo.servicerName}}</td>
+            </tr>
+            <tr>
+                <td class="basicInfo_title">结算方</td>
+                <td>{{detailOrderSettlement.settlementUserName}}</td>
+                <td class="basicInfo_title">结算单号</td>
+                <td>{{detailOrderSettlement.settlementNo}}</td>
+                <td class="basicInfo_title">结算时间</td>
+                <td>{{detailOrderSettlement.settlementTime}}</td>
+            </tr>
+            <tr>
+                <td class="basicInfo_title">进厂时间</td>
+                <td>{{detailOrderInfo.createTime}}</td>
+                <td class="basicInfo_title">进厂里程</td>
+                <td>{{detailOrderInfo.mileage}}</td>
+                <td class="basicInfo_title">出厂里程</td>
+                <td>{{detailOrderInfo.factoryMileage}}</td>
+            </tr>
+        </table>
+        <table class="table project">
+            <caption>表一：工时明细</caption>
+            <thead>
+                <tr>
+                    <th>序号</th>
+                    <th>维修项目</th>
+                    <th>结算工时</th>
+                    <th>单价（元）</th>
+                    <th>折扣率（%）</th>
+                    <th>金额（元）</th>
+                    <th>备注</th>
+                </tr>
+            </thead>
+            <tbody>
+                <tr *ngFor="let item of detailOrderInfo.detailProjectDtos; let i = index">
+                    <td class="text-center">{{i+1}}</td>
+                    <td class="text-center">{{item.projectName}}</td>
+                    <td class="text-center">{{item.repairHour}}</td>
+                    <td class="text-right">{{item.hourPrice}}</td>
+                    <td class="text-center">{{item.discount}}</td>
+                    <td class="text-right">{{item.totalCount}}</td>
+                    <td class="text-center"></td>
+                </tr>
+            </tbody>
+            <tfoot>
+                <tr>
+                    <td colspan="7">
+                        <span>金额合计：{{projectPrice.priceCount}}</span>
+                        <span>优惠：¥ {{projectPrice.discountPrice}}</span>
+                        <span>应收金额：¥ {{projectPrice.amountPrice}}</span>
+                    </td>
+                </tr>
+            </tfoot>
+        </table>
+        <table class="table project">
+            <caption>汇总：收费结算单</caption>
+            <thead>
+                <tr>
+                    <th>序号</th>
+                    <th>名称</th>
+                    <th>金额（元）</th>
+                    <th>备注</th>
+                </tr>
+            </thead>
+            <tbody>
+                <tr>
+                    <td class="text-center">1</td>
+                    <td class="text-center">工时费</td>
+                    <td class="text-right">{{projectPrice.priceCount}}</td>
+                    <td class="text-center"></td>
+                </tr>
+                <tr>
+                    <td class="text-center">2</td>
+                    <td class="text-center">材料费</td>
+                    <td class="text-right">{{partPrice.priceCount}}</td>
+                    <td class="text-center"></td>
+                </tr>
+            </tbody>
+            <tfoot>
+                <tr>
+                    <td colspan="4">
+                        <span>金额合计：{{projectPrice.priceCount + partPrice.priceCount}}</span>
+                        <span>优惠：¥ {{projectPrice.discountPrice}}</span>
+                        <span>应收金额：¥ {{projectPrice.amountPrice + partPrice.priceCount}}</span>
+                    </td>
+                </tr>
+            </tfoot>
+        </table>
+    </div>
+    <div class="printFooter">
+        <span>操作人：</span>
+        <span>打印时间：{{printDate}}</span>
+        <span class="customer">客户签名：</span>
+        <span class="customer">日期：</span>
+    </div>
+</div>

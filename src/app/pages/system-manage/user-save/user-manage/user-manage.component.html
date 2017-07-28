@@ -1,0 +1,259 @@
+<!--component html goes here -->
+<div class="wrap" @flyIn>
+    <h4>用户管理</h4>
+    <div class="wrap-block">
+        <form class="mb-3">
+            <div class="form-inline">
+                <input class="form-control mr-1" name="keyword" placeholder="请输入姓名或手机号" [(ngModel)]='userparams.searchKey'>
+                <button class="btn btn-success mr-2" type="button" (click)="search()">查询</button>
+                <button class="btn btn-info" type="button" (click)="addModal.show();addInfo()">新增</button>
+            </div>
+        </form>
+        <div class="table-container">
+            <table class="table table-bordered text-center">
+                <thead>
+                    <tr>
+                        <th>操作</th>
+                        <th>姓名</th>
+                        <th>角色</th>
+                        <th>组织</th>
+                        <th>职位</th>
+                        <th>所属部门</th>
+                        <th>手机号</th>
+                        <th>创建时间</th>
+                        <th>备注</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr *ngFor="let item of listInfo">
+                        <td>
+                            <button class="btn btn-sm btn-primary" [disabled]="!item.isEnable" (click)="getUserDetailInfo(item.userId);editModal.show()">编辑</button>
+                            <button class="btn btn-sm btn-danger" [disabled]="!item.isEnable" (click)="reset.show()">重置密码</button>
+                            <button class="btn btn-sm btn-warning" *ngIf="item.isEnable" (click)="disUser(item.userId)">冻结</button>
+                            <button class="btn btn-sm btn-warning" *ngIf="!item.isEnable" (click)="enUser(item.userId)">解冻</button>
+                        </td>
+                        <td>{{item.userName}}</td>
+                        <td>{{item.roleNames}}</td>
+                        <td>{{item.orgName}}</td>
+                        <td>{{item.posNames}}</td>
+                        <td>{{item.depNames}}</td>
+                        <td>{{item.mobile}}</td>
+                        <td>{{item.createTime}}</td>
+                        <td>{{item.remark}}</td>
+                    </tr>
+                </tbody>
+            </table>
+        </div>
+        <div class="form-group paginate">
+            <label>
+            每页显示
+            <select class="form-control select" (change)="pageChanged($event,'SELECT')">
+                <option value="10">10</option>
+                <option value="20">20</option>
+                <option value="30">30</option>
+                <option value="50">50</option>
+                <option value="100">100</option>
+            </select>
+        </label>
+            <pagination [totalItems]="totalItems" [(ngModel)]="index" [maxSize]="10" [itemsPerPage]="userparams.pageSize" [boundaryLinks]="true"
+                previousText="上一页" nextText="下一页" firstText="首页" lastText="尾页" (pageChanged)="pageChanged($event)"></pagination>
+                <label class="contorl-label">
+                跳转到<input type="number" class="form-control" min="1" [max]="maxPageSize" [(ngModel)]="choosePage">页
+            </label>
+                <button class="btn btn-default" (click)="pageChanged($event,'BUTTON')">GO</button>
+        </div>
+    </div>
+</div>
+<div bsModal #addModal="bs-modal" class="modal fade" tabindex="-1" role="dialog" aria-labelledby="myLargeModalLabel" aria-hidden="true"
+    [config]="{backdrop: 'static'}">
+    <div class="modal-dialog modal-lg">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h4 class="modal-title pull-left" *ngIf="modalCheck==1">新增用户</h4>
+                <h4 class="modal-title pull-left" *ngIf="modalCheck==0">编辑用户</h4>
+                <button type="button" class="close pull-right" (click)="addModal.hide()" aria-label="Close">
+          <span aria-hidden="true">&times;</span>
+        </button>
+            </div>
+            <div class="modal-body">
+                <div class="card">
+                    <div class="bg-danger errwrap dis">
+                        <p class="addInfoErr errInfo"></p>
+                    </div>
+                    <form class="card-block ng-untouched ng-pristine ng-invalid" [formGroup]="addForm">
+                        <div class="form-group">
+                            <label class="form-control-label required"><span style="color: red">*</span> 手机号：</label>
+                            <input class="form-control" formControlName="mobile" maxlength="11" [(ngModel)]="addparams.mobile" type="text" placeholder="请输入手机号">
+                            <div class="form-inline" *ngIf="addFormErrors.mobile.error">
+                                <div [hidden]="!addFormErrors.mobile.error" class="formInfo input-group">
+                                    {{addFormErrors.mobile.error}}
+                                </div>
+                            </div>
+                        </div>
+                        <div class="form-group" *ngIf="psdCheck">
+                            <label class="form-control-label required"><span style="color: red">*</span> 密码</label>
+                            <input class="form-control" formControlName="password" minlength="6" maxlength="18" [(ngModel)]="addparams.password" type="password" placeholder="请输入密码">
+                            <div class="form-inline" *ngIf="addFormErrors.password.error">
+                                <div [hidden]="!addFormErrors.password.error" class="formInfo input-group">
+                                    {{addFormErrors.password.error}}
+                                </div>
+                            </div>
+                        </div>
+                        <div class="form-group">
+                            <label class="form-control-label required"><span style="color: red">*</span> 姓名</label>
+                            <input class="form-control" formControlName="username" maxlength="25" [(ngModel)]="addparams.userName" placeholder="请输入姓名" type="text">
+                            <div class="form-inline" *ngIf="addFormErrors.username.error">
+                                <div [hidden]="!addFormErrors.username.error" class="formInfo input-group">
+                                    {{addFormErrors.username.error}}
+                                </div>
+                            </div>
+                        </div>
+                        <div class="form-group worker">
+                            <label class="form-control-label required"><span style="color: red">*</span> 角色</label>
+                            <div class="popModal1 dis">
+                                <ngx-treeview [config]="config1" [items]="roleitems" (selectedChange)="onSelectedChange($event,1)">
+                                </ngx-treeview>
+                                <p class="workDetail pull-right">
+                                    <button type="button" class="btn-sm btn-success mr-1" (click)="sureRole()">确定</button>
+                                    <button type="button" class="btn-sm btn-default mr-2" (click)="cancle(1)">取消</button>
+                                </p>
+                            </div>
+                            <input type="button" class="btn-secondary dropdown mr-2" formControlName="allroles" (click)="showMsg(1)" [(ngModel)]="saveRoles"
+                                value="请选择">
+                                <div class="form-inline" *ngIf="addFormErrors.allroles.error">
+                                    <div [hidden]="!addFormErrors.allroles.error" class="formInfo input-group">
+                                        {{addFormErrors.allroles.error}}
+                                    </div>
+                                </div>
+                        </div>
+                        <div class="form-group worker">
+                            <label class="form-control-label required"><span style="color: red">*</span> 职位</label>
+                            <div class="popModal2 dis">
+                                <ngx-treeview [config]="config2" [items]="items" (selectedChange)="onSelectedChange($event,2)">
+                                </ngx-treeview>
+                                <p class="workDetail pull-right">
+                                    <button type="button" class="btn-sm btn-success mr-2" (click)="surePos()">确定</button>
+                                    <button type="button" class="btn-sm btn-default mr-2" (click)="cancle(2)">取消</button>
+                                </p>
+                            </div>
+                            <input type="button" class="btn-secondary dropdown mr-2" formControlName="posName" (click)="showMsg(2)" [(ngModel)]="savePos"
+                                value="请选择">
+                                <div class="form-inline" *ngIf="addFormErrors.posName.error">
+                                    <div [hidden]="!addFormErrors.posName.error" class="formInfo input-group">
+                                        {{addFormErrors.posName.error}}
+                                    </div>
+                                </div>
+                        </div>
+                        <div class="form-group" *ngIf="remarkCheck">
+                            <label class="form-control-label">备注</label>
+                            <input class="form-control" formControlName="remark" [(ngModel)]="addparams.remark" placeholder="请输入备注" type="text">
+                        </div>
+                        <div class="form-group">
+                            <button class="btn btn-primary mr-3" type="button" [disabled]="!addForm.valid" (click)="submit()">提交</button>
+                        </div>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div>
+    </div>
+    <div bsModal #editModal="bs-modal" class="modal fade" tabindex="-1" role="dialog" aria-labelledby="myLargeModalLabel" aria-hidden="true"
+        [config]="{backdrop: 'static'}">
+        <div class="modal-dialog modal-lg">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h4 class="modal-title pull-left">编辑用户</h4>
+                    <button type="button" class="close pull-right" (click)="editModal.hide()" aria-label="Close">
+          <span aria-hidden="true">&times;</span>
+        </button>
+                </div>
+                <div class="modal-body">
+                    <div class="card">
+                        <form class="card-block ng-untouched ng-pristine ng-invalid" [formGroup]="editForm">
+                            <div class="form-group">
+                                <label class="form-control-label required"><span style="color: red">*</span> 手机号：</label>
+                                <input class="form-control" formControlName="mobile" [(ngModel)]="addparams.mobile" type="text" placeholder="请输入手机号">
+                                <div class="form-inline" *ngIf="editFormErrors.mobile.error">
+                                    <div [hidden]="!editFormErrors.mobile.error" class="formInfo input-group">
+                                        {{editFormErrors.mobile.error}}
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="form-group">
+                                <label class="form-control-label required"><span style="color: red">*</span> 姓名</label>
+                                <input class="form-control" formControlName="username" [(ngModel)]="addparams.userName" placeholder="请输入姓名" type="text">
+                                <div class="form-inline" *ngIf="editFormErrors.username.error">
+                                    <div [hidden]="!editFormErrors.username.error" class="formInfo input-group">
+                                        {{editFormErrors.username.error}}
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="form-group worker">
+                                <label class="form-control-label required"><span style="color: red">*</span> 角色</label>
+                                <div class="popModal1 dis">
+                                    <ngx-treeview [config]="config1" [items]="roleitems" (selectedChange)="onSelectedChange($event,1)">
+                                    </ngx-treeview>
+                                    <p class="workDetail pull-right">
+                                        <button type="button" class="btn-sm btn-success mr-1" (click)="sureRole()">确定</button>
+                                        <button type="button" class="btn-sm btn-default mr-2" (click)="cancle(1)">取消</button>
+                                    </p>
+                                </div>
+                                <input type="button" class="btn-secondary dropdown mr-2" formControlName="allroles" (click)="showMsg(1)" [(ngModel)]="saveRoles"
+                                    value="请选择">
+                                    <div class="form-inline" *ngIf="editFormErrors.allroles.error">
+                                        <div [hidden]="!editFormErrors.allroles.error" class="formInfo input-group">
+                                            {{editFormErrors.allroles.error}}
+                                        </div>
+                                    </div>
+                            </div>
+                            <div class="form-group worker">
+                                <label class="form-control-label required"><span style="color: red">*</span> 职位</label>
+                                <div class="popModal2 dis">
+                                    <ngx-treeview [config]="config2" [items]="items" (selectedChange)="onSelectedChange($event,2)">
+                                    </ngx-treeview>
+                                    <p class="workDetail pull-right">
+                                        <button type="button" class="btn-sm btn-success mr-1" (click)="surePos()">确定</button>
+                                        <button type="button" class="btn-sm btn-default mr-2" (click)="cancle(2)">取消</button>
+                                    </p>
+                                </div>
+                                <input type="button" class="btn-secondary dropdown mr-2" formControlName="posName" (click)="showMsg(2)" [(ngModel)]="savePos"
+                                    value="请选择">
+                                    <div class="form-inline" *ngIf="editFormErrors.posName.error">
+                                        <div [hidden]="!editFormErrors.posName.error" class="formInfo input-group">
+                                            {{editFormErrors.posName.error}}
+                                        </div>
+                                    </div>
+                            </div>
+                            <div class="form-group" *ngIf="remarkCheck">
+                                <label class="form-control-label">备注</label>
+                                <input class="form-control" formControlName="remark" maxlength="18" [(ngModel)]="addparams.remark" placeholder="请输入备注" type="text">
+                            </div>
+                            <div class="form-group">
+                                <button class="btn btn-primary mr-3" type="button" [disabled]="!editForm.valid" (click)="edit()">提交</button>
+                            </div>
+                        </form>
+                    </div>
+                </div>
+            </div>
+        </div>
+        </div>
+        <div bsModal #reset="bs-modal" class="modal fade reset" tabindex="-1" role="dialog" aria-labelledby="mySmallModalLabel" aria-hidden="true"
+            [config]="{backdrop: 'static'}">
+            <div class="modal-dialog modal-sm">
+                <div class="modal-content">
+                    <div class="modal-body">
+                        <button type="button" class="close pull-right" aria-label="Close" (click)="reset.hide()">
+                    <span aria-hidden="true">&times;</span>
+                </button>
+                        <div>
+                            <div class="icon">?</div>
+                            <div class="content">密码将重置为手机号后六位，是否确认操作？</div>
+                            <div class="infoButton">
+                                <button type="button" class="btn btn-primary" (click)="reset.hide()">确定</button>
+                                <button type="button" class="btn btn-default" (click)="reset.hide()">取消</button>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            </div>

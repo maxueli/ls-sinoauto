@@ -1,0 +1,11 @@
+// component css goes here
+table{
+    position: absolute;
+    top: 40px;
+    left: 0px;
+    z-index: 55;
+    background-color: #fff;
+    td,th{
+        white-space: nowrap;
+    }
+}

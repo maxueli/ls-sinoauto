@@ -1,0 +1,461 @@
+<div class="container userAndCustomer" @flyIn>
+    <div class="card_header clearfix">
+        <h4 class="pull-left">维修增项</h4>
+        <div class="btn-group pull-right" dropdown [autoClose]="isShow">
+            <button dropdownToggle type="button" class="btn btn-link dropdown-toggle">
+                <i aria-hidden="true" class="fa fa-list-alt"></i>
+                <span class="suspend-span">挂单信息 <span>({{hangOrderListCount}})</span></span>
+                <i class="fa fa-angle-down"></i>
+            </button>
+            <div *dropdownMenu class="dropdown-menu" role="menu">
+                <table class="table table-bordered">
+                    <thead>
+                        <tr>
+                            <th>工单号</th>
+                            <th>车主</th>
+                            <th>车牌号</th>
+                            <th></th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr *ngFor="let item of hangOrderList" (click)="loadHangOrderDetail(item.orderNo, 'orderNo')">
+                            <td>{{item.orderNo}}</td>
+                            <td>{{item.customerName}}</td>
+                            <td>{{item.customerCarNo}}</td>
+                            <td (click)="complete.show();hangDisabled(1,item.hangId);$event.stopPropagation()">
+                                <i class="fa fa-times-circle"></i>作废
+                            </td>
+                        </tr>
+                    </tbody>
+                    <tfoot *ngIf="hangOrderListCount > 10">
+                        <tr>
+                            <td colspan="4">
+                                <pagination [totalItems]="hangOrderListCount" [maxSize]="5" class="pagination-sm" [boundaryLinks]="true" previousText="&lsaquo;" nextText="&rsaquo;" firstText="&laquo;" lastText="&raquo;" (pageChanged)="pageChanged($event,'hang')"></pagination>
+                            </td>
+                        </tr>
+                    </tfoot>
+                </table>
+            </div>
+        </div>
+    </div>
+    <form class="form-inline">
+        <div class="input-group">
+            <input type="text" class="form-control" name="id" [(ngModel)]="orderInfoParam.condition" (click)="isCollapsed('id')" (keyup)="reloadCarsInfo($event, 'id')" placeholder="请输入车牌号/工单号">
+            <span class="input-group-addon defBgColor" (click)="isCollapsed('id')"><i class="fa fa-search"></i></span>
+            <div [collapse]="idCollapsed" class="dropdown-menu">
+                <table class="table table-bordered">
+                    <thead>
+                        <tr>
+                            <th class="text-center">客户名称</th>
+                            <th class="text-center">手机号</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr role="menuitem" class="dropdown-item" *ngFor="let item of orderInfo" (click)="selectCarsInfo(item, 'id')">
+                            <td>{{item.carNo}}</td>
+                            <td>{{item.orderNo}}</td>
+                        </tr>
+                    </tbody>
+                    <tfoot *ngIf="totalItems[0]>10">
+                        <tr>
+                            <td role="menuitem" (click)="idCollapsed = false" colspan="2">
+                                <pagination [totalItems]="totalItems[0]" [maxSize]="5" class="pagination-sm" [boundaryLinks]="true" previousText="&lsaquo;" nextText="&rsaquo;" firstText="&laquo;" lastText="&raquo;" (pageChanged)="pageChanged($event,'id')"></pagination>
+                            </td>
+                        </tr>
+                    </tfoot>
+                </table>
+            </div>
+        </div>
+        <span>
+            注意：已结算的工单，不能再进行增项操作。
+        </span>
+    </form>
+    <div class="card_body">
+        <table class="table table-bordered">
+            <thead>
+                <tr>
+                    <th class="tr-left-bold" colspan="4">车辆信息</th>
+                </tr>
+            </thead>
+            <tbody>
+                <tr>
+                    <td>工单号</td>
+                    <td>{{orderDetail.orderNo}}</td>
+                    <td>车牌号</td>
+                    <td>{{orderDetail.carNo}}</td>
+                </tr>
+                <tr>
+                    <td>车主</td>
+                    <td>{{orderDetail.name}}</td>
+                    <td>车主电话</td>
+                    <td>{{orderDetail.mobile}} </td>
+                </tr>
+                <tr>
+                    <td>送修人</td>
+                    <td>{{orderDetail.repairName}}</td>
+                    <td>送修人电话</td>
+                    <td>{{orderDetail.repairMobile}}</td>
+                </tr>
+                <tr>
+                    <td>介绍人</td>
+                    <td>{{orderDetail.recommender}}</td>
+                    <td>介绍人电话</td>
+                    <td>{{orderDetail.recommenderMobile}}</td>
+                </tr>
+                <tr>
+                    <td>品牌</td>
+                    <td>{{orderDetail.brandName}}</td>
+                    <td>车系</td>
+                    <td>{{orderDetail.seriesName}}</td>
+                </tr>
+                <tr>
+                    <td>车型</td>
+                    <td>{{orderDetail.carModelName}}</td>
+                    <td>VIN</td>
+                    <td>{{orderDetail.vin}}</td>
+                </tr>
+                <tr>
+                    <td>维修类型</td>
+                    <td [ngSwitch]="orderDetail.repairType">
+                        <template [ngSwitchCase]="1">一般维修</template>
+                        <template [ngSwitchCase]="2">定期保养</template>
+                        <template [ngSwitchCase]="3">保险维修</template>
+                        <template [ngSwitchCase]="4">事故维修</template>
+                        <template [ngSwitchCase]="5">维修索赔</template>
+                        <template [ngSwitchCase]="6">出厂返修</template>
+                        <template [ngSwitchCase]="7">内部返修</template>
+                    </td>
+                    <td>验车日期</td>
+                    <td>{{orderDetail.vehicleDate}}</td>
+                </tr>
+                <tr>
+                    <td>预计交车时间</td>
+                    <td>{{orderDetail.estimatedDeliveryTime}}</td>
+                    <td>进厂里程(KM)</td>
+                    <td>{{orderDetail.mileage}}</td>
+                </tr>
+                <tr>
+                    <td>上次进厂时间</td>
+                    <td></td>
+                    <td>上次进厂里程(KM)</td>
+                    <td></td>
+                </tr>
+                <tr>
+                    <td>建议下次保养日期</td>
+                    <td>{{orderDetail.nextMaintainDate}}</td>
+                    <td>建议下次保养里程(KM)</td>
+                    <td>{{orderDetail.nextMileage}}</td>
+                </tr>
+                <tr>
+                    <td>维修工位</td>
+                    <td>{{orderDetail.repairStation}}</td>
+                    <td></td>
+                    <td></td>
+                </tr>
+            </tbody>
+        </table>
+        <tabset class="tabCard" [hidden]="isTabs">
+            <tab>
+                <template tabHeading>
+                    <i aria-hidden="true" class="fa fa-clone"></i>维修项目
+                </template>
+                <table class="table table-bordered">
+                    <thead>
+                        <tr>
+                            <th>操作</th>
+                            <th>维修项目名称</th>
+                            <th>维修工时</th>
+                            <th>工时单价(元)</th>
+                            <th>折扣率(%)</th>
+                            <th>金额(元)</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <!-- <tr *ngFor="let item of orderDetail.repairOrderInfoDtos">
+                            <td></td>
+                            <td>
+                                {{item.projectName}}
+                                <label class="append-stamp">增项</label>
+                            </td>
+                            <td>{{item.repairHour}}</td>
+                            <td class="text-right">{{item.hourPrice}}</td>
+                            <td>{{item.discount}}</td>
+                            <td class="text-right">{{item.totalCount}}</td>
+                        </tr> -->
+                        <tr *ngFor="let item of hangProjectParam.repairDtos; let i = index">
+                            <td>
+                                <button class="btn btn-success" *ngIf="item.hang" (click)="newProjects.show();saveProjectId('repair', i)">编辑</button>
+                                <button class="btn btn-danger" *ngIf="item.hang" (click)="orderInfoDelete('repair', i)">删除</button>
+                            </td>
+                            <td>
+                                {{item.projectName}}
+                                <span class="accept-stamp" *ngIf="item.isPass"></span>
+                                <label class="append-stamp" *ngIf="item.isExtra">增项</label>
+                            </td>
+                            <td>{{item.repairHour}}</td>
+                            <td class="text-right">{{item.hourPrice}}</td>
+                            <td>{{item.discount}}</td>
+                            <td class="text-right">{{item.totalCount}}</td>
+                        </tr>
+                    </tbody>
+                </table>
+                <div class="text-center add">
+                    <button class="btn btn-link btn-default" (click)="newProjects.show()">
+                        <i aria-hidden="true" class="fa fa-plus-circle text-success"></i>新增维修项目
+                    </button>
+                </div>
+            </tab>
+            <tab>
+                <template tabHeading>
+                    <i aria-hidden="true" class="fa fa-plus-square mr-2"></i>附加项目
+                </template>
+                <table class="table table-bordered extraProject">
+                    <thead>
+                        <tr>
+                            <th>操作</th>
+                            <th>备注</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <!-- <tr *ngFor="let item of extraList">
+                            <td></td>
+                            <td>{{item.projectContent}}</td>
+                        </tr> -->
+                        <tr *ngFor="let item of hangProjectParam.stExtraProjects; let i = index">
+                            <td>
+                                <button class="btn btn-success" *ngIf="item.isHang" (click)="newItems.show();saveProjectId('extra', i)">编辑</button>
+                                <button class="btn btn-danger" *ngIf="item.isHang" (click)="orderInfoDelete('extra', i)">删除</button>
+                            </td>
+                            <td>{{item.projectContent}}</td>
+                        </tr>
+                    </tbody>
+                </table>
+                <div class="text-center add">
+                    <button class="btn btn-link btn-default" [disabled]="isSaveExtra" (click)="newItems.show()">
+                        <i aria-hidden="true" class="fa fa-plus-circle text-success"></i>
+                        新增附加项目
+                    </button>
+                </div>
+            </tab>
+            <tab>
+                <template tabHeading>
+                    <i aria-hidden="true" class="fa fa-wpforms mr-2"></i>建议维修项目
+                </template>
+                <table class="table table-bordered">
+                    <thead>
+                        <tr>
+                            <th>操作</th>
+                            <th>建议维修项目</th>
+                            <th>备注</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <!-- <tr *ngFor="let item of adviceList">
+                            <td></td>
+                            <td>{{item.projectName}}</td>
+                            <td>{{item.remark}}</td>
+                        </tr> -->
+                        <tr *ngFor="let item of hangProjectParam.stAdviseRepairProjects; let i = index">
+                            <td>
+                                <button class="btn btn-success" *ngIf="item.hang" (click)="newPropose.show();saveProjectId('advice', i)">编辑</button>
+                                <button class="btn btn-danger" *ngIf="item.hang" (click)="orderInfoDelete('advice', i)">删除</button>
+                            </td>
+                            <td>{{item.projectName}}</td>
+                            <td>{{item.remark}}</td>
+                        </tr>
+                    </tbody>
+                </table>
+                <div class="text-center add">
+                    <button class="btn btn-link btn-default" (click)="newPropose.show()">
+                        <i aria-hidden="true" class="fa fa-plus-circle text-success"></i>
+                        新增建议维修项目
+                    </button>
+                </div>
+            </tab>
+        </tabset>
+        <div class="card" [hidden]="isTabs">
+            <span>工时费：<span>¥ {{priceCount.hourPrice}}</span></span>
+            <span>优惠：<span>¥ {{priceCount.discountPrice}}</span></span>
+            <span class="pull-right">应收金额：<span>¥ {{priceCount.amountPrice}}</span></span>
+        </div>
+    </div>
+    <div class="card-footer">
+        <button type="button" class="btn btn-primary" [disabled]="isChange" (click)="saveHangProject()">提交增项</button>
+        <button type="button" class="btn btn-success btn-suspend" [disabled]="isChange" (click)="saveHangOrder()">挂单</button>
+    </div>
+</div>
+
+<div bsModal #newProjects="bs-modal" class="modal fade userAndCustomer" tabindex="-1" role="dialog" aria-labelledby="myLargeModalLabel" aria-hidden="true" [config]="{backdrop: 'static'}">
+    <div class="modal-dialog modal-lg">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h4 class="modal-title pull-left">新增维修项目</h4>
+                <button type="button" class="close pull-right" (click)="newProjects.hide();cencelNewProject('repair')" aria-label="Close">
+                    <span aria-hidden="true">&times;</span>
+                </button>
+            </div>
+            <div class="modal-body">
+                <form [formGroup]="newProjectForm">
+                    <div class="form-inline">
+                        <div class="input-group">
+                            <label for="projectName" class="input-group-addon"><i class="icon-sm">*</i>项目名称</label>
+                            <input type="text" class="form-control" formControlName="projectName" id="projectName" (click)="isCollapsed('repair')" (keyup)="reloadCarsInfo($event, 'repair')">
+                            <span class="input-group-addon defBgColor" (click)="isCollapsed('repair')"><i class="fa fa-search"></i></span>
+                            <ul [collapse]="repairCollapsed" class="dropdown-menu card card-block card-header">
+                                <li role="menuitem" *ngFor="let item of repairList" (click)="selectCarsInfo(item, 'repair')">
+                                    <a class="dropdown-item">{{item.projectName}}</a>
+                                </li>
+                                <li class="divider dropdown-divider"></li>
+                                <li role="menuitem" (click)="repairCollapsed = false">
+                                    <pagination [totalItems]="totalItems[1]" [maxSize]="10" class="pagination-sm" [boundaryLinks]="true" previousText="&lsaquo;" nextText="&rsaquo;" firstText="&laquo;" lastText="&raquo;" (pageChanged)="pageChanged($event,'repair')"></pagination>
+                                </li>
+                            </ul>
+                        </div>
+                        <div class="input-group">
+                            <label for="repairType" class="input-group-addon"><i class="icon-sm">*</i> 维修类型</label>
+                            <select class="form-control" formControlName="repairType" id="repairType" (change)="selectRepairType($event)">
+                                <option style="display:none"></option>
+                                <option value="1">机修</option>
+                                <option value="2">钣金</option>
+                                <option value="3">混合</option>
+                            </select>
+                        </div>
+                    </div>
+                    <div class="form-inline" *ngIf="newProjectFormErrors.projectName.error || newProjectFormErrors.repairType.error">
+                        <div [hidden]="!newProjectFormErrors.projectName.error" class="formInfo input-group">
+                            {{newProjectFormErrors.projectName.error}}
+                        </div>
+                        <div [hidden]="!newProjectFormErrors.repairType.error" class="formInfo input-group">
+                            {{newProjectFormErrors.repairType.error}}
+                        </div>
+                    </div>
+                    <div class="form-inline">
+                        <div class="input-group">
+                            <label for="repairHour" class="input-group-addon"><i class="icon-sm">*</i>维修工时</label>
+                            <input type="text" class="form-control" formControlName="repairHour" id="repairHour" onkeypress="return event.keyCode>=48&&event.keyCode<=57" (keyup)="priceChange($event, 'repairHour')">
+                        </div>
+                        <div class="input-group">
+                            <label for="hourPrice" class="input-group-addon"><i class="icon-sm">*</i>工时单价</label>
+                            <input type="text" class="form-control" formControlName="hourPrice" id="hourPrice" maxlength="10" onkeypress="return event.keyCode>=48&&event.keyCode<=57" (keyup)="priceChange($event, 'hourPrice')">
+                            <span class="input-group-addon">元</span>
+                        </div>
+                    </div>
+                    <div class="form-inline" *ngIf="newProjectFormErrors.repairHour.error || newProjectFormErrors.hourPrice.error">
+                        <div [hidden]="!newProjectFormErrors.repairHour.error" class="formInfo input-group">
+                            {{newProjectFormErrors.repairHour.error}}
+                        </div>
+                        <div [hidden]="!newProjectFormErrors.hourPrice.error" class="formInfo input-group">
+                            {{newProjectFormErrors.hourPrice.error}}
+                        </div>
+                    </div>
+                    <div class="form-inline">
+                        <div class="input-group">
+                            <label for="discount" class="input-group-addon"><i class="icon-sm">*</i>折扣率</label>
+                            <input type="text" class="form-control" formControlName="discount" id="discount" maxlength="3" onkeypress="return event.keyCode>=48&&event.keyCode<=57" (keyup)="priceChange($event, 'discount')">
+                            <span class="input-group-addon">%</span>
+                        </div>
+                        <div class="input-group">
+                            <label for="totalCount" class="input-group-addon"><i class="icon-sm">*</i>金额</label>
+                            <input type="text" class="form-control" formControlName="totalCount" id="totalCount" readonly>
+                            <span class="input-group-addon">元</span>
+                        </div>
+                    </div>
+                    <div class="form-inline" *ngIf="newProjectFormErrors.discount.error || newProjectFormErrors.totalCount.error">
+                        <div [hidden]="!newProjectFormErrors.discount.error" class="formInfo input-group">
+                            {{newProjectFormErrors.discount.error}}
+                        </div>
+                        <div [hidden]="!newProjectFormErrors.totalCount.error" class="formInfo input-group">
+                            {{newProjectFormErrors.totalCount.error}}
+                        </div>
+                    </div>
+                    <div class="text-center">
+                        <button class="btn btn-success" type="submit" [disabled]="!newProjectForm.valid" (click)="newProjects.hide();saveNewProject('repair')">保存</button>
+                        <button class="btn btn-default" type="button" (click)="newProjects.hide();cencelNewProject('repair')">取消</button>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+</div>
+<div bsModal #newItems="bs-modal" class="modal fade userAndCustomer" tabindex="-1" role="dialog" aria-labelledby="myLargeModalLabel" aria-hidden="true" [config]="{backdrop: 'static'}">
+    <div class="modal-dialog modal-lg">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h4 class="modal-title pull-left">新增附加项目</h4>
+                <button type="button" class="close pull-right" (click)="newItems.hide();cencelNewProject('extra')" aria-label="Close">
+                    <span aria-hidden="true">&times;</span>
+                </button>
+            </div>
+            <div class="modal-body">
+                <form class="infoForm">
+                    <div class="form-group">
+                        <textarea type="textarea" class="form-control" name="projectContent" placeholder="备注" [(ngModel)]="extraProject.projectContent"></textarea>
+                    </div>
+                    <div class="text-center">
+                        <button class="btn btn-success" type="submit" [disabled]="!extraProject.projectContent" (click)="newItems.hide();saveNewProject('extra')">保存</button>
+                        <button class="btn btn-default" type="button" (click)="newItems.hide();cencelNewProject('extra')">取消</button>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+</div>
+<div bsModal #newPropose="bs-modal" class="modal fade userAndCustomer" tabindex="-1" role="dialog" aria-labelledby="myLargeModalLabel" aria-hidden="true" [config]="{backdrop: 'static'}">
+    <div class="modal-dialog modal-lg">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h4 class="modal-title pull-left">新增建议维修项目</h4>
+                <button type="button" class="close pull-right" (click)="newPropose.hide();cencelNewProject('advice')" aria-label="Close">
+                    <span aria-hidden="true">&times;</span>
+                </button>
+            </div>
+            <div class="modal-body">
+                <form [formGroup]="newProposeForm">
+                    <div class="form-inline">
+                        <div class="input-group adviceRepair">
+                            <label for="projectName" class="input-group-addon "><i class="icon-sm">*</i>建议维修项目</label>
+                            <input type="text" class="form-control" formControlName="projectName" id="projectName" (click)="isCollapsed('advice')" (keyup)="reloadCarsInfo($event, 'advice')">
+                            <span class="input-group-addon defBgColor" (click)="isCollapsed('advice')"><i class="fa fa-search"></i></span>
+                            <ul [collapse]="adviceCollapsed" class="dropdown-menu  card card-block card-header">
+                                <li role="menuitem" *ngFor="let item of adviceRepairList" (click)="selectCarsInfo(item, 'advice')">
+                                    <a class="dropdown-item">{{item.projectName}}</a>
+                                </li>
+                                <li class="divider dropdown-divider"></li>
+                                <li role="menuitem" (click)="adviceCollapsed = false">
+                                    <pagination [totalItems]="totalItems[2]" [maxSize]="10" class="pagination-sm" [boundaryLinks]="true" previousText="&lsaquo;" nextText="&rsaquo;" firstText="&laquo;" lastText="&raquo;" (pageChanged)="pageChanged($event,'advice')"></pagination>
+                                </li>
+                            </ul>
+                        </div>
+                        <div class="input-group">
+                            <label for="remark" class="input-group-addon">备注</label>
+                            <input type="text" class="form-control" formControlName="remark" id="remark">
+                        </div>
+                    </div>
+                    <div class="text-center propose">
+                        <button class="btn btn-success" type="submit" [disabled]="!newProposeForm.valid" (click)="newPropose.hide();saveNewProject('advice')">保存</button>
+                        <button class="btn btn-default" type="button" (click)="newPropose.hide();cencelNewProject('advice')">取消</button>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+</div>
+<div bsModal #complete="bs-modal" class="modal fade complete" tabindex="-1" role="dialog" aria-labelledby="mySmallModalLabel" aria-hidden="true" [config]="{backdrop: 'static'}">
+    <div class="modal-dialog modal-sm">
+        <div class="modal-content">
+            <div class="modal-body">
+                <button type="button" class="close pull-right" aria-label="Close" (click)="complete.hide();cencelhangDisabled()">
+                    <span aria-hidden="true">&times;</span>
+                </button>
+                <div>
+                    <div class="icon">!</div>
+                    <div class="content">作废后将不可恢复，是否确认作废？</div>
+                    <div class="infoButton">
+                        <button type="button" class="btn btn-primary" (click)="complete.hide();hangDisabled(2,'OK')">确定</button>
+                        <button type="button" class="btn btn-default" (click)="complete.hide();cencelhangDisabled()">取消</button>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>

@@ -1,0 +1,338 @@
+<!--component html goes here -->
+<div id="cashier" @flyIn>
+    <h4>维修收银</h4>
+    <form class="select">
+        <div class="input-group">
+            <label class="input-group-addon">工单状态</label>
+            <div class="form-control">
+                <div class="form-check-box">
+                    <label class="form-check-label">
+                        <input class="form-check-input" type="checkbox" name="cashier" value="6" (change)="search()">待收银（已结算）
+                    </label>
+                </div>
+                <div class="form-check-box">
+                    <label class="form-check-label">
+                        <input class="form-check-input" type="checkbox" name="cashier" value="7" (change)="search()">已收银
+                    </label>
+                </div>
+            </div>
+        </div>
+        <div class="form-inline">
+            <div class="input-group card card-block card-heade">
+                <label class="input-group-addon">结算方式</label>
+                <select class="form-control" id="type" name="type" [(ngModel)]="cashsearchparams.settlementType">
+                    <option value="">所有</option>
+                    <option value="1">挂账</option>
+                    <option value="2">现结</option>
+                </select>
+            </div>
+            <div class="input-group">
+                <label class="input-group-addon">结算单号</label>
+                <input class="form-control" maxlength="20" name="settleNo" type="text" placeholder="请输入结算单号" [(ngModel)]="cashsearchparams.settlementNo">
+            </div>
+            <div class="input-group">
+                <label class="input-group-addon">车牌号</label>
+                <input class="form-control" maxlength="8" name="carNo" type="text" placeholder="请输入车牌号" [(ngModel)]="cashsearchparams.carNo">
+            </div>
+            <div class="input-group card card-block card-heade dateError">
+                <label class="input-group-addon">进厂时间</label>
+                <div>
+                    <input class="form-control" name="startTime" type="text" ngui-datetime-picker [close-on-select]="false" date-only="true"
+                        max-date="maxDate" placeholder="请选择开始时间" [(ngModel)]="cashsearchparams.startTime" (valueChanged)="timeChange()">
+                </div>
+                <label class="input-group-addon">-</label>
+                <div>
+                    <input class="form-control" name="endTime" type="text" ngui-datetime-picker [close-on-select]="false" date-only="true" max-date="maxDate"
+                        placeholder="请选择截止时间" [(ngModel)]="cashsearchparams.endTime" (valueChanged)="timeChange()">
+                </div>
+                <div class="formInfo input-group bg-danger" *ngIf="timeError">
+                    无效的进厂时间，开始时间要小于截止时间
+                </div>
+            </div>
+            <div class="input-group">
+                <button type="submit" class="btn btn-success" (click)='search()' [disabled]='notSubmit'>查询</button>
+                <button type="reset" class="btn btn-warning" (click)="reset()">重置</button>
+            </div>
+        </div>
+    </form>
+    <div class="cashier_main">
+        <div class="table-container">
+            <table class="table table-bordered text-center">
+                <thead>
+                    <tr>
+                        <th>操作</th>
+                        <th>状态</th>
+                        <th>车牌号</th>
+                        <th>结算单号</th>
+                        <th>应收金额</th>
+                        <th>结算方式</th>
+                        <th>维修类型</th>
+                        <th>预计交车时间</th>
+                        <th>车型</th>
+                        <th>送修人</th>
+                        <th>服务顾问</th>
+                        <th>支付方式</th>
+                        <th>收银时间</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr *ngFor="let item of list">
+                        <td>
+                            <button *ngIf="item.orderStatus==6" class="btn btn-sm btn-success" type="button" (click)="cashier.show();getInfoDetail(item.orderId)">收银</button>
+                            <button class="btn btn-sm btn-info" type="button" (click)="detail.show();getInfoDetail(item.orderId)">详情</button>
+                        </td>
+                        <td [ngSwitch]="item.orderStatus">
+                            <template [ngSwitchCase]="6">待收银(已结算)</template>
+                            <template [ngSwitchCase]="7">已收银</template>
+                        </td>
+                        <td>{{item.carNo}}</td>
+                        <td>{{item.settlementNo}}</td>
+                        <td>
+                            <span *ngIf="item.settlementMoney">¥</span> {{item.settlementMoney}}
+                        </td>
+                        <td>{{item.settlementType}}</td>
+                        <td>{{item.repairType}}</td>
+                        <td>{{item.estimatedDeliveryTime}}</td>
+                        <td>{{item.carModel}}</td>
+                        <td>{{item.repairName}}</td>
+                        <td>{{item.servicerName}}</td>
+                        <td>{{item.payType}}</td>
+                        <td>{{item.cashierTime}}</td>
+                    </tr>
+                </tbody>
+            </table>
+        </div>
+    </div>
+    <div class="form-group paginate">
+        <label>
+            每页显示
+            <select class="form-control select" (change)="pageChanged($event,'SELECT')">
+                <option value="10">10</option>
+                <option value="20">20</option>
+                <option value="30">30</option>
+                <option value="50">50</option>
+                <option value="100">100</option>
+            </select>
+        </label>
+        <pagination [totalItems]="totalItems" [(ngModel)]="index" [maxSize]="10" [itemsPerPage]="cashsearchparams.pageSize" [boundaryLinks]="true"
+            previousText="上一页" nextText="下一页" firstText="首页" lastText="尾页" (pageChanged)="pageChanged($event)"></pagination>
+            <label class="contorl-label">
+                跳转到<input type="number" class="form-control" min="1" [max]="maxPageSize" [(ngModel)]="choosePage">页
+            </label>
+            <button class="btn btn-default" (click)="pageChanged($event,'BUTTON')">GO</button>
+    </div>
+</div>
+
+<div bsModal #cashier="bs-modal" class="modal fade" tabindex="-1" role="dialog" aria-labelledby="myLargeModalLabel" aria-hidden="true"
+    [config]="{backdrop: 'static'}">
+    <div class="modal-dialog modal-lg">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h4 class="modal-title pull-left">收银</h4>
+                <button type="button" class="close pull-right" (click)="cashier.hide();resetMoney()" aria-label="Close">
+                    <span aria-hidden="true">&times;</span>
+                </button>
+            </div>
+            <div class="modal-body">
+                <div class="cashierInfo input-group bg-danger dis">
+                    金额不符，请核对
+                </div>
+                <div class="card">
+                    <span class="pull-left">应收金额：<span>¥ {{listDetail.cashAmountDue}}</span></span>
+                </div>
+                <div class="input-group checkout-item">
+                    <span class="input-group-addon" id="" style="width:150px;">现金(元)</span>
+                    <input class="form-control ng-untouched ng-pristine ng-valid" type="text" (blur)="setCheMoney(1)" (focus)="resetCheMoney(1)"
+                        [(ngModel)]="cheMoney.cashMoney">
+                </div>
+                <div class="input-group checkout-item">
+                    <span class="input-group-addon" id="" style="width:150px;">微信(元)</span>
+                    <input class="form-control ng-untouched ng-pristine ng-valid" type="text" (blur)="setCheMoney(2)" (focus)="resetCheMoney(2)"
+                        [(ngModel)]="cheMoney.wechatMoney">
+                </div>
+                <div class="input-group checkout-item">
+                    <span class="input-group-addon" id="" style="width:150px;">支付宝(元)</span>
+                    <input class="form-control ng-untouched ng-pristine ng-valid" type="text" (blur)="setCheMoney(3)" (focus)="resetCheMoney(3)"
+                        [(ngModel)]="cheMoney.alipayMoney">
+                </div>
+                <div class="input-group checkout-item">
+                    <span class="input-group-addon" id="" style="width:150px;">银行卡(元)</span>
+                    <input class="form-control ng-untouched ng-pristine ng-valid" type="text" (blur)="setCheMoney(4)" (focus)="resetCheMoney(4)"
+                        [(ngModel)]="cheMoney.bankMoney">
+                </div>
+                <div class="input-group checkout-item">
+                    <span class="input-group-addon" id="" style="width:150px;">储值卡(元)</span>
+                    <input class="form-control ng-untouched ng-pristine ng-valid" type="text" (blur)="setCheMoney(5)" (focus)="resetCheMoney(5)"
+                        [(ngModel)]="cheMoney.cardMoney">
+                </div>
+                <div class="input-group checkout-item">
+                    <span class="input-group-addon" id="" style="width:150px;">支票(元)</span>
+                    <input class="form-control ng-untouched ng-pristine ng-valid" type="text" (blur)="setCheMoney(6)" (focus)="resetCheMoney(6)"
+                        [(ngModel)]="cheMoney.checkMoney">
+                </div>
+                <div class="input-group checkout-item">
+                    <span class="input-group-addon" id="" style="width:150px;">索赔(元)</span>
+                    <input class="form-control ng-untouched ng-pristine ng-valid" type="text" (blur)="setCheMoney(7)" (focus)="resetCheMoney(7)"
+                        [(ngModel)]="cheMoney.claimMoney">
+                </div>
+                <div class="input-group checkout-item">
+                    <span class="input-group-addon" id="" style="width:150px;">保险理赔(元)</span>
+                    <input class="form-control ng-untouched ng-pristine ng-valid" type="text" (blur)="setCheMoney(8)" (focus)="resetCheMoney(8)"
+                        [(ngModel)]="cheMoney.insuranceMoney">
+                </div>
+                <div class="text-center"><button aria-label="Close" class="btn btn-primary mt-1" type="button" (click)="total=listDetail.amountDue;surecashier()">确定收银</button></div>
+            </div>
+        </div>
+    </div>
+    </div>
+    <div bsModal #detail="bs-modal" class="modal fade" tabindex="-1" role="dialog" aria-labelledby="myLargeModalLabel" aria-hidden="true"
+        [config]="{backdrop: 'static'}">
+        <div class="modal-dialog modal-lg">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h4 class="modal-title pull-left">维修收银详情</h4>
+                    <button type="button" class="close pull-right" (click)="detail.hide()" aria-label="Close">
+                    <span aria-hidden="true">&times;</span>
+                </button>
+                </div>
+                <div class="modal-body">
+                    <div>
+                        <table class="table table-order-info table-bordered">
+                            <tbody>
+                                <tr>
+                                    <td class="fixed-width">车牌号</td>
+                                    <td>{{listDetail.carNo}}</td>
+                                    <td class="fixed-width">车型</td>
+                                    <td>{{listDetail.carModel}}</td>
+                                </tr>
+                                <tr>
+                                    <td class="fixed-width">VIN</td>
+                                    <td>{{listDetail.vin}}</td>
+                                    <td class="fixed-width">送修人</td>
+                                    <td>{{listDetail.repairName}}</td>
+                                </tr>
+                                <tr>
+                                    <td class="fixed-width">送修人手机</td>
+                                    <td>{{listDetail.repairMobile}}</td>
+                                    <td class="fixed-width">工单号</td>
+                                    <td>{{listDetail.orderNo}}</td>
+                                </tr>
+                                <tr>
+                                    <td class="fixed-width">车主</td>
+                                    <td>{{listDetail.name}}</td>
+                                    <td class="fixed-width">车主电话</td>
+                                    <td>{{listDetail.mobile}}</td>
+                                </tr>
+                                <tr>
+                                    <td class="fixed-width">预计交车时间 </td>
+                                    <td>{{listDetail.estimatedDeliveryTime}}</td>
+                                    <td class="fixed-width">维修技师</td>
+                                    <td>{{technician}}</td>
+                                </tr>
+                                <tr>
+                                    <td class="fixed-width">服务顾问</td>
+                                    <td>{{listDetail.servicerName}}</td>
+                                    <td class="fixed-width">介绍人</td>
+                                    <td>{{listDetail.recommender}}</td>
+                                </tr>
+                                <tr>
+                                    <td class="fixed-width">介绍人电话</td>
+                                    <td>{{listDetail.recommenderMobile}}</td>
+                                    <td class="fixed-width">维修类型</td>
+                                    <td>{{listDetail.repairTypeDesc}}</td>
+                                </tr>
+                                <tr>
+                                    <td class="fixed-width">结算方</td>
+                                    <td>{{listDetail.repairName}}</td>
+                                    <td class="fixed-width">结算单号</td>
+                                    <td>{{detailSettlementDto.settlementNo}}</td>
+                                </tr>
+                                <tr>
+                                    <td class="fixed-width">结算员</td>
+                                    <td>{{detailSettlementDto.settlementUserName}}</td>
+                                    <td class="fixed-width">结算时间</td>
+                                    <td>{{detailSettlementDto.settlementTime}}</td>
+                                </tr>
+                                <tr>
+                                    <td class="fixed-width">进场时间</td>
+                                    <td>{{listDetail.deliveryTime}}</td>
+                                    <td class="fixed-width">进场里程（KM）</td>
+                                    <td>{{listDetail.mileage}}</td>
+                                </tr>
+                                <tr>
+                                    <td class="fixed-width">出场里程（KM）</td>
+                                    <td>{{listDetail.factoryMileage}}</td>
+                                    <td class="fixed-width">出场时间</td>
+                                    <td>{{listDetail.deliveryTime}}</td>
+                                </tr>
+                            </tbody>
+                        </table>
+                        <tabset>
+                            <tab class="tab-pane active">
+                                <template tabHeading>
+                                    <i aria-hidden="true" class="fa fa-clone mr-2"></i>维修项目
+                                </template>
+                                <table class="table table-bordered text-center">
+                                    <thead>
+                                        <tr>
+                                            <th>项目名称</th>
+                                            <th>维修工时</th>
+                                            <th>工时单价(元)</th>
+                                            <th>金额(元)</th>
+                                            <th>折扣率(%)</th>
+                                        </tr>
+                                    </thead>
+                                    <tbody>
+                                        <tr *ngFor="let item of deteilProjectDto">
+                                            <td style="position:relative;">{{item.projectName}}
+                                                <span class="print-hidden accept-stamp"></span>
+                                            </td>
+                                            <td>{{item.repairHour}}</td>
+                                            <td class="text-right">{{item.hourPrice}}</td>
+                                            <td class="text-right">{{item.totalCount}}</td>
+                                            <td>{{item.discount}}</td>
+                                        </tr>
+                                    </tbody>
+                                </table>
+                            </tab>
+                            <tab *ngIf="partcheck">
+                                <template tabHeading>
+                                    <i aria-hidden="true" class="fa fa-wrench mr-2"></i>维修配件
+                                </template>
+                                <table class="table table-bordered text-center">
+                                    <thead>
+                                        <tr>
+                                            <th>维修工项</th>
+                                            <th>配件名称</th>
+                                            <th>品牌</th>
+                                            <th>规格型号</th>
+                                            <th>数量</th>
+                                            <th>单价(元)</th>
+                                            <th>金额(元)</th>
+                                        </tr>
+                                    </thead>
+                                    <tbody>
+                                        <tr *ngFor="let item of detailrepairPackDtos">
+                                            <td>{{item[0].repairProject}}</td>
+                                            <td>{{item[0].partsName}}</td>
+                                            <td>{{item[0].partsBrandName}}</td>
+                                            <td>{{item[0].partsSpec}}</td>
+                                            <td>{{item[0].count}}</td>
+                                            <td class="text-right">{{item[0].price}}</td>
+                                            <td class="text-right">{{item[0].totalPrice}}</td>
+                                        </tr>
+                                    </tbody>
+                                </table>
+                            </tab>
+                        </tabset>
+                        <div class="card">
+                            <span>工时费：<span>¥ {{listDetail.totalHourCost}}</span></span>
+                            <span>材料费：<span>¥ {{listDetail.totalMaterialsCost}}</span></span>
+                            <span>优惠：<span>¥ {{listDetail.totalDiscountPrice}}</span></span>
+                            <span class="pull-right">应收金额：<span>¥ {{listDetail.cashAmountDue}}</span></span>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+        </div>

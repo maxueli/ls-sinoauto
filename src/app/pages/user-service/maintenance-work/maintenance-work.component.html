@@ -1,0 +1,216 @@
+<!--component html goes here -->
+<div id="work" @flyIn>
+    <h4>维修派工</h4>
+    <form>
+        <div class="form-inline">
+            <input class="form-control mr-2" name="keyword" [(ngModel)]="workerparams.condition" placeholder="请输入车牌号/工单号">
+            <button class="btn btn-success" type="button" (click)="search()">查询</button>
+        </div>
+        <div class="input-group status">
+            <label class="input-group-addon">工单状态</label>
+            <div class="form-control">
+                <div class="form-check-box">
+                    <label>
+                        <input type="checkbox" name="allCashier" (change)="ischeckAll()" value="">全部
+                    </label>
+                </div>
+                <div class="form-check-box">
+                    <label>
+                        <input class="form-check-input" type="checkbox" name="cashier" value="1" (change)="search()">待派工
+                    </label>
+                </div>
+                <div class="form-check-box">
+                    <label>
+                        <input class="form-check-input" type="checkbox" name="cashier" value="2" (change)="search()">待开工（已指派）
+                    </label>
+                </div>
+                <div class="form-check-box">
+                    <label>
+                        <input class="form-check-input" type="checkbox" name="cashier" value="3" (change)="search()">待完工（已开工）
+                    </label>
+                </div>
+            </div>
+        </div>
+    </form>
+    <div class="work_main">
+        <div class="table-container">
+            <table class="table table-bordered text-center">
+                <thead>
+                    <tr>
+                        <th>操作</th>
+                        <th>状态</th>
+                        <th>车牌号</th>
+                        <th>工单号</th>
+                        <th>维修技师</th>
+                        <th>维修类型</th>
+                        <th>转派</th>
+                        <th>进场时间</th>
+                        <th>预计交车时间</th>
+                        <th>超时</th>
+                        <th>车型</th>
+                        <th>VIN</th>
+                        <th>送修人</th>
+                        <th>送修人电话</th>
+                        <th>服务顾问</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr *ngFor="let item of list">
+                        <td>
+                            <button class="btn btn-sm btn-info" (click)="workModal.show();getDetailInfo(item.orderId)">派工</button>
+                            <button class="btn btn-sm btn-danger" (click)="complete.show();statusFalg=item.orderStatus;finished(item.orderId)">完工</button>
+                        </td>
+                        <td [ngSwitch]="item.orderStatus">
+                            <template [ngSwitchCase]="1">待派工</template>
+                            <template [ngSwitchCase]="2">待开工(已指派)</template>
+                            <template [ngSwitchCase]="3">待完工(已开工)</template>
+                        </td>
+                        <td>{{item.carNo}}</td>
+                        <td>{{item.orderNo}}</td>
+                        <td>{{item.technicianName}}</td>
+                        <td>{{item.repairType}}</td>
+                        <td>{{item.turnToSendName}}</td>
+                        <td>{{item.createTime}}</td>
+                        <td>{{item.estimatedDeliveryTime}}</td>
+                        <td class="overTime">{{item.overtime}}</td>
+                        <td>{{item.carModelName}}</td>
+                        <td>{{item.vin}}</td>
+                        <td>{{item.repairName}}</td>
+                        <td>{{item.repairMobile}}</td>
+                        <td>{{item.serviceName}}</td>
+                    </tr>
+                </tbody>
+            </table>
+        </div>
+    </div>
+    <div class="form-group paginate">
+        <label>
+            每页显示
+            <select class="form-control select" (change)="pageChanged($event,'SELECT')">
+                <option value="10">10</option>
+                <option value="20">20</option>
+                <option value="30">30</option>
+                <option value="50">50</option>
+                <option value="100">100</option>
+            </select>
+        </label>
+        <pagination [totalItems]="totalItems" [(ngModel)]="index" [maxSize]="10" [itemsPerPage]="workerparams.pageSize" [boundaryLinks]="true"
+            previousText="上一页" nextText="下一页" firstText="首页" lastText="尾页" (pageChanged)="pageChanged($event)"></pagination>
+            <label class="contorl-label">
+                跳转到<input type="number" class="form-control" min="1" [max]="maxPageSize" [(ngModel)]="choosePage">页
+            </label>
+            <button class="btn btn-default" (click)="pageChanged($event,'BUTTON')">GO</button>
+    </div>
+</div>
+
+<div bsModal #workModal="bs-modal" class="modal fade" tabindex="-1" role="dialog" aria-labelledby="myLargeModalLabel" aria-hidden="true"
+    [config]="{backdrop: 'static'}">
+    <div class="modal-dialog modal-lg">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h4 class="modal-title pull-left">派工详情</h4>
+                <button type="button" class="close pull-right" (click)="workModal.hide();closeReset()" aria-label="Close">
+          <span aria-hidden="true">&times;</span>
+        </button>
+            </div>
+            <div class="modal-body">
+                <tabset>
+                    <tab>
+                        <template tabHeading>
+                            <i aria-hidden="true" class="fa fa-clone mr-2"></i>维修项目
+                        </template>
+                        <table class="table table-bordered mb-3">
+                            <thead>
+                                <tr>
+                                    <th>
+                                        <input type="checkbox" name="alRepaiitem" (change)="isAllPro()">
+                                    </th>
+                                    <th>指派维修技师</th>
+                                    <th>转派</th>
+                                    <th>项目名称</th>
+                                    <th>维修工时</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                <tr *ngFor="let item of repairOrderInfoDtoList">
+                                    <td>
+                                        <input type="checkbox" [value]="item.repairProjectId+'_'+item.isTransfer+'_'+item.isAllot" name="repaiitem" [disabled]="item.isTransfer==1||item.isPass"
+                                            [checked]="selections[w]" (change)="handle($event,item)" />
+                                    </td>
+                                    <td>{{item.assignTechnicanName}}</td>
+                                    <td>{{item.turnToSendName}}</td>
+                                    <td>
+                                        {{item.projectName}}
+                                        <label class="append-stamp" *ngIf="item.isExtra">增项</label>
+                                        <span class="accept-stamp" *ngIf="item.isPass"></span>
+                                    </td>
+                                    <td>{{item.repairHour}}</td>
+                                </tr>
+                            </tbody>
+                        </table>
+                        <div class="worker">
+                            <div class="popModal1 dis">
+                                <ul>
+                                    <li *ngFor="let item of sendToListInfo">
+                                        <input class="form-check-input" type="radio" name="sendToItem" value={{item.userId}}>                                        {{item.userName}}
+                                    </li>
+                                </ul>
+                                <p class="workDetail pull-right">
+                                    <button type="button" class="btn-sm btn-success mr-2" (click)="sureSend()">确定</button>
+                                    <button type="button" class="btn-sm btn-default" (click)="cancle(1)">取消</button>
+                                </p>
+                            </div>
+                            <button type="button" class="btn btn-success mr-2" (click)="showMsg(1);sendToList()" [disabled]="disSendBtn">
+                                指派
+                            </button>
+                            <div class="popModal2 dis">
+                                <ul>
+                                    <li *ngFor="let item of turnToListInfo">
+                                        <input class="form-check-input" type="radio" name="turnToItem" value={{item.userId}}>                                        {{item.userName}}
+                                    </li>
+                                </ul>
+                                <p class="workDetail pull-right">
+                                    <button type="button" class="btn-sm btn-success mr-2" (click)="sureTurn()">确定</button>
+                                    <button type="button" class="btn-sm btn-default" (click)="cancle(2)">取消</button>
+                                </p>
+                            </div>
+                            <button type="button" class="btn btn-default" (click)="showMsg(2);turnToList()" [disabled]="disBtn">
+                                转派
+                            </button>
+                        </div>
+                    </tab>
+                </tabset>
+            </div>
+        </div>
+    </div>
+    </div>
+
+    <div bsModal #complete="bs-modal" class="modal fade complete" tabindex="-1" role="dialog" aria-labelledby="mySmallModalLabel"
+        aria-hidden="true" [config]="{backdrop: 'static'}">
+        <div class="modal-dialog modal-sm">
+            <div class="modal-content">
+                <div *ngIf="statusFalg==2||statusFalg==3" class="modal-body">
+                    <button type="button" class="close pull-right" aria-label="Close" (click)="complete.hide()">
+                        <span aria-hidden="true">&times;</span>
+                    </button>
+                    <div>
+                        <div class="icon">?</div>
+                        <div class="content">您确定要完工吗？</div>
+                        <div class="infoButton">
+                            <button type="button" class="btn btn-primary" (click)="finishPro()">确定</button>
+                            <button type="button" class="btn btn-default" (click)="complete.hide()">取消</button>
+                        </div>
+                    </div>
+                </div>
+                <div *ngIf="statusFalg==1" class="modal-body">
+                    <div>
+                        <div class="icon2">!</div>
+                        <div class="content">此工单还没指派维修技师，不可以执行完工操作。请先指派维修技师</div>
+                        <div class="infoButton">
+                            <button type="button" class="btn btn-primary" (click)="complete.hide()">确定</button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+        </div>

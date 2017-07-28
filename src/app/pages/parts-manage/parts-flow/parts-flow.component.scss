@@ -1,0 +1,198 @@
+// component css goes here
+#parts_flow{
+    width: 98%;
+    padding-left: 20px;
+     h4{
+        border-bottom: 1px solid #eceeef;
+        padding-bottom: 15px;
+    }
+    .flow_top{
+        border-bottom: 1px solid #eceeef;
+        padding-bottom:10px;
+        .col-md-2{
+            width: 20%;
+            padding-left:0px;
+            position: relative;
+             .input-group{
+                .form-control{
+                    height: 40px;
+                }
+                .btn{
+                    border: none;
+                    padding: 6px 30px;
+                }
+            }
+            .flowhideinfo{
+                position: absolute;
+                top: 40px;
+                left: 0px;
+                background: #fff;
+                z-index: 999;
+                .paginate{
+                    padding: 0px!important;
+                }
+                .table{
+                    margin-bottom: 0px!important;
+                    tr th{
+                        text-align: center;
+                        white-space: nowrap;
+                        color: #333;
+                        font-weight: bold!important;
+                    }
+                    tr td{
+                         white-space: nowrap;
+                         text-align: center;
+                        cursor: pointer;
+                    }
+                }
+            }
+        }
+       
+    }
+    .flow_content{
+      
+        .flow_content_t{
+            padding: 20px 0px 20px 235px;
+            border-bottom: 1px solid #eceeef; 
+            .flow_info{
+                p{
+                    float: left;
+                    width: 30%;
+                    color: #000;
+                    font-size: 16px;
+                }
+            }
+        }
+        .flow_content_c{
+            padding: 20px 0px 0px;
+            border-bottom: 1px solid #eceeef;
+            .col-md-4{
+                padding-left: 0px;
+                .input-group{
+                    .form-control{
+                        height: 40px;
+                    }
+                }
+            }
+        }
+        .flow_content_b{
+            margin-top: 20px;
+            position: relative;
+
+
+            .flowbottom{
+                margin-bottom: 10px;
+                li{
+                    float: left;
+                    list-style:none; 
+                    width: 150px;
+                    height: 40px;
+                    line-height: 40px;
+                    background: #ddd;
+                    margin-right: 10px;
+                    border-radius: 4px;
+                    font-size: 16px;
+                     color: #000!important;
+                    cursor: pointer;
+                    position: relative;
+                    z-index: 1;
+                    i{
+                        padding: 0px 4px;
+                        color: #fff;
+                        background: #636c72;
+                        margin-left: 110px;
+                        border-radius: 4px;
+                        font-style: normal;
+                        z-index: 5;
+                        position: relative;
+                        text-align: right;
+                    }
+                    .center{
+                        display: block;
+                        width: 100%;
+                        text-align: center;
+                        border-radius: 4px;
+                        color: #fff;
+                        font-size: 16px;
+                        position: absolute;
+                        top: 0px;
+                        left: 0px;
+                        z-index: 3;
+
+                    }
+                    .bg{
+                        display: block;
+                        width: 100%;
+                        height: 100%;
+                        background: #286090;
+                        position: absolute;
+                        top: 0px;
+                        left: 0px;
+                        z-index: 2;
+                        border-radius: 4px;
+                        color: #fff!important;
+                    }
+                }
+                .flowbottombg{
+                    background-color: #27b394 !important;
+                    color: #fff!important;
+                }
+            }
+            .faliao{
+                color: red;
+                position: absolute;
+                top: 0px;
+                left: 0px;
+                padding: 10px 15px;
+            }
+            .xiaosou{
+                color: blue;
+                position: absolute;
+                top: 0px;
+                left: 91px;
+                padding: 10px 15px;
+            }
+            .caigou{
+                color:greenyellow;
+                position: absolute;
+                top: 0px;
+                left: 182px;
+                padding: 10px 15px;
+            }
+            .neibu{
+                color:green;
+                position: absolute;
+                top: 0px;
+                left: 271px;
+                padding: 10px 15px;
+            }
+            a{
+                font-size: 18px;
+                color: #000;
+                font-weight: bold;
+            }
+            .table tr th{
+                text-align: center;
+                background: #f3f3f4!important;
+                padding: 12px 0px!important;
+                background: #f3f3f4!important;
+                font-size: 16px;
+                font-weight: 500;
+                color: #727171;
+            }
+            .table tr td{
+                color: #292b2c;
+            }
+        }
+    }
+    .flow_buttom{
+        border-top:1px solid #eceeef;
+        padding-top: 20px;
+        .btn{
+            border: none;
+            color: #292b2c;
+            background-color: #dcdddd !important;
+            padding: 8px 30px;
+        }
+    }
+}

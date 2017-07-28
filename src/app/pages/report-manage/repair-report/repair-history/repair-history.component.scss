@@ -1,0 +1,223 @@
+// component css goes here
+#repair_history {
+    width: 98%;
+    padding-left: 20px;
+    h4 {
+        border-bottom: 1px solid #eceeef;
+        line-height: 40px;
+    }
+    .history_top {
+        margin-bottom: 10px;
+        .col-md-2 {
+            padding-left: 0px;
+            position: relative;
+            .historyhide{
+                position: absolute;
+                top: 40px;
+                left: 0px;
+                z-index: 10;
+                background: #fff;
+                .table{
+                    td{
+                        cursor: pointer;
+                    }
+                    tfoot{
+                        tr td{
+                            padding: 0px!important;
+                        }
+                    }
+                }
+            }
+        }
+        .col-md-4 {
+            padding-left: 0px;
+        }
+         .input-group{
+            .form-control{
+                height: 40px;
+            }
+         }  
+    }
+    .input_top_h {
+        .col-md-2 {
+            padding-left: 0px;
+        }
+        .input-group{
+            .form-control{
+                height: 40px;
+            }
+            .btn{
+                border: none;
+                padding: 7px 30px;
+            }
+        }
+    }
+    .history_main {
+        .history_main_w {
+            width: 100%;
+            max-height: 400px;
+            border: 1px solid rgb(236, 238, 239);
+            overflow: auto;
+            .table {
+                width: 120%!important;
+                max-width: 120%!important;
+                margin-bottom:0px!important;
+                .Total td {
+                    font-weight: bold;
+                }
+                th {
+                    text-align: center;
+                    background: #f3f3f4!important;
+                    font-size: 16px!important;
+                    font-weight: 500!important;
+                    color: #727171;
+                    vertical-align: middle !important;
+                }
+                td {
+                    padding: 5px 0px;
+                    vertical-align: middle !important;
+                    color: #292b2c;
+                    .btn{
+                        border: none;
+                        width: 75px;
+                        padding: 6px 12px;
+                    }
+                }
+            }
+        }
+    }
+    .inventory_buttom {
+        border-bottom: 1px solid #ccc;
+        .showpag {
+            display: inline-block;
+            padding-top: 30px;
+            margin-right: 10px;
+        }
+        .form-group {
+            display: inline-block;
+            margin-top: 20px;
+            margin-right: 10px;
+            .form-control {
+                height: 40px;
+            }
+        }
+        .input_group {
+            display: inline-block;
+            margin-top: 20px;
+            margin-left: 10px;
+            .form-control {
+                display: inline-block;
+                width: 80px;
+                height: 40px;
+            }
+        }
+        .pag {
+            display: inline-block;
+            .pagination {
+                li {
+                    a {
+                        color: #000;
+                        padding: 10px 15px;
+                    }
+                }
+            }
+        }
+    }
+    .history_footer {
+        .btn {
+            margin-top: 15px;
+            padding: 8px 25px;
+        }
+    }
+}
+
+.modal {
+    .modal-header{
+        .close{
+            border-radius: 100% !important;
+            padding: 0px 3px 2px !important;
+            border: 2px solid #727171 !important;
+            outline: none;
+        }
+    }
+    .table {
+        th {
+            text-align: center;
+            background: #f3f3f4;
+            padding: 12px 0px;
+            border: 1px solid #eceeef;
+        }
+        td {
+            vertical-align: middle;
+            padding: 10px 0px;
+        }
+    }
+    .repair_his_bill {
+        padding: 10px;
+        border: 1px solid #ccc;
+        border-radius: 8px;
+        margin-top: 10px;
+        h3 {
+            font-size: 20px;
+        }
+        .table {
+            .nonB td {
+                border: none!important;
+                padding: 20px 40px;
+            }
+        }
+    }
+    .btn {
+        display: block;
+        margin: 10px auto;
+        padding: 8px 30px;
+    }
+}
+.printgoods{
+    display: none;
+    .printtop{
+        margin-top: 10px;
+        border-top: 2px solid #ccc;
+        border-bottom: 1px solid #ccc;
+        .printtop-row{
+            margin: 5px 0px;
+            p{
+                width: 30%;
+                display: inline-block;
+                margin-right: 20px;
+            }
+        }
+    }
+    .printcenter{
+         border-bottom: 1px solid #ccc;
+          .printtop-row{
+            margin: 5px 0px;
+            p{
+                width: 30%;
+                display: inline-block;
+                margin-right: 20px;
+            }
+        }
+    }
+    .printbuttom{
+        .repair_his_bill {
+           
+            border-radius: 8px;
+            margin-top: 10px;
+            h3 {
+                font-size: 20px;
+            }
+            .table {
+                .nonB td {
+                    border: none!important;
+                    padding: 20px 40px;
+                }
+            }
+        }
+    }
+    .printFooter{
+        span{
+            margin-right: 40px;
+        }
+    }
+}

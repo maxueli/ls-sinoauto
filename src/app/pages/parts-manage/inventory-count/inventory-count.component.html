@@ -1,0 +1,167 @@
+<!--component html goes here -->
+<div id="parts_price" @flyIn>
+    <h4 clas="parts_title">盘点清单</h4>
+    <div class="parts_top">
+        <form action="">
+            <div class="row">
+                <div class="col-md-2">
+                    <div class="input-group">
+                        <span class="input-group-addon" id="sizing-addon2">盘点单号</span>
+                        <input type="text" class="form-control" placeholder="请输入盘点单号" [(ngModel)]="inventorysearch.inventoryCode" name="partsCode">
+                    </div>
+                </div>
+                <div class="col-md-4">
+                    <div class="input-group">
+                        <span class="input-group-addon" id="sizing-addon2">生成日期</span>
+                        <input class="form-control" placeholder="请选择开始日期" [(ngModel)]="inventorysearch.beginTime" (valueChanged)="timeChange()" name="beginTime" ngui-datetime-picker
+                            [close-on-select]="false">
+                        <span class="input-group-addon" id="sizing-addon2">-</span>
+                        <input class="form-control" placeholder="请选择结束日期" [(ngModel)]="inventorysearch.endTime" (valueChanged)="timeChange()" name="endTime" ngui-datetime-picker
+                            [close-on-select]="false">
+                    </div>
+                    <div class="formInfo input-group bg-danger" *ngIf="timeError">
+                        无效的查询时间，开始时间要小于结束时间
+                    </div>
+                </div>
+                <div class="col-md-2">
+                    <div class="input-group">
+                        <span class="input-group-addon" id="sizing-addon2">操作人</span>
+                        <input type="text" class="form-control" placeholder="请输入操作人" [(ngModel)]="inventorysearch.operUserName" name="operUserName">
+                    </div>
+                </div>
+
+                <div class="form-group mb-2">
+                    <button class="btn btn-primary" type="submit" (click)="inventorySearc()" [disabled]='notSubmit'>查询</button>
+                </div>
+
+            </div>
+        </form>
+    </div>
+    <div class="parts_main">
+        <div class="inventort_wrap">
+            <table class="table table-bordered text-center">
+                <thead>
+                    <tr>
+                        <th>操作</th>
+                        <th>盘点单号</th>
+                        <th>生成时间</th>
+                        <th>仓库</th>
+                        <th>操作人</th>
+
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr *ngFor="let item of list">
+                        <td><button class="btn btn-info" type="text" (click)="detail(item.depotId,item.inventoryCode)">详情</button></td>
+                        <td>{{item.inventoryCode}}</td>
+                        <td>{{item.createTime}}</td>
+                        <td>{{item.depotName}}</td>
+                        <td>{{item.operUserName}}</td>
+                    </tr>
+                </tbody>
+            </table>
+        </div>
+    </div>
+    <div class="inventory_buttom clearfix">
+        <div class="form-group paginate">
+            <label>
+                每页显示
+                <select class="form-control select" (change)="pageChanged($event,'SELECT')">
+                    <option value="10">10</option>
+                    <option value="20">20</option>
+                    <option value="30">30</option>
+                    <option value="50">50</option>
+                    <option value="100">100</option>
+                </select>
+            </label>
+            <pagination [totalItems]="totalItems" [(ngModel)]="index" [maxSize]="10" [itemsPerPage]="inventoryPatams.pageSize" [boundaryLinks]="true"
+                previousText="上一页" nextText="下一页" firstText="首页" lastText="尾页" (pageChanged)="pageChanged($event)"></pagination>
+            <label class="contorl-label">
+                跳转到<input type="number" class="form-control" min="1" [max]="maxPageSize" [(ngModel)]="choosePage">页
+            </label>
+            <button class="btn btn-default" (click)="pageChanged($event,'BUTTON')">GO</button>
+        </div>
+    </div>
+    <div class="inventory_foot">
+        <button type="button" class="btn btn-primary" (click)="lgModal.show();">
+           创建盘点单
+        </button>
+    </div>
+</div>
+<!--创建盘点单 模态框 start-->
+<div bsModal #lgModal="bs-modal" class="modal fade" tabindex="-1" role="dialog" aria-labelledby="myLargeModalLabel" aria-hidden="true">
+    <div class="modal-dialog modal-lg">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h4 class="modal-title pull-left"> 创建盘点清单</h4>
+                <button type="button" class="close pull-right" (click)="lgModal.hide()" aria-label="Close">
+          <span aria-hidden="true">&times;</span>
+        </button>
+            </div>
+            <div class="modal-body">
+                <div class="modal_main clearfix">
+                    <div class="inventory_modal">
+                        <div class="col-md-5">
+
+                            <div class="input-group">
+                                <span class="input-group-addon" id="sizing-addon2">仓库</span>
+                                <select class="form-group" name="roleId" class="form-control" [(ngModel)]="searchDepotDetail.depotId">
+                                  <option *ngFor="let item of depotlist;"  [value]="item.depotId" >{{item.depotName}}</option>
+                                </select>
+                            </div>
+                        </div>
+                        <div class="form-group">
+                            <button class="btn btn-primary" type="submit" (click)="Establish()">查询</button>
+                        </div>
+                        <div class="in_content">
+                            <table class="table table-bordered text-center">
+                                <thead>
+                                    <tr>
+                                        <th>仓库</th>
+                                        <th>库位</th>
+                                        <th>配件编码</th>
+                                        <th>配件分类</th>
+                                        <th>配件名称</th>
+                                        <th>品牌</th>
+                                        <th>规格型号</th>
+                                        <th>单位</th>
+                                        <th>成本</th>
+                                        <th>库存量</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    <tr *ngFor="let item of dateils">
+                                        <td>{{item.depotName}}</td>
+                                        <td>{{item.depotPosName}}</td>
+                                        <td>{{item.partsCode}}</td>
+                                        <td>{{item.partsTypeName}}</td>
+                                        <td>{{item.partsName}}</td>
+                                        <td>{{item.partsBrandName}}</td>
+                                        <td>{{item.partsSpec}}</td>
+                                        <td>{{item.partsUnit}}</td>
+                                        <td>{{item.totalCost}}</td>
+                                        <td>{{item.inventory}}</td>
+                                    </tr>
+                                    <tr *ngIf="dateilLength==0">
+
+                                        <td colspan="10">
+                                            暂无数据.......
+                                        </td>
+                                    </tr>
+                                </tbody>
+                            </table>
+                        </div>
+                        <hr>
+                        <div class="button clearfix">
+                            <button class="btn btn-primary" type="submit" (click)="Generate()">生成盘点清单</button>
+                            <button class="btn btn-default" type="reset" (click)="lgModal.hide()">取消</button>
+                        </div>
+
+                    </div>
+
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+<!--创建盘点单 模态框 end-->

@@ -1,0 +1,211 @@
+// component css goes here
+#parts-sell{
+    width: 98%;
+    padding-left: 20px;
+    h4{
+        border-bottom: 1px solid #eceeef;
+        line-height: 40px;
+    }
+    .history_top{
+        margin-bottom: 10px;
+        .col-md-3{
+            padding-left: 0px;
+        }
+          .bianma{
+                    position: relative;
+                    .stockhideinfo{
+                    position: absolute;
+                    top: 35px;
+                    left: 0px;
+                    background: #fff;
+                    z-index: 999;
+                    .paginate{
+                        padding: 0px;
+                    }
+                    .table{
+                        margin-bottom: 0px!important;
+                        
+                        tr th{
+                            text-align: center;
+                            white-space: nowrap;
+                            color: #333;
+                            font-weight: bold!important;
+                        }
+                        tr td{
+                            white-space: nowrap;
+                            text-align: center;
+                            padding: 5px 20px;
+                            cursor: pointer;
+                            
+                        }
+                    }
+                    .stocklist{
+                        width: 362px;
+                        border: 1px solid #ccc;
+                        border-radius: 4px;
+                        background: #fff;
+                        li{
+                            border-bottom: 1px solid #ccc;
+                            line-height: 35px;
+                            padding-left: 15px;
+                            cursor: pointer;
+                        }
+                            li:hover{
+                                background: #f5f5f5;
+                            }
+                    } 
+                }
+            }
+        .col-md-4{
+            padding-left: 0px;
+        
+        }
+         .input-group{
+            .form-control{
+                height: 40px;
+            }
+         }    
+    }
+     .input_top_h{
+        .col-md-2{
+            padding-left: 0px;
+            
+        }
+         .input-group{
+            .form-control{
+                height: 40px;
+            }
+            .btn{
+                border: none;
+                padding: 7px 30px;
+            }
+        }
+    }
+    .history_main{
+        .red{
+            color: red;
+        }
+        .history_main_w{
+            width: 100%;
+            max-height: 470px;
+            border: 1px solid rgb(236, 238, 239);
+            overflow: auto;
+            .table{
+                 margin-bottom: 0px!important;
+                 .Total td{
+                    font-weight: bold;
+                }
+                th{
+                    text-align: center;
+                    background: #f3f3f4!important;
+                    font-size: 16px!important;
+                    font-weight: 500!important;
+                    color: #727171;
+                    vertical-align: middle !important;
+                }
+                td{
+                    padding: 5px 0px;
+                     color: #292b2c;
+                    vertical-align: middle !important;
+                    .btn{
+                        border: none;
+                        width: 75px;
+                        padding: 6px 12px;
+                    }
+                }
+
+            }
+        }
+    }
+    .inventory_buttom{
+        border-bottom:1px solid #ccc;
+        .showpag{
+            display: inline-block;
+            padding-top: 30px;
+            margin-right: 10px;
+          
+        }
+        .form-group{
+            display: inline-block;
+            margin-top: 20px;
+            margin-right: 10px;
+            .form-control{
+                height: 40px;
+            }
+        }
+        .input_group{
+            display: inline-block;
+           
+            margin-top: 20px;
+           
+            margin-left: 10px;
+            .form-control{
+                display: inline-block;
+                width: 80px;
+                height: 40px;
+            }
+        }
+        .pag{
+            display: inline-block;
+            .pagination{
+                li{
+                    a{
+                        color: #000;
+                        padding: 10px 15px;
+                    }
+                }
+            }
+        }
+        
+    }
+    .history_footer{
+        .btn{
+            margin-top:15px;
+            padding: 8px 25px;
+        }
+    }
+}
+.modal{
+    .modal-header{
+        .close{
+            border-radius: 100%!important;
+            padding: 0px 3px 2px!important;
+            border: 2px solid #727171!important;
+            outline: none;
+            .times{
+                font-weight: 700;
+                color: #000;
+            }
+        }
+    }
+    .repair_his_bill{
+        width: 100%;
+        overflow-x: scroll;
+        .table{
+             width: 110%!important;
+             min-width: 110%!important;
+             margin-bottom: 0px!important;
+             th{
+                text-align: center;
+                background: #f3f3f4;
+                font-size: 16px;
+                font-weight: 500;
+                color: #727171;
+                border-color: #dcdddd;
+             }
+        }
+    }
+    .button{
+        .btn{
+            display: block;
+            padding: 8px 30px;
+            margin: 10px auto;
+        }
+    }
+}
+.printgoods{
+    display: none;
+    .printContnet{
+        margin-top: 10px;
+    }
+}

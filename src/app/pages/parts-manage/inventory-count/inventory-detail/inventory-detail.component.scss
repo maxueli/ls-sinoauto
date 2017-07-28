@@ -1,0 +1,53 @@
+#parts_detail{
+    width: 98%;
+    padding-left: 20px;
+    h3{
+        border-bottom: 1px solid #eceeef;
+        padding-bottom: 15px;
+    }
+    .parts_detail_top{
+        .parts_detail_info{
+            font-size: 16px;
+           color:#000;
+           span{
+               margin-right: 10px;
+           }
+        }
+        .table tr th{
+            text-align: center;
+            background: #f3f3f4;
+            padding: 10px 0px;
+            border: 1px solid #eceeef;
+        }
+        .table tr td{
+            padding: 10px 0px;
+            border: 1px solid #eceeef;
+        }
+    }
+    .parts_detail_b{
+        border-top: 1px solid #ccc;
+        padding-top: 10px;
+        .btn{
+            padding: 8px 30px;
+            outline: none;
+        }
+    }
+}
+.printgoods{
+    display: none;
+    .printContnet{
+        margin-top: 10px;
+        border-top: 2px solid #ccc;
+        padding-top: 10px;
+        .table{
+            tr th{
+                text-align: center;
+            }
+        }
+        p{
+            span{
+                margin-right: 10px;
+            }
+        }
+    }
+}

@@ -1,0 +1,347 @@
+<!--component html goes here -->
+<div class="inter-content" @flyIn>
+  <div class="header">
+    <h4 class="title">内部退料</h4>
+    <div class="list-info" dropdown [autoClose]='dropdownShow'>
+      <a href dropdownToggle (click)="false">
+        <i class="fa fa-list-alt"></i>
+        <span>挂单信息({{hanglog.totalCount}})</span>
+
+        <i class="fa fa-angle-up"></i>
+      </a>
+      <div *dropdownMenu class="dropdown-menu">
+        <table class="table table-hover">
+          <thead>
+            <tr>
+              <td>领料人</td>
+              <td>领料部门</td>
+              <td>操作</td>
+            </tr>
+          </thead>
+          <tbody>
+            <tr *ngFor="let item of hanglog.result">
+              <td  (click)='getHanglogInfo(item)'>{{item.implUserName}}</td>
+              <td  (click)='getHanglogInfo(item)'>{{item.departName}}</td>
+              <td (click)='giveuphanglogs(item)'>
+                <span class="cursor-pointer">
+                  <i class="cursor-pointer fa fa-times-circle"></i>
+                  作废
+                </span>
+              </td>
+            </tr>
+            <tr *ngIf="hangOrderListCount>=10" >
+              <td colspan="3">
+                <pagination [totalItems]="hangOrderListCount"  [maxSize]="5" class="pagination-sm" [boundaryLinks]="true" previousText="&lsaquo;" nextText="&rsaquo;" firstText="&laquo;" lastText="&raquo;" (pageChanged)="pageChanged($event,'hang')"></pagination>
+              </td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+    </div>
+  </div>
+  <div class="content">
+    <div class="form-inline">
+      <div class="form-group">
+        <label class="sr-only" for="receivePeople"></label>
+        <div class="input-group">
+          <div class="input-group-addon">领料人</div>
+          <select class="form-control" name="userId" id="receivePeople" [(ngModel)]="interSearchParam.userId" (change)="chosedepart(interSearchParam.userId,$event)">
+             <option *ngFor="let item of packUser"  [value]="item.key">{{item.value}}</option> 
+          </select>
+        </div>
+      </div>
+      <div class="form-group">
+        <label class="sr-only" for="division"></label>
+        <div class="input-group">
+          <div class="input-group-addon">部门</div>
+          <select class="form-control" [(ngModel)]="interSearchParam.departId" (change)="getIpcode(interSearchParam.departId,$event)">
+            <option *ngFor="let item of depart"  [value]="item.key">{{item.value}}</option>
+          </select>
+        </div>
+      </div>
+      <div class="form-group">
+        <label class="sr-only" for="divisionCall"></label>
+        <div class="input-group">
+          <div class="input-group-addon">内部领料单号</div>
+          <select class="form-control" [(ngModel)]="interSearchParam.ipCode" (change)="getfindinsideretreats(interSearchParam.ipCode)">
+            <option *ngFor="let item of ipCodelist"  [value]="item">{{item}}</option>
+          </select>
+        </div>
+        <!--<div class='divisionInfo' [hidden]='isShow'>
+          <pagination [totalItems]="175" [maxSize]="5" class="pagination-sm" [boundaryLinks]="true" previousText="上一页" nextText="下一页"
+            firstText="首页" lastText="尾页" [rotate]="false" (numPages)="numPages = $event"></pagination>
+        </div>-->
+      </div>
+    </div>
+    <div class="table-caption">内部领料信息</div>
+    <div class="table-container">
+      <table class="table table-bordered">
+        <thead>
+          <tr>
+            <th>操作</th>
+            <th>配件编码</th>
+            <th>配件分类</th>
+            <th>配件名称</th>
+            <th>品牌</th>
+            <th>规格型号</th>
+            <th>单位</th>
+            <th>仓库</th>
+            <th>库位</th>
+            <th>库存量</th>
+            <th>单价（元）</th>
+            <th>数量</th>
+            <th>已退数量</th>
+            <th>金额（元）</th>
+          </tr>
+
+        </thead>
+        <tbody>
+          <tr *ngFor="let item of interlist">
+            <td>
+              <button class="btn btn-sm btn-primary" [disabled]='item.count==item.returnCount' (click)='ReMaterialModal.show();Return_material(item)'>退料</button>
+            </td>
+            <td>{{item.partsCode}}</td>
+            <td>{{item.partsTypeName}}</td>
+            <td>{{item.partsName}}</td>
+            <td>{{item.partsBrandName}}</td>
+            <td>{{item.partsSpec}}</td>
+            <td>{{item.partsUnit}}</td>
+            <td>{{item.depotName}}</td>
+            <td>{{item.depotPosName}}</td>
+            <td>{{item.inventory}}</td>
+            <td>{{item.price}}</td>
+            <td>{{item.count}}</td>
+            <td>{{item.returnCount}}</td>
+            <td>{{item.totalPrice}}</td>
+          </tr>
+        </tbody>
+      </table>
+    </div>
+    <div class="table-caption">内部退料信息</div>
+    <div class="table-container">
+      <table class="table table-bordered">
+        <thead>
+          <tr>
+            <th>操作</th>
+            <th>序号</th>
+            <th>配件编码</th>
+            <th>配件分类</th>
+            <th>配件名称</th>
+            <th>品牌</th>
+            <th>规格型号</th>
+            <th>单位</th>
+            <th>仓库</th>
+            <th>库位</th>
+            <th>库存量</th>
+            <th>单价（元）</th>
+            <th>数量</th>
+            <th>金额（元）</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr *ngIf="returnOk.partsCode" >
+            <td>
+              <button class="btn btn-sm btn-danger" (click)='deleteItem()'>删除</button>
+            </td>
+            <td>{{1}}</td>
+            <td>{{returnOk.partsCode}}</td>
+            <td>{{returnOk.partsTypeName}}</td>
+            <td>{{returnOk.partsName}}</td>
+            <td>{{returnOk.partsBrandName}}</td>
+            <td>{{returnOk.partsSpec}}</td>
+            <td>{{returnOk.partsUnit}}</td>
+            <td>{{returnOk.depotName}}</td>
+            <td>{{returnOk.depotPosName}}</td>
+            <td>{{returnOk.inventory}}</td>
+            <td>{{returnOk.price}}</td>
+            <td>{{returnOk.count?returnOk.count:returnOk.retreatCount}}</td>
+            <td>{{returnOk.totalPrice}}</td>
+          </tr>
+        </tbody>
+      </table>
+    </div>
+  </div>
+  <div class="footer">
+    <button class="btn btn-primary" [disabled]='!returnOk.partsCode' (click)='Generatestorage()'>生成内部退料单</button>
+    <button class="btn btn-success btn-suspend" [disabled]='!returnOk.partsCode' (click)='Postersorders()'>挂单</button>
+  </div>
+  <div bsModal #ReMaterialModal="bs-modal" class="modal fade" [config]="{backdrop: 'static'}" tabindex="-1" role="dialog" aria-labelledby="mySmallModalLabel"
+    aria-hidden="true">
+    <div class="modal-dialog modal-lg">
+      <div class="modal-content">
+        <div class="modal-header">
+          <h4 class="modal-title pull-left" style="font-size:1.5rem;font-weight:500;">退料</h4>
+<button type="button" class="close pull-right" (click)="ReMaterialModal.hide()" aria-label="Close">
+          <span aria-hidden="true">&times;</span>
+        </button>
+</div>
+<div class="modal-body">
+  <div class="newAdd">
+    <form class="card-block row ">
+      <div class="card">
+        <div class="card-left">
+
+          <div class="form-group">
+            <label class="form-control-label ">
+                    配件编码
+                    </label>
+            <input type="text" class="form-control " [(ngModel)]="ReturnParams.partsCode" name="partsCode" readonly value="请输入配件编码">
+          </div>
+          <div class="form-group">
+            <label class="form-control-label ">
+                    配件名称
+                    </label>
+            <input type="text" class="form-control " [(ngModel)]="ReturnParams.partsName" name="partsName" readonly>
+          </div>
+
+          <div class="form-group">
+            <label class="form-control-label ">
+                    品牌
+                    </label>
+            <input type="text" class="form-control " [(ngModel)]="ReturnParams.partsBrandName" name="partsBrandName" readonly>
+          </div>
+          <div class="form-group">
+            <label class="form-control-label ">
+                    规格型号
+                    </label>
+            <input type="text" class="form-control " [(ngModel)]="ReturnParams.partsSpec" name="partsSpec" readonly>
+          </div>
+          <div class="form-group">
+            <label class="form-control-label ">
+                    单位
+                    </label>
+            <input type="text" class="form-control " [(ngModel)]="ReturnParams.partsUnit" name="partsUnit" readonly>
+          </div>
+          <div class="form-group">
+            <label class="form-control-label ">
+                    单价（元）
+                    </label>
+            <input type="text" class="form-control " [(ngModel)]="ReturnParams.price" name="price" readonly>
+          </div>
+        </div>
+        <div class="card-right">
+
+          <div class="form-group">
+            <label class="form-control-label ">
+                      仓库
+                    </label>
+            <input type="text" class="form-control " [(ngModel)]="ReturnParams.depotName" name="depotName" readonly>
+          </div>
+          <div class="form-group">
+            <label class="form-control-label ">
+                      库位
+                    </label>
+            <input type="text" class="form-control " [(ngModel)]="ReturnParams.depotPosName" name="depotPosName" readonly>
+          </div>
+          <div class="form-group">
+            <label class="form-control-label ">
+                      配件分类
+                    </label>
+            <input type="text" class="form-control " [(ngModel)]="ReturnParams.partsTypeName" name="partsTypeName" readonly>
+          </div>
+          <div class="form-group" [formGroup]="insideRetreat">
+            <label class="form-control-label ">
+                      数量（可退数量：{{ReturnParams.surereturnCount}}）
+                    </label>
+            <input type="number" class="form-control " [(ngModel)]="ReturnParams.count" name="count" formControlName='count' (keyup)='changeCount($event.target.value)'>
+            <div *ngIf="formErrors.count.error" style="color: #a94442"> {{formErrors.count.error}}
+</div>
+</div>
+
+<div class="form-group">
+  <label class="form-control-label ">
+                      金额（元）
+                    </label>
+  <input type="text" class="form-control " [(ngModel)]="ReturnParams.totalPrice" name="totalPrice" readonly>
+</div>
+</div>
+</div>
+<div class="card-botton">
+  <button class="btn btn-primary mr-2" [disabled]='!insideRetreat.valid' (click)="pickinginfo()">提交</button>
+</div>
+</form>
+</div>
+</div>
+</div>
+</div>
+</div>
+<div class="modal fade" bsModal #staticModal="bs-modal" [config]="{backdrop: 'static'}" tabindex="-1" role="dialog" aria-labelledby="mySmallModalLabel"
+  aria-hidden="true">
+  <div class="modal-dialog modal-sm">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h4 class="modal-title pull-left">提示</h4>
+        <button type="button" class="close pull-right" aria-label="Close" (click)="offprint()">
+          <span aria-hidden="true">&times;</span>
+        </button>
+      </div>
+      <div class="modal-body" style="font-size:16px;text-align:center;">
+<div style="margin-bottom:10px;font-weight:700"> 已生成内部退料单，是否需要打印？
+</div>
+<div class="btnGroup">
+  <button class="btn-primary btn-sm btn" (click)='dyHtml($event)'>确定</button>
+  <button class="btn-default btn-sm btn" (click)='offprint()'>取消</button>
+</div>
+</div>
+</div>
+</div>
+</div>
+</div>
+<div class="printgoods">
+  <div class="printHeader">
+    <img src="../../../../../assets/img/login_logo.png" alt="">
+    <span class="printTitle">内部退料单</span>
+  </div>
+  <div class="printContnet">
+    <ul>
+      <li>
+        领料单号： RB999901170627001
+      </li>
+      <li>
+        流水号：1
+      </li>
+      <li>车牌号：苏A88888</li>
+      <li>开单时间：2017-07-05 15：28：44</li>
+    </ul>
+    <table class="table">
+      <thead>
+        <tr>
+          <th>配件编码</th>
+          <th>配件分类</th>
+          <th>配件名称</th>
+          <th>品牌</th>
+          <th>规格型号</th>
+          <th>单位</th>
+          <th>仓库</th>
+          <th>库位</th>
+          <th>单价（元）</th>
+          <th>数量</th>
+          <th>金额（元）</th>
+        </tr>
+      </thead>
+      <tbody>
+        <tr *ngFor="let item of printData" >
+          <td>{{item.partsCode}}</td>
+          <td>{{item.partsTypeName}}</td>
+          <td>{{item.partsName}}</td>
+          <td>{{item.partsBrandName}}</td>
+          <td>{{item.partsSpec}}</td>
+          <td>{{item.partsUnit}}</td>
+          <td>{{item.depotName}}</td>
+          <td>{{item.depotPosName}}</td>
+          <td>{{item.price}}</td>
+          <td>{{item.returnCount?item.returnCount:item.retreatCount}}</td>
+          <td>{{item.totalPrice}}</td>
+        </tr>
+      </tbody>
+    </table>
+  </div>
+  <div class="printFooter">
+    <div class="printTime">
+      打印时间:2017-07-06 10：28：16
+    </div>
+    <div class="operator">
+      操作人：老魏 领料人：
+    </div>
+  </div>
+</div>

@@ -1,0 +1,393 @@
+<!--component html goes here -->
+<div id="parts_flow" @flyIn>
+    <h4 clas="parts_title">配件流水账</h4>
+    <div class="flow_top clearfix">
+        <form action="">
+            <div class="col-md-2">
+                <div class="input-group">
+                    <span class="input-group-addon" id="sizing-addon2">配件编码</span>
+                    <input type="text" class="form-control" [(ngModel)]='flowtemParams.partsCode' name="partsCode" (focus)='getflowinfo()' 
+                        (click)='getflowinfo()' placeholder="配件编码">
+                    <span class="input-group-addon defBgColor">
+                    <i  class="fa fa-search"></i>
+                </span>
+                </div>
+                <!--隐藏内容 start  -->
+                <div class="flowhideinfo" *ngIf="isShow" >
+                    <table class="table table-hover table-sm table-bordered table-responsive">
+                        <thead>
+                            <tr>
+                                <th style="width:20%">品牌</th>
+                                <th style="width:15%">配件编码</th>
+                                <th style="width:15%">配件分类</th>
+                                <th style="width:15%">配件名称</th>
+                                <th style="width:15%">规格型号</th>
+                                <th style="width:10%">库存量</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <tr *ngFor="let item of flowlist" (click)='flowtem(item);flowinfoid(item.partsId,item.stockId)'>
+                                <td>{{item.parts.brandName}}</td>
+                                <td>{{item.parts.partsCode}}</td>
+                                <td>{{item.parts.partsTypeName}}</td>
+                                <td>{{item.parts.partsName}}</td>
+                                <td>{{item.parts.partsSpec}}</td>
+                                <td>{{item.parts.inventory}}</td>
+                            </tr>
+                        </tbody>
+                    </table>
+                    <!--分页 start  -->
+                    <div class="form-group paginate">
+                        <pagination [totalItems]="total[0]" [maxSize]="10" class="pagination-sm" [boundaryLinks]="true" previousText="&lsaquo;" nextText="&rsaquo;"
+                            firstText="&laquo;" lastText="&raquo;" (pageChanged)="page($event,'partsCode')"></pagination>
+                    </div>
+                    <!--分页 end  -->
+
+                </div>
+                <!--隐藏内容 end  -->
+            </div>
+            <div class="col-md-2">
+                <div class="input-group">
+                    <span class="input-group-addon" id="sizing-addon2">配件名称</span>
+                    <input type="text" class="form-control" [(ngModel)]='flowtemParams.partsName' (focus)='partsNameinfo()' 
+                        (click)='partsNameinfo()' name="partsName" placeholder="配件名称">
+                    <span class="input-group-addon defBgColor">
+                        <i  class="fa fa-search"></i>
+                    </span>
+                </div>
+                <!--隐藏内容 start  -->
+                <div class="flowhideinfo" *ngIf="nameisShow">
+                    <table class="table table-hover table-sm table-bordered table-responsive">
+                        <thead>
+                            <tr>
+                                <th style="width:20%">品牌</th>
+                                <th style="width:15%">配件编码</th>
+                                <th style="width:15%">配件分类</th>
+                                <th style="width:15%">配件名称</th>
+                                <th style="width:15%">规格型号</th>
+                                <th style="width:10%">库存量</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <tr *ngFor="let item of flowlist" (click)='flowtem(item);flowinfoid(item.partsId,item.stockId)'>
+                                <td>{{item.parts.brandName}}</td>
+                                <td>{{item.parts.partsCode}}</td>
+                                <td>{{item.parts.partsTypeName}}</td>
+                                <td>{{item.parts.partsName}}</td>
+                                <td>{{item.parts.partsSpec}}</td>
+                                <td>{{item.parts.inventory}}</td>
+                            </tr>
+                        </tbody>
+                    </table>
+                    <!--分页 start  -->
+                    <div class="form-group paginate">
+                        <pagination [totalItems]="total[1]" [maxSize]="10" class="pagination-sm" [boundaryLinks]="true" previousText="&lsaquo;" nextText="&rsaquo;"
+                            firstText="&laquo;" lastText="&raquo;" (pageChanged)="page($event,'partsName')"></pagination>
+                    </div>
+                    <!--分页 end  -->
+                </div>
+
+                <!--隐藏内容 end  -->
+            </div>
+        </form>
+    </div>
+    <div class="flow_content clearfix" *ngIf="contntisShow">
+        <div class="flow_content_t clearfix">
+            <div class="flow_info clearfix">
+                <p>
+                    <span>配件编码：</span>
+                    <span>{{flowtemParams.partsCode}}</span>
+                </p>
+                <p>
+                    <span>配件类型：</span>
+                    <span>{{flowtemParams.partsCode}}</span>
+                </p>
+                <p>
+                    <span>配件名称：</span>
+                    <span>{{flowtemParams.partsName}}</span>
+                </p>
+            </div>
+            <div class="flow_info clearfix">
+                <p>
+                    <span>品牌：</span>
+                    <span>{{flowtemParams.brandName}}</span>
+                </p>
+                <p>
+                    <span>规格型号：</span>
+                    <span>{{flowtemParams.partsSpec}}</span>
+                </p>
+                <p>
+                    <span>单位：</span>
+                    <span>{{flowtemParams.partsUnit}}</span>
+                </p>
+            </div>
+            <div class="flow_info">
+                <p>
+                    <span>库存量：</span>
+                    <span>{{flowtemParams.inventory}}</span>
+                </p>
+                <p>
+                    <span>最新入库日期：</span>
+                    <span>{{flowtemParams.createTime}}</span>
+                </p>
+                <p>
+                    <span>最新出库日期：</span>
+                    <span>{{flowtemParams.dmlTime}}</span>
+                </p>
+            </div>
+        </div>
+        <div class="flow_content_c">
+            <div class="col-md-4">
+                <div class="input-group">
+                    <span class="input-group-addon" id="sizing-addon2">查询日期</span>
+                    <input type="text" class="form-control" [(ngModel)]='partsflowParams.beginTime' name="beginTime" ngui-datetime-picker
+                            [close-on-select]="false" placeholder="请选择开始日期" (valueChanged)="timeChange()" aria-describedby="sizing-addon2">
+                    <span class="input-group-addon" id="sizing-addon2">-</span>
+                    <input type="text" class="form-control" [(ngModel)]='partsflowParams.endTime' (valueChanged)="timeChange()" name="endTime" ngui-datetime-picker
+                            [close-on-select]="false" placeholder="请选择结束日期" aria-describedby="sizing-addon2">
+                </div>
+                 <div class="formInfo input-group bg-danger" *ngIf="timeError">
+                    无效的查询时间，开始时间要小于结束时间
+                </div>
+            </div>
+            <div class="form-group mb-2">
+                <button class="btn btn-primary" type="submit" (click)="Detailed()" [disabled]='notSubmit'>查询明细</button>
+            </div>
+        </div>
+        <div class="flow_content_b">
+            <ul class="flowbottom clearfix">
+                <li class="bottombg" (click)="isshow1();faliao(1)">
+                    <span class="center">维修发料</span>
+                    <span class="bg" *ngIf="istableshow1"></span>
+                    <i *ngIf="istableshow1">{{pagetotal}}</i>
+                </li>
+                <li (click)="isshow2();faliao(2)">
+                    <span class="center">配件销售</span>
+                    <span class="bg" *ngIf="istableshow2"></span>
+                    <i *ngIf="istableshow2">{{totalItems}}</i>
+                </li>
+                <li (click)="isshow3();faliao(3)">
+                    <span class="center">采购入库</span>
+                    <span class="bg" *ngIf="istableshow3"></span>
+                    <i *ngIf="istableshow3">{{totalItems}}</i>
+                </li>
+                <li (click)="isshow4();faliao(4)">
+                    <span class="center">内部领料</span>
+                    <span class="bg" *ngIf="istableshow4"></span>
+                    <i *ngIf="istableshow4">{{totalItems}}</i>
+                </li>
+            </ul>
+            <div class="flowbottominfo">
+                <!--维修发料  -->
+                <div *ngIf="istableshow1">
+                     <table class="table table-bordered text-center">
+                    <thead>
+                        <tr>
+                            <th>单号</th>
+                            <th>发生时间</th>
+                            <th>数量</th>
+                            <th>成本单价(元)</th>
+                            <th>成本金额(元)</th>
+                            <th>销售单价(元)</th>
+                            <th>销售金额(元)</th>
+                            <th>库存量</th>
+                            <th>车牌号</th>
+                            <th>客户名称</th>
+                            <th>操作人</th>
+
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr *ngFor="let item of flowlists">
+                            <td>{{item.orderNo}}</td>
+                            <td>{{item.createTime}}</td>
+                            <td>{{item.count}}</td>
+                            <td>{{item.cost}}</td>
+                            <td>{{item.totalCost}}</td>
+                            <td>{{item.sellPrice}}</td>
+                            <td>{{item.sellPrice}}</td>
+                            <td>{{item.inventory}}</td>
+                            <td>{{item.carNo}}</td>
+                            <td>{{item.userName}}</td>
+                            <td>{{item.name}}</td>
+                        </tr>
+                    </tbody>
+                </table>
+                    <div class="form-group paginate">
+                        <pagination [totalItems]="pagetotal" [maxSize]="10" class="pagination-sm" [boundaryLinks]="true" previousText="&lsaquo;" nextText="&rsaquo;"
+                            firstText="&laquo;" lastText="&raquo;" (pageChanged)="pagination($event)"></pagination>
+                    </div>
+                </div>
+               
+                <!--销售配件  -->
+                <div *ngIf="istableshow2">
+                    <table class="table table-bordered text-center">
+                        <thead>
+                            <tr>
+                                <th>单号</th>
+                                <th>发生时间</th>
+                                <th>数量</th>
+                                <th>成本单价(元)</th>
+                                <th>成本金额(元)</th>
+                                <th>销售单价(元)</th>
+                                <th>销售金额(元)</th>
+                                <th>库存量</th>
+                                <th>客户名称</th>
+                                <th>手机号</th>
+                                <th>操作人</th>
+
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <tr *ngFor="let item of alldateinfo">
+                                <td>{{item.sellCode}}</td>
+                                <td>{{item.createTime}}</td>
+                                <td>{{item.count}}</td>
+                                <td>{{item.cost}}</td>
+                                <td>{{item.totalCost}}</td>
+
+                                <td>{{item.sellPrice}}</td>
+
+                                <td>{{item.price}}</td>
+                                <td>{{item.inventory}}</td>
+                                <td>{{item.userName}}</td>
+                                <td>{{item.mobile}}</td>
+                                <td>{{item.name}}</td>
+
+                            </tr>
+                        </tbody>
+                    </table>
+                    <div class="form-group paginate">
+                        <pagination [totalItems]="pagetotals[3]" [maxSize]="10" class="pagination-sm" [boundaryLinks]="true" previousText="&lsaquo;" nextText="&rsaquo;"
+                            firstText="&laquo;" lastText="&raquo;" (pageChanged)="pageing($event,'xiaos')"></pagination>
+                    </div>
+                </div>
+                <!--采购入库  -->
+                <div *ngIf="istableshow3">
+                     <table class="table table-bordered text-center">
+                        <thead>
+                            <tr>
+                                <th>单号</th>
+                                <th>发生时间</th>
+                                <th>数量</th>
+                                <th>不含税单价(元)</th>
+                                <th>不含税金额(元)</th>
+                                <th>含税金额(元)</th>
+                                <th>库存量</th>
+                                <th>供应商</th>
+                                <th>操作人</th>
+
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <tr *ngFor="let item of alldateinfo">
+                                <td>{{item.purchCode}}</td>
+                                <td>{{item.createTime}}</td>
+                                <td>{{item.count}}</td>
+                                <td>{{item.purchCode}}</td>
+                                <td>{{item.totalTaxPrice}}</td>
+                                <td>{{item.taxPrice}}</td>
+                                <td>{{item.inventory}}</td>
+                                <td>{{item.supplier}}</td>
+                                <td>{{item.purchUserId}}</td>
+                            </tr>
+                        </tbody>
+                    </table>
+                     <!--分页 start  -->
+                    <!-- <div class="form-group paginate">
+                        <label>
+                            每页显示
+                            <select class="form-control select" (change)="pageing($event,'SELECT')">
+                                <option value="10">10</option>
+                                <option value="20">20</option>
+                                <option value="30">30</option>
+                                <option value="50">50</option>
+                                <option value="100">100</option>
+                            </select>
+                        </label>
+                        <pagination [totalItems]="pagetot" [(ngModel)]="index" [maxSize]="10" [itemsPerPage]="partsflowParams.pageSize" [boundaryLinks]="true"
+                            previousText="上一页" nextText="下一页" firstText="首页" lastText="尾页" (pageChanged)="pageing($event)"></pagination>
+                        <label class="contorl-label">
+                            跳转到<input type="number" class="form-control" min="1" [max]="maxPageSize" [(ngModel)]="choosePage">页
+                        </label>
+                        <button class="btn btn-default" (click)="pageing($event,'BUTTON')">GO</button>
+                    </div> -->
+                    
+                    <div class="form-group paginate">
+                        <pagination [totalItems]="pagetotals[2]" [maxSize]="10" class="pagination-sm" [boundaryLinks]="true" previousText="&lsaquo;" nextText="&rsaquo;"
+                            firstText="&laquo;" lastText="&raquo;" (pageChanged)="pageing($event,'kucun')"></pagination>
+                    </div>
+                   
+                    <!--分页 end  -->
+                </div>
+               
+                <!--内部领料  -->
+                <div *ngIf="istableshow4">
+                    <table class="table table-bordered text-center" >
+                        <thead>
+                            <tr>
+                                <th>单号</th>
+                                <th>发生时间</th>
+                                <th>数量</th>
+                                <th>成本单价(元)</th>
+                                <th>成本金额(元)</th>
+                                <th>销售单价(元)</th>
+                                <th>销售金额(元)</th>
+                                <th>库存量</th>
+                                <th>领料人</th>
+                                <th>领料部门</th>
+                                <th>操作人</th>
+
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <tr *ngFor="let item of alldateinfo">
+                                <td>{{item.ipCode}}</td>
+                                <td>{{item.createTime}}</td>
+                                <td>{{item.count}}</td>
+                                <td>{{item.cost}}</td>
+                                <td>{{item.totalCost}}</td>
+                                <td>{{item.price}}</td>
+                                <td>{{item.totalPrice}}</td>
+                                <td>{{item.inventory}}</td>
+                                <td>{{item.userName}}</td>
+                                <td>{{item.orgName}}</td>
+                                <td>{{item.operUserName}}</td>
+                            </tr>
+                        </tbody>
+                    </table>
+                     <!--分页 start  -->
+                    <!-- <div class="form-group paginate">
+                        <label>
+                            每页显示
+                            <select class="form-control select" (change)="pageing($event,'SELECT')">
+                                <option value="10">10</option>
+                                <option value="20">20</option>
+                                <option value="30">30</option>
+                                <option value="50">50</option>
+                                <option value="100">100</option>
+                            </select>
+                        </label>
+                        <pagination [totalItems]="pagetotal" [(ngModel)]="index" [maxSize]="10" [itemsPerPage]="partsflowParams.pageSize" [boundaryLinks]="true"
+                            previousText="上一页" nextText="下一页" firstText="首页" lastText="尾页" (pageChanged)="pageing($event)"></pagination>
+                        <label class="contorl-label">
+                            跳转到<input type="number" class="form-control" min="1" [max]="maxPageSize" [(ngModel)]="choosePage">页
+                        </label>
+                        <button class="btn btn-default" (click)="pageing($event,'BUTTON')">GO</button>
+                    </div> -->
+                     <div class="form-group paginate">
+                        <pagination [totalItems]="pagetotals[1]" [maxSize]="10" class="pagination-sm" [boundaryLinks]="true" previousText="&lsaquo;" nextText="&rsaquo;"
+                            firstText="&laquo;" lastText="&raquo;" (pageChanged)="pageing($event,'lingliao')"></pagination>
+                    </div>
+                    <!--分页 end  -->
+                </div>
+            </div>
+        </div>
+       
+    </div>
+    <div class="flow_buttom">
+        <button type="button" class="btn btn-primary">
+           导出
+        </button>
+    </div>
+</div>

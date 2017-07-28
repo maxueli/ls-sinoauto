@@ -1,0 +1,633 @@
+<div class="container userAndCustomer" @flyIn>
+    <div class="card_header clearfix">
+        <h4 class="pull-left">创建工单</h4>
+        <div class="btn-group pull-right" dropdown>
+            <button dropdownToggle type="button" class="btn btn-link dropdown-toggle">
+                <i aria-hidden="true" class="fa fa-list-alt"></i>
+                <span class="suspend-span">挂单信息 <span>({{hangOrderListCount}})</span></span>
+                <i class="fa fa-angle-down"></i>
+            </button>
+            <div *dropdownMenu class="dropdown-menu" role="menu">
+                <table class="table table-bordered">
+                    <thead>
+                        <tr>
+                            <th>车牌号</th>
+                            <th>车主</th>
+                            <th>车主电话</th>
+                            <th></th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr *ngFor="let item of hangOrderList" (click)="loadHangOrderDetail(item.hangId)">
+                            <td>{{item.carNo}}</td>
+                            <td>{{item.name}}</td>
+                            <td>{{item.mobile}}</td>
+                            <td class="pointer text-center" (click)="complete.show();hangDisabled(1, item.hangId);$event.stopPropagation()">
+                                <i class="fa fa-times-circle"></i>作废
+                            </td>
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    </div>
+    <div class="card_body">
+        <form [formGroup]="creatForm">
+            <div class="form-inline">
+                <div class="input-group">
+                    <label for="carNo" class="input-group-addon"><i class="icon-sm">*</i>车牌号</label>
+                    <input type="text" class="form-control" formControlName="carNo" id="carNo" maxlength="7" (click)="isCollapsed('carNo')" (keyup)="reloadCarsInfo($event, 'carNo')" (change)="customerMobileChange()">
+                    <span class="input-group-addon defBgColor" (click)="isCollapsed('carNo')"><i class="fa fa-search"></i></span>
+                    <div [collapse]="carNoCollapsed" class="dropdown-menu">
+                        <table class="table table-bordered">
+                            <thead>
+                                <tr>
+                                    <th class="text-center">车牌号</th>
+                                    <th class="text-center">车主</th>
+                                    <th class="text-center">车主电话</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                <tr role="menuitem" class="dropdown-item" *ngFor="let item of userInfoList" (click)="selectCarsInfo(item, 'carNo')">
+                                    <td>{{item.carNo}}</td>
+                                    <td>{{item.name}}</td>
+                                    <td>{{item.mobile}}</td>
+                                </tr>
+                            </tbody>
+                            <tfoot *ngIf="totalItems[0]>10">
+                                <tr>
+                                    <td role="menuitem" (click)="carNoCollapsed = false" colspan="3">
+                                        <pagination [totalItems]="totalItems[0]" [maxSize]="5" class="pagination-sm" [boundaryLinks]="true" previousText="&lsaquo;" nextText="&rsaquo;" firstText="&laquo;" lastText="&raquo;" (pageChanged)="pageChanged($event,'carNo')"></pagination>
+                                    </td>
+                                </tr>
+                            </tfoot>
+                        </table>
+                    </div>
+                </div>
+                <div class="input-group">
+                    <label for="name" class="input-group-addon"><i class="icon-sm">*</i>车主</label>
+                    <input type="text" class="form-control" formControlName="name" id="name" maxlength="15" (click)="isCollapsed('name')" (keyup)="reloadCarsInfo($event, 'name')" (change)="customerMobileChange($event, 'name')">
+                    <span class="input-group-addon defBgColor" (click)="isCollapsed('name')"><i class="fa fa-search"></i></span>
+                    <div [collapse]="nameCollapsed" class="dropdown-menu">
+                        <table class="table table-bordered">
+                            <thead>
+                                <tr>
+                                    <th class="text-center">车牌号</th>
+                                    <th class="text-center">车主</th>
+                                    <th class="text-center">车主电话</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                <tr role="menuitem" class="dropdown-item" *ngFor="let item of userInfoList" (click)="selectCarsInfo(item, 'name')">
+                                    <td>{{item.carNo}}</td>
+                                    <td>{{item.name}}</td>
+                                    <td>{{item.mobile}}</td>
+                                </tr>
+                            </tbody>
+                            <tfoot *ngIf="totalItems[0]>10">
+                                <tr>
+                                    <td role="menuitem" (click)="nameCollapsed = false" colspan="3">
+                                        <pagination [totalItems]="totalItems[0]" [maxSize]="5" class="pagination-sm" [boundaryLinks]="true" previousText="&lsaquo;" nextText="&rsaquo;" firstText="&laquo;" lastText="&raquo;" (pageChanged)="pageChanged($event,'name')"></pagination>
+                                    </td>
+                                </tr>
+                            </tfoot>
+                        </table>
+                    </div>
+                </div>
+                <div class="input-group">
+                    <label for="mobile" class="input-group-addon"><i class="icon-sm">*</i>车主电话</label>
+                    <input type="text" class="form-control" formControlName="mobile" id="mobile" maxlength="11" onkeypress="return event.keyCode>=48&&event.keyCode<=57" (change)="customerMobileChange($event, 'mobile')">
+                </div>
+                <div class="input-group">
+                    <label for="sourceChannel" class="input-group-addon">来源渠道</label>
+                    <select class="form-control" formControlName="sourceChannel" id="sourceChannel">
+                        <option style="display:none"></option>
+                        <option value="1">网络平台</option>
+                        <option value="2">宣传广告</option>
+                        <option value="3">直接到店</option>
+                        <option value="4">朋友介绍</option>
+                        <option value="5">微信</option>
+                        <option value="6">店铺活动</option>
+                    </select>
+                </div>
+            </div>
+            <div class="form-inline" *ngIf="creatFormErrors.carNo.error || creatFormErrors.name.error || creatFormErrors.mobile.error || creatFormErrors.sourceChannel.error">
+                <div [hidden]="!creatFormErrors.carNo.error" class="formInfo carNo input-group">
+                    {{creatFormErrors.carNo.error}}
+                </div>
+                <div [hidden]="!creatFormErrors.name.error" class="formInfo carNo input-group">
+                    {{creatFormErrors.name.error}}
+                </div>
+                <div [hidden]="!creatFormErrors.mobile.error" class="formInfo carNo input-group">
+                    {{creatFormErrors.mobile.error}}
+                </div>
+                <div [hidden]="!creatFormErrors.sourceChannel.error" class="formInfo carNo input-group">
+                    {{creatFormErrors.sourceChannel.error}}
+                </div>
+            </div>
+            <div class="form-inline form_border">
+                <div class="input-group">
+                    <label for="brandName" class="input-group-addon"><i class="icon-sm">*</i>品牌</label>
+                    <input type="text" class="form-control" formControlName="brandName" id="brandName" (click)="isCollapsed('brand')" (keyup)="reloadCarsInfo($event, 'brand')">
+                    <span class="input-group-addon defBgColor" (click)="isCollapsed('brand')"><i class="fa fa-search"></i></span>
+                    <ul [collapse]="brandCollapsed" class="dropdown-menu card card-block card-header">
+                        <li role="menuitem" *ngFor="let item of carsBrandList" (click)="selectCarsInfo(item, 'brand')">
+                            <a class="dropdown-item">{{item.value}}</a>
+                        </li>
+                        <li class="divider dropdown-divider"></li>
+                        <li role="menuitem" (click)="brandCollapsed = false" *ngIf="totalItems[1]>10">
+                            <pagination [totalItems]="totalItems[1]" [maxSize]="5" class="pagination-sm" [boundaryLinks]="true" previousText="&lsaquo;" nextText="&rsaquo;" firstText="&laquo;" lastText="&raquo;" (pageChanged)="pageChanged($event,'brand')"></pagination>
+                        </li>
+                    </ul>
+                </div>
+                <div class="input-group">
+                    <label for="seriesName" class="input-group-addon"><i class="icon-sm">*</i>车系</label>
+                    <input type="text" class="form-control" formControlName="seriesName" id="seriesName" (click)="isCollapsed('series')" (keyup)="reloadCarsInfo($event, 'series')">
+                    <span class="input-group-addon defBgColor" (click)="isCollapsed('series')"><i class="fa fa-search"></i></span>
+                    <ul [collapse]="seriesCollapsed" class="dropdown-menu card card-block card-header">
+                        <li role="menuitem" *ngFor="let item of carsSeriesList" (click)="selectCarsInfo(item, 'series')">
+                            <a class="dropdown-item">{{item.value}}</a>
+                        </li>
+                        <li class="divider dropdown-divider"></li>
+                        <li role="menuitem" (click)="seriesCollapsed = false" *ngIf="totalItems[2]>10">
+                            <pagination [totalItems]="totalItems[2]" [maxSize]="5" class="pagination-sm" [boundaryLinks]="true" previousText="&lsaquo;" nextText="&rsaquo;" firstText="&laquo;" lastText="&raquo;" (pageChanged)="pageChanged($event,'series')"></pagination>
+                        </li>
+                    </ul>
+                </div>
+                <div class="input-group">
+                    <label for="modelName" class="input-group-addon"><i class="icon-sm">*</i>车型</label>
+                    <input type="text" class="form-control" formControlName="modelName" id="modelName" (click)="isCollapsed('model')" (keyup)="reloadCarsInfo($event, 'model')">
+                    <span class="input-group-addon defBgColor" (click)="isCollapsed('model')"><i class="fa fa-search"></i></span>
+                    <ul [collapse]="modelCollapsed" class="dropdown-menu card card-block card-header">
+                        <li role="menuitem" *ngFor="let item of carsModelList" (click)="selectCarsInfo(item, 'model')">
+                            <a class="dropdown-item">{{item.value}}</a>
+                        </li>
+                        <li class="divider dropdown-divider"></li>
+                        <li role="menuitem" (click)="modelCollapsed = false" *ngIf="totalItems[3]>10">
+                            <pagination [totalItems]="totalItems[3]" [maxSize]="5" class="pagination-sm" [boundaryLinks]="true" previousText="&lsaquo;" nextText="&rsaquo;" firstText="&laquo;" lastText="&raquo;" (pageChanged)="pageChanged($event,'model')"></pagination>
+                        </li>
+                    </ul>
+                </div>
+                <div class="input-group">
+                    <label for="vin" class="input-group-addon">VIN</label>
+                    <input type="text" class="form-control" formControlName="vin" id="vin" maxlength="17">
+                </div>
+            </div>
+            <div class="form-inline" *ngIf="creatFormErrors.brandName.error || creatFormErrors.seriesName.error || creatFormErrors.modelName.error || creatFormErrors.vin.error">
+                <div [hidden]="!creatFormErrors.brandName.error" class="formInfo carNo input-group">
+                    {{creatFormErrors.brandName.error}}
+                </div>
+                <div [hidden]="!creatFormErrors.seriesName.error" class="formInfo carNo input-group">
+                    {{creatFormErrors.seriesName.error}}
+                </div>
+                <div [hidden]="!creatFormErrors.modelName.error" class="formInfo carNo input-group">
+                    {{creatFormErrors.modelName.error}}
+                </div>
+                <div [hidden]="!creatFormErrors.vin.error" class="formInfo carNo input-group">
+                    {{creatFormErrors.vin.error}}
+                </div>
+            </div>
+            <hr>
+            <div class="form-inline">
+                <div class="input-group">
+                    <label for="repairType" class="input-group-addon"><i class="icon-sm">*</i>维修类型</label>
+                    <select class="form-control" formControlName="repairType" id="repairType">
+                        <option style="display:none"></option>
+                        <option value="1">一般维修</option>
+                        <option value="2">定期保养</option>
+                        <option value="3">保险维修</option>
+                        <option value="4">事故维修</option>
+                        <option value="5">维修索赔</option>
+                        <option value="6">出厂返修</option>
+                        <option value="7">内部返修</option>
+                    </select>
+                </div>
+                <div class="input-group">
+                    <label for="estimatedDeliveryTime" class="input-group-addon"><i class="icon-sm">*</i>预计交车时间</label>
+                    <input type="text" class="form-control" formControlName="estimatedDeliveryTime" id="estimatedDeliveryTime" ngui-datetime-picker [close-on-select]="false" [min-date]="minDate" (valueChanged)="dateChange($event, 'deliveryTime')" readonly>
+                </div>
+                <div class="input-group">
+                    <label for="repairName" class="input-group-addon"><i class="icon-sm">*</i>送修人</label>
+                    <input type="text" class="form-control" formControlName="repairName" id="repairName" maxlength="15">
+                </div>
+                <div class="input-group">
+                    <label for="repairMobile" class="input-group-addon"><i class="icon-sm">*</i>送修人电话</label>
+                    <input type="text" class="form-control" formControlName="repairMobile" id="repairMobile" maxlength="11" onkeypress="return event.keyCode>=48&&event.keyCode<=57">
+                </div>
+            </div>
+            <div class="form-inline" *ngIf="creatFormErrors.repairType.error || creatFormErrors.estimatedDeliveryTime.error || creatFormErrors.repairName.error || creatFormErrors.repairMobile.error">
+                <div [hidden]="!creatFormErrors.repairType.error" class="formInfo input-group">
+                    {{creatFormErrors.repairType.error}}
+                </div>
+                <div [hidden]="!creatFormErrors.estimatedDeliveryTime.error" class="formInfo input-group">
+                    {{creatFormErrors.estimatedDeliveryTime.error}}
+                </div>
+                <div [hidden]="!creatFormErrors.repairName.error" class="formInfo input-group">
+                    {{creatFormErrors.repairName.error}}
+                </div>
+                <div [hidden]="!creatFormErrors.repairMobile.error" class="formInfo input-group">
+                    {{creatFormErrors.repairMobile.error}}
+                </div>
+            </div>
+            <div class="form-inline">
+                <div class="input-group">
+                    <label for="driveMileage" class="input-group-addon"><i class="icon-sm">*</i>行驶里程</label>
+                    <input type="text" class="form-control" formControlName="driveMileage" id="driveMileage" maxlength="15" onkeypress="return event.keyCode>=48&&event.keyCode<=57" (change)="mileageChange()">
+                    <span class="input-group-addon">KM</span>
+                </div>
+                <div class="input-group">
+                    <label for="recommender" class="input-group-addon">介绍人</label>
+                    <input type="text" class="form-control" formControlName="recommender" id="recommender" maxlength="15">
+                </div>
+                <div class="input-group">
+                    <label for="recommenderMobile" class="input-group-addon">介绍人电话</label>
+                    <input type="text" class="form-control" formControlName="recommenderMobile" id="recommenderMobile" maxlength="11" onkeypress="return event.keyCode>=48&&event.keyCode<=57">
+                </div>
+                <div class="input-group">
+                    <label for="vehicleDate" class="input-group-addon">验车日期</label>
+                    <input type="text" class="form-control" formControlName="vehicleDate" id="vehicleDate" ngui-datetime-picker [close-on-select]="false" [min-date]="minDate" (valueChanged)="dateChange($event, 'vehicleDate')" readonly>
+                </div>
+            </div>
+            <div class="form-inline" *ngIf="creatFormErrors.driveMileage.error || creatFormErrors.recommenderMobile.error">
+                <div [hidden]="!creatFormErrors.driveMileage.error" class="formInfo input-group">
+                    {{creatFormErrors.driveMileage.error}}
+                </div>
+                <div class="formInfo input-group"></div>
+                <div [hidden]="!creatFormErrors.recommenderMobile.error" class="formInfo input-group">
+                    {{creatFormErrors.recommenderMobile.error}}
+                </div>
+                <div class="formInfo input-group"></div>
+            </div>
+            <div class="form-inline">
+                <div class="input-group">
+                    <label for="repairStation" class="input-group-addon">维修工位</label>
+                    <input type="text" class="form-control" formControlName="repairStation" id="repairStation">
+                </div>
+                <div class="input-group">
+                    <label for="lastInFactoryTime" class="input-group-addon">上次进厂时间</label>
+                    <input type="text" class="form-control" formControlName="lastInFactoryTime" id="lastInFactoryTime" readonly>
+                </div>
+                <div class="input-group">
+                    <label for="lastInFactoryMileage" class="input-group-addon">上次进厂里程</label>
+                    <input type="text" class="form-control" formControlName="lastInFactoryMileage" id="lastInFactoryMileage" readonly>
+                    <span class="input-group-addon">KM</span>
+                </div>
+                <div class="input-group"></div>
+            </div>
+            <div class="form-inline">
+                <div class="input-group">
+                    <label for="nextMaintainDate" class="input-group-addon">建议下次保养日期</label>
+                    <input type="text" class="form-control" formControlName="nextMaintainDate" id="nextMaintainDate" ngui-datetime-picker [close-on-select]="false" [min-date]="minDate" (valueChanged)="dateChange($event, 'nextDate')" readonly>
+                </div>
+                <div class="input-group">
+                    <label for="nextMileage" class="input-group-addon">建议下次保养里程</label>
+                    <input type="text" class="form-control" formControlName="nextMileage" id="nextMileage" maxlength="15" onkeypress="return event.keyCode>=48&&event.keyCode<=57" (change)="mileageChange()">
+                    <span class="input-group-addon">KM</span>
+                </div>
+                <div class="input-group"></div>
+                <div class="input-group"></div>
+            </div>
+            <div class="form-inline" *ngIf="creatFormErrors.nextMileage.error">
+                <div [hidden]="!creatFormErrors.nextMaintainDate.error" class="formInfo input-group">
+                    {{creatFormErrors.nextMaintainDate.error}}
+                </div>
+                <div [hidden]="!creatFormErrors.nextMileage.error" class="formInfo nextMileage input-group">
+                    {{creatFormErrors.nextMileage.error}}
+                </div>
+                <div class="formInfo input-group"></div>
+                <div class="formInfo input-group"></div>
+            </div>
+        </form>
+        <hr>
+        <tabset class="tabCard">
+            <tab class="active">
+                <template tabHeading>
+                    <i aria-hidden="true" class="fa fa-clone mr-2"></i>维修项目
+                </template>
+                <table class="table table-bordered">
+                    <thead>
+                        <tr>
+                            <th class="text-center">操作</th>
+                            <th class="text-center">序号</th>
+                            <th class="text-center">维修项目名称</th>
+                            <th class="text-center">维修工时</th>
+                            <th class="text-center">工时单价(元)</th>
+                            <th class="text-center">折扣率(%)</th>
+                            <th class="text-center">金额(元)</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr *ngFor="let item of createParams.projectParamDtos; let i = index">
+                            <td class="text-center">
+                                <button class="btn btn-success" (click)="newProjects.show();saveProjectId(i)">编辑</button>
+                                <button class="btn btn-danger" (click)="delProjectId(i)">删除</button>
+                            </td>
+                            <td>{{i+1}}</td>
+                            <td>
+                                {{item.projectName}}
+                                <span class="accept-stamp" *ngIf="item.isPass"></span>
+                                <label class="append-stamp" *ngIf="item.isExtra">增项</label>
+                            </td>
+                            <td>{{item.repairHour}}</td>
+                            <td>{{item.hourPrice}}</td>
+                            <td>{{item.discount}}</td>
+                            <td>{{item.totalCount}}</td>
+                        </tr>
+                    </tbody>
+                </table>
+                <div class="text-center add">
+                    <button class="btn btn-link btn-default" (click)="newProjects.show()">
+                        <i aria-hidden="true" class="fa fa-plus-circle text-success"></i>
+                        新增维修项目
+                    </button>
+                </div>
+            </tab>
+            <tab>
+                <template tabHeading>
+                    <i aria-hidden="true" class="fa fa fa-history"></i> 上次维修记录
+                </template>
+                <table class="table table-bordered" *ngIf="isRepairProject">
+                    <caption>维修项目</caption>
+                    <thead>
+                        <tr>
+                            <th>维修项目名称</th>
+                            <th>维修工时</th>
+                            <th>工时单价(元)</th>
+                            <th>折扣率(%)</th>
+                            <th>金额(元)</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr *ngFor="let item of projectOrder">
+                            <td>{{item.projectName}}</td>
+                            <td>{{item.repairHour}}</td>
+                            <td class="text-right">{{item.hourPrice}}</td>
+                            <td class="text-right">{{item.discount}}</td>
+                            <td class="text-right">{{item.totalCount}}</td>
+                        </tr>
+                    </tbody>
+                </table>
+                <table class="table table-bordered" *ngIf="projectRepairOrder">
+                    <caption>维修配件</caption>
+                    <thead>
+                        <tr>
+                            <th>维修工项</th>
+                            <th>配件名称</th>
+                            <th>品牌</th>
+                            <th>规格型号</th>
+                            <th>数量</th>
+                            <th>单价(元)</th>
+                            <th>金额(元)</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr *ngFor="let item of projectRepairOrder">
+                            <td>{{item.repairProject}}</td>
+                            <td>{{item.partsName}}</td>
+                            <td>{{item.partsBrandName}}</td>
+                            <td>{{item.partsSpec}}</td>
+                            <td>{{item.count}}</td>
+                            <td class="text-right">{{item.price}}</td>
+                            <td class="text-right">{{item.totalPrice}}</td>
+                        </tr>
+                    </tbody>
+                </table>
+            </tab>
+            <tab>
+                <template tabHeading>
+                    <i aria-hidden="true" class="fa fa fa-clipboard"></i> 预检单
+                </template>
+                <div *ngIf="isPreview">
+                    <table class="table table-bordered">
+                        <caption>基本信息</caption>
+                        <tbody>
+                            <tr>
+                                <td>预检类型</td>
+                                <td>{{previewOrder.repairType}}</td>
+                                <td>油量</td>
+                                <td>
+                                    {{previewOrder.remainingOil}}
+                                    <span *ngIf="previewOrder.remainingOil">%</span>
+                                </td>
+                            </tr>
+                            <tr>
+                                <td>故障描述</td>
+                                <td colspan="3">{{previewOrder.faultDesc}}</td>
+                            </tr>
+                        </tbody>
+                    </table>
+                    <table class="table table-bordered">
+                        <caption>检查项</caption>
+                        <thead>
+                            <tr>
+                                <th>项目名称</th>
+                                <th>检查项（项）</th>
+                                <th>异常项</th>
+                                <th>其他备注</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <tr>
+                                <td>随车附件</td>
+                                <td>
+                                    <span>检查项：{{previewOrder.partsTestNum}}</span><br>
+                                    <span>合格项：{{previewOrder.partsTestPassNum}}</span><br>
+                                    <span class="text-danger">异常项：{{previewOrder.partsTestExcNum}}</span>
+                                </td>
+                                <td>{{previewOrder.partsExc || '暂无'}}</td>
+                                <td>{{previewOrder.partsRemark || '暂无'}}</td>
+                            </tr>
+                            <tr>
+                                <td>仪表盘</td>
+                                <td>
+                                    <span>检查项：{{previewOrder.dashboardNum}}</span><br>
+                                    <span>合格项：{{previewOrder.dashboardPassNum}}</span><br>
+                                    <span class="text-danger">异常项：{{previewOrder.dashboardExcNum}}</span>
+                                </td>
+                                <td>{{previewOrder.dashboardExc || '暂无'}}</td>
+                                <td>{{previewOrder.dashboardRemark || '暂无'}}</td>
+                            </tr>
+                        </tbody>
+                    </table>
+                    <table class="table table-bordered">
+                        <caption>车辆缺陷标识
+                            <!-- <div class="pull-right" style="background:white">
+                                <span class="trouble-icon mr-1">
+                                    <img alt="划痕" class="thumbnail img-fluid rounded" src="../../../../../assets/images/huahen.png"> 
+                                </span>划痕
+                                <span class="trouble-icon ml-3 mr-1">
+                                    <img alt="变形" class="thumbnail img-fluid rounded" src="../../../../../assets/images/bianxing.png"> 
+                                </span>变形
+                                <span class="trouble-icon ml-3 mr-1">
+                                    <img alt="变形" class="thumbnail img-fluid rounded" src="../../../../../assets/images/posun.png"> 
+                                </span>破损
+                            </div> -->
+                        </caption>
+                        <thead>
+                            <tr>
+                                <th>外观</th>
+                                <th>内饰</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <tr>
+                                <td><img src="{{previewOrder.surfacePicUrl}}" alt=""></td>
+                                <td><img src="{{previewOrder.interiorPicUrl}}" alt=""></td>
+                            </tr>
+                        </tbody>
+                    </table>
+                    <table class="table table-bordered">
+                        <caption>照片</caption>
+                        <ul class="previewPic">
+                            <li *ngIf="!previewOrder.picUrl">暂无</li>
+                            <li *ngFor="let item of previewOrder.picUrl">
+                                <img src="{{item}}" alt="">
+                            </li>
+                        </ul>
+                    </table>
+                    <div class="clearfix customerUrlBox">
+                        <div class="pull-left text-left">
+                            <p>
+                                <span>预检员：{{previewOrder.previewerName}}</span>
+                                <span>日期：{{previewOrder.createTime }}</span>
+                            </p>
+                        </div>
+                        <div class="pull-right text-left">
+                            <p>
+                                <span class="mr-3">
+                                    客户签名：<img height="25" width="100" src="{{previewOrder.customerSignUrl}}" alt="" ></span>
+                                <span>日期：{{previewOrder.createTime }}</span>
+                            </p>
+                        </div>
+                    </div>
+                </div>
+            </tab>
+        </tabset>
+        <div class="cardInfo">
+            <span>工时费：<span>¥ {{priceCount.hourPrice}}</span></span>
+            <span>材料费：<span>¥ {{priceCount.materialsPrice}}</span></span>
+            <span>优惠：<span>¥ {{priceCount.discountPrice}}</span></span>
+            <span class="pull-right">应收金额：<span>¥ {{priceCount.amountPrice}}</span></span>
+        </div>
+        <div class="text-center">
+            <button type="button" class="btn btn-success" [disabled]="isCreate" (click)="saveCreateOrder()" id="createOrder">
+                <i class="fa fa-spinner fa-fw fa-spin fa-none-size d-none" [hidden]="isCreateLoad"></i> 生成工单
+            </button>
+            <button type="button" class="btn btn-warning" [disabled]="isHangUp" (click)="saveHangOrder()">
+                <i class="fa fa-spinner fa-fw fa-spin fa-none-size d-none" [hidden]="isHangUpLoad"></i> 挂单
+            </button>
+        </div>
+    </div>
+</div>
+
+<div bsModal #newProjects="bs-modal" class="modal fade userAndCustomer" tabindex="-1" role="dialog" aria-labelledby="myLargeModalLabel" aria-hidden="true">
+    <div class="modal-dialog modal-lg">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h4 class="modal-title pull-left">新增维修项目</h4>
+                <button type="button" class="close pull-right" (click)="newProjects.hide();cencelNewProject()" aria-label="Close">
+          <span aria-hidden="true">&times;</span>
+        </button>
+            </div>
+            <div class="modal-body">
+                <form [formGroup]="newProjectForm">
+                    <div class="form-inline">
+                        <div class="input-group">
+                            <label for="projectName" class="input-group-addon"><i class="icon-sm">*</i>项目名称</label>
+                            <input type="text" class="form-control" formControlName="projectName" id="projectName" (click)="isCollapsed('repair')" (keyup)="reloadCarsInfo($event, 'repair')">
+                            <span class="input-group-addon defBgColor" (click)="isCollapsed('repair')"><i class="fa fa-search"></i></span>
+                            <ul [collapse]="repairCollapsed" class="dropdown-menu card card-block card-header">
+                                <li role="menuitem" *ngFor="let item of repairList" (click)="selectCarsInfo(item, 'repair')">
+                                    <a class="dropdown-item">{{item.projectName}}</a>
+                                </li>
+                                <li class="divider dropdown-divider"></li>
+                                <li role="menuitem" (click)="repairCollapsed = false">
+                                    <pagination [totalItems]="totalItems[4]" [maxSize]="5" class="pagination-sm" [boundaryLinks]="true" previousText="&lsaquo;" nextText="&rsaquo;" firstText="&laquo;" lastText="&raquo;" (pageChanged)="pageChanged($event,'repair')"></pagination>
+                                </li>
+                            </ul>
+                        </div>
+                        <div class="input-group">
+                            <label for="repairId" class="input-group-addon"><i class="icon-sm">*</i> 维修类型</label>
+                            <select class="form-control" formControlName="repairId" id="repairId">
+                                <option style="display:none"></option>
+                                <option value="1">机修</option>
+                                <option value="2">钣金</option>
+                                <option value="3">混合</option>
+                            </select>
+                        </div>
+                    </div>
+                    <div class="form-inline" *ngIf="newProjectFormErrors.projectName.error || newProjectFormErrors.repairId.error">
+                        <div [hidden]="!newProjectFormErrors.projectName.error" class="formInfo input-group">
+                            {{newProjectFormErrors.projectName.error}}
+                        </div>
+                        <div [hidden]="!newProjectFormErrors.repairId.error" class="formInfo input-group">
+                            {{newProjectFormErrors.repairId.error}}
+                        </div>
+                    </div>
+                    <div class="form-inline">
+                        <div class="input-group">
+                            <label for="repairHour" class="input-group-addon"><i class="icon-sm">*</i>维修工时</label>
+                            <input type="text" class="form-control" formControlName="repairHour" id="repairHour" maxlength="15" onkeypress="return event.keyCode>=48&&event.keyCode<=57" (keyup)="priceChange($event, 'repairHour')">
+                        </div>
+                        <div class="input-group">
+                            <label for="hourPrice" class="input-group-addon"><i class="icon-sm">*</i>工时单价</label>
+                            <input type="text" class="form-control" formControlName="hourPrice" id="hourPrice" maxlength="10" onkeypress="return event.keyCode>=48&&event.keyCode<=57" (keyup)="priceChange($event, 'hourPrice')">
+                            <span class="input-group-addon">元</span>
+                        </div>
+                    </div>
+                    <div class="form-inline" *ngIf="newProjectFormErrors.repairHour.error || newProjectFormErrors.hourPrice.error">
+                        <div [hidden]="!newProjectFormErrors.repairHour.error" class="formInfo input-group">
+                            {{newProjectFormErrors.repairHour.error}}
+                        </div>
+                        <div [hidden]="!newProjectFormErrors.hourPrice.error" class="formInfo input-group">
+                            {{newProjectFormErrors.hourPrice.error}}
+                        </div>
+                    </div>
+                    <div class="form-inline">
+                        <div class="input-group">
+                            <label for="discount" class="input-group-addon"><i class="icon-sm">*</i>折扣率</label>
+                            <input type="text" class="form-control" formControlName="discount" id="discount" maxlength="3" onkeypress="return event.keyCode>=48&&event.keyCode<=57" (keyup)="priceChange($event, 'discount')">
+                            <span class="input-group-addon">%</span>
+                        </div>
+                        <div class="input-group">
+                            <label for="totalCount" class="input-group-addon"><i class="icon-sm">*</i>金额</label>
+                            <input type="text" class="form-control" formControlName="totalCount" id="totalCount" readonly>
+                            <span class="input-group-addon">元</span>
+                        </div>
+                    </div>
+                    <div class="form-inline" *ngIf="newProjectFormErrors.discount.error || newProjectFormErrors.totalCount.error">
+                        <div [hidden]="!newProjectFormErrors.discount.error" class="formInfo input-group">
+                            {{newProjectFormErrors.discount.error}}
+                        </div>
+                        <div [hidden]="!newProjectFormErrors.totalCount.error" class="formInfo input-group">
+                            {{newProjectFormErrors.totalCount.error}}
+                        </div>
+                    </div>
+                    <div class="text-center">
+                        <button class="btn btn-success" type="submit" [disabled]="!newProjectForm.valid" (click)="newProjects.hide();saveNewProject()">保存</button>
+                        <button class="btn btn-default" type="button" (click)="newProjects.hide();cencelNewProject()">取消</button>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+</div>
+<div bsModal #complete="bs-modal" class="modal fade complete" tabindex="-1" role="dialog" aria-labelledby="mySmallModalLabel" aria-hidden="true" [config]="{backdrop: 'static'}">
+    <div class="modal-dialog modal-sm">
+        <div class="modal-content">
+            <div class="modal-body">
+                <button type="button" class="close pull-right" aria-label="Close" (click)="complete.hide();cencelhangDisabled()">
+                    <span aria-hidden="true">&times;</span>
+                </button>
+                <div>
+                    <div class="icon">!</div>
+                    <div class="content">作废后将不可恢复，是否确认作废？</div>
+                    <div class="infoButton">
+                        <button type="button" class="btn btn-primary" (click)="complete.hide();hangDisabled(2,'OK')">确定</button>
+                        <button type="button" class="btn btn-default" (click)="complete.hide();cencelhangDisabled()">取消</button>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>

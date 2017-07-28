@@ -1,0 +1,118 @@
+<div class="container">
+    <div class="header clearfix">
+        <h4 class="pull-left">进销存明细</h4>
+        <button type="button" class="close pull-right" (click)="localPage()">
+            <span aria-hidden="true">&times;</span>
+        </button>
+    </div>
+    <hr>
+    <form>
+        <div class="form-inline">
+            <div class="input-group">
+                <label for="" class="input-group-addon">配件编码</label>
+                <input class="form-control" name="" type="text">
+                <span class="input-group-addon">
+                    <i class="fa fa-search"></i>
+                </span>
+            </div>
+            <div class="input-group">
+                <label for="" class="input-group-addon">配件名称</label>
+                <input class="form-control" name="" type="text">
+                <span class="input-group-addon">
+                    <i class="fa fa-search"></i>
+                </span>
+            </div>
+            <div class="input-group">
+                <button type="submit" class="btn btn-primary">查询</button>
+            </div>
+        </div>
+    </form>
+    <p>温馨提示：系统为您找到 <span>0</span> 条记录</p>
+    <div class="table-container table-center">
+        <table class="table table-bordered">
+            <thead>
+                <tr>
+                    <th>配件编码</th>
+                    <th>配件名称</th>
+                    <th>期初数量</th>
+                    <th>期初金额</th>
+                    <th>期末数量</th>
+                    <th>期末金额</th>
+                    <th>入库数量</th>
+                    <th>入库金额</th>
+                    <th>出库数量</th>
+                    <th>出库成本<br>金额</th>
+                    <th>出库销售<br>金额</th>
+                    <th>采购入库<br>数量</th>
+                    <th>采购入库<br>金额</th>
+                    <th>维修领料<br>数量</th>
+                    <th>维修领料<br>金额</th>
+                    <th>配件销售<br>数量</th>
+                    <th>配件销售<br>金额</th>
+                    <th>内部领料<br>数量</th>
+                    <th>内部领料<br>金额</th>
+                </tr>
+            </thead>
+            <tbody>
+            </tbody>
+        </table>
+    </div>
+    <div class="loading">
+        <div [hidden]="true">
+            <i class="fa fa-spinner fa-fw fa-spin fa-3x d-none"></i>
+        </div>
+        <div [hidden]="false">没有数据</div>
+    </div>
+    <div class="table-container table-right">
+        <table class="table table-bordered">
+            <thead>
+                <tr>
+                    <th>合计</th>
+                    <th>期初数量</th>
+                    <th>期初金额</th>
+                    <th>期末数量</th>
+                    <th>期末金额</th>
+                    <th>入库数量</th>
+                    <th>入库金额</th>
+                    <th>出库数量</th>
+                    <th>出库成本<br>金额</th>
+                    <th>出库销售<br>金额</th>
+                    <th>采购入库<br>数量</th>
+                    <th>采购入库<br>金额</th>
+                    <th>维修领料<br>数量</th>
+                    <th>维修领料<br>金额</th>
+                    <th>配件销售<br>数量</th>
+                    <th>配件销售<br>金额</th>
+                    <th>内部领料<br>数量</th>
+                    <th>内部领料<br>金额</th>
+                </tr>
+            </thead>
+            <tbody>
+                <tr>
+                    <td></td>
+                    <td class="text-center">0</td>
+                    <td>0.00</td>
+                    <td class="text-center">0</td>
+                    <td>0.00</td>
+                    <td class="text-center">0</td>
+                    <td>0.00</td>
+                    <td class="text-center">0</td>
+                    <td>0.00</td>
+                    <td>0.00</td>
+                    <td class="text-center">0</td>
+                    <td>0.00</td>
+                    <td class="text-center">0</td>
+                    <td>0.00</td>
+                    <td class="text-center">0</td>
+                    <td>0.00</td>
+                    <td class="text-center">0</td>
+                    <td>0.00</td>
+                </tr>
+            </tbody>
+        </table>
+    </div>
+    <hr>
+    <div class="export">
+        <button type="button" class="btn btn-primary">导出</button>
+    </div>
+</div>

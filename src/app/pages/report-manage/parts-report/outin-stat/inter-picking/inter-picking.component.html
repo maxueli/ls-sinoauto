@@ -1,0 +1,257 @@
+<!--component html goes here -->
+<div id="parts-sell" @flyIn>
+     <h4>内部领料统计</h4>
+    <div class="history_top clearfix">
+        <form action=""> 
+            <div class="col-md-2">
+                <div class="input-group">
+                    <span class="input-group-addon" id="sizing-addon2" name="userName" >领料人</span>
+                    <select class="form-group"  name="roleId" [(ngModel)]="interParams.packUserId" (change)='packUserIdchange(packUserId,$event)'  class="form-control" >
+                        <option *ngFor="let item of packUserList"  [value]="item.userId">{{item.userName}}</option>
+                    </select>
+                </div>
+            </div>
+            <div class="col-md-2">
+                <div class="input-group">
+                    <span class="input-group-addon" id="sizing-addon2" name="packOrgId">部门</span>
+                    <select class="form-group"  name="roleId" [(ngModel)]="interParams.packOrgId"  class="form-control" >
+                       <option *ngFor="let item of departList"  [value]="item.depId">{{item.depName}}</option>
+                    </select>
+                </div>
+            </div>
+            <div class="col-md-4">
+                <div class="input-group">
+                    <span class="input-group-addon" id="sizing-addon2">进厂日期</span>
+                    <input type="text" class="form-control" placeholder="请选择开始日期" name="beginTime" [(ngModel)]="interParams.beginTime" (valueChanged)="timeChange()" ngui-datetime-picker [close-on-select]="false" date-only="true"
+                        max-date="maxDate" aria-describedby="sizing-addon2">
+                    <span class="input-group-addon" id="sizing-addon2">-</span>
+                    <input type="text" class="form-control" placeholder="请选择结束日期" name="endTime" [(ngModel)]="interParams.endTime" (valueChanged)="timeChange()" ngui-datetime-picker [close-on-select]="false" date-only="true"
+                        max-date="maxDate" aria-describedby="sizing-addon2">
+                    
+                </div>
+                 <div class="formInfo input-group bg-danger" *ngIf="timeError">
+                    无效的进厂时间，开始时间要小于截止时间
+                </div>
+            </div>
+            <div class="form-group">
+                <button  class="btn btn-primary" type="submit" (click)="Intersearch()" [disabled]='notSubmit'>查询</button>
+            </div>
+        </form>
+    </div>
+    <hr style="margin-top:0px;">
+    <div class="history_main">
+         <h4>温馨提示：系统为您找到<span class="red">{{totalItems}}</span>条记录</h4>
+        <div class="history_main_w">
+            <table class="table table-bordered text-center">
+                <thead>
+                    <tr>
+                        <th>操作</th>
+                        <th>单号</th>
+                        <th>领料人</th>
+                        <th>部门</th>
+                        <th>金额（元）</th>
+                        <th>开单时间</th>
+                        <th>操作人</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr *ngFor="let item of Intelist" >
+                        <td><button  class="btn btn-info" type="text" (click)="Interdetails(item.ipCode)">详情</button></td>
+                        <td>{{item.ipCode}}</td>
+                        <td>{{item.userName}}</td>
+                        <td>{{item.depName}}</td>
+                        <td>{{item.totalPrice}}</td>
+                        <td>{{item.createTime}}</td>
+                        <td>{{item.operUserName}}</td>
+                    </tr>
+
+                     
+                </tbody>
+            </table>
+        </div>
+    </div>
+    <div class="inventory_buttom clearfix">
+        <div class="form-group paginate">
+            <label>
+                每页显示
+                <select class="form-control select" (change)="pageChanged($event,'SELECT')">
+                    <option value="10">10</option>
+                    <option value="20">20</option>
+                    <option value="30">30</option>
+                    <option value="50">50</option>
+                    <option value="100">100</option>
+                </select>
+            </label>
+            <pagination [totalItems]="totalItems" [(ngModel)]="index" [maxSize]="10" [itemsPerPage]="interParams.pageSize" [boundaryLinks]="true" previousText="上一页" nextText="下一页" firstText="首页" lastText="尾页" (pageChanged)="pageChanged($event)"></pagination>
+            <label class="contorl-label">
+                跳转到<input type="number" class="form-control" min="1" [max]="maxPageSize" [(ngModel)]="choosePage">页
+            </label>
+            <button class="btn btn-default" (click)="pageChanged($event,'BUTTON')">GO</button>
+        </div>
+    </div>
+    <div class="history_footer">
+        <button  class="btn btn-primary" type="submit">导出</button>
+    </div>
+</div>
+
+
+<!--详情 模态框 start-->
+<div bsModal #lgModal="bs-modal" class="modal fade" tabindex="-1" role="dialog" aria-labelledby="myLargeModalLabel" aria-hidden="true">
+  <div class="modal-dialog modal-lg">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h4 class="modal-title pull-left"> 内部领料详情</h4>
+        <button type="button" class="close pull-right" (click)="lgModal.hide()" aria-label="Close">
+          <span aria-hidden="true">&times;</span>
+        </button>
+      </div>
+      <div class="modal-body">
+        <div class="modal_main clearfix">
+            <div class="inventory_modal">
+                <div class="repair_his_content">
+                     <table class="table table-bordered text-center">
+                        <tbody>
+                            <tr>
+                                <td width="25%">单号</td>
+                                <td width="25%">{{interParamsdateils.ipCode}}</td>
+                                <td width="25%">领料人：</td>
+                                <td width="25%">{{interParamsdateils.depotName}}</td>
+                            </tr>
+                            <tr>
+                                <td>部门：</td>
+                                <td>{{interParamsdateils.departmentName}}</td>
+                                <td>开单时间</td>
+                                <td>{{interParamsdateils.createTime}}</td>
+                            </tr>
+                            <tr>
+                                <td>操作人：</td>
+                                <td>{{interParamsdateils.operUserName}}</td>
+                                <td></td>
+                                <td></td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
+                <div class="repair_his_bill">
+                     <table class="table table-bordered text-center">
+                        <thead>
+                            <tr>
+                                <th>配件编码</th>
+                                <th>配件分类</th>
+                                <th>配件名称</th>
+                                <th>品牌</th>
+                                <th>规格型号</th>
+                                <th>单位</th>
+                                <th>仓库</th>
+                                <th>库位</th>
+                                <th>库位量</th>
+                                <th>单价（元）</th>
+                                <th>数量</th>
+                                <th>金额（元）</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <tr>
+                                <td>{{interparts.partsCode}}</td>
+                                <td>{{interparts.partsTypeName}}</td>
+                                <td>{{interparts.partsName}}</td>
+                                <td>{{interparts.brandName}}</td>
+                                <td>{{interparts.partsSpec}}</td>
+                                <td>{{interparts.partsUnit}}</td>
+                                <td>{{interParamsdateils.depotName  }}</td>
+                                <td>{{interParamsdateils.depotPosName}}</td>
+                                <td>{{interparts.inventory}}</td>
+                                <td>{{interParamsdateils.price}}</td>
+                                <td>{{interParamsdateils.count}}</td>
+                                <td>{{interParamsdateils.totalPrice}}</td>
+                                
+                            </tr>
+                        </tbody>
+                        
+                    </table>
+                </div>
+               
+                <div class="button clearfix">
+                    <button class="btn btn-primary" type="submit" (click)="lgModal.hide();orderPrint()">打印</button>
+                </div>
+               
+            </div>
+            
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+<!--详情 模态框 end-->
+
+<div class="printgoods">
+    <div class="printHeader">
+        <img src="../../../../../assets/img/login_logo.png" alt="">
+        
+    </div>
+    <div class="printContnet">
+         <div class="repair_his_content">
+            <table class="table table-bordered text-center">
+                <tbody>
+                    <tr>
+                        <td width="25%">单号</td>
+                        <td width="25%">{{interParamsdateils.ipCode}}</td>
+                        <td width="25%">领料人：</td>
+                        <td width="25%">{{interParamsdateils.depotName}}</td>
+                    </tr>
+                    <tr>
+                        <td>部门：</td>
+                        <td>{{interParamsdateils.departmentName}}</td>
+                        <td>开单时间</td>
+                        <td>{{interParamsdateils.createTime}}</td>
+                    </tr>
+                    <tr>
+                        <td>操作人：</td>
+                        <td>{{interParamsdateils.operUserName}}</td>
+                        <td></td>
+                        <td></td>
+                    </tr>
+                </tbody>
+            </table>
+        </div>
+        <div class="repair_his_bill">
+                <table class="table table-bordered text-center">
+                <thead>
+                    <tr>
+                        <th>配件编码</th>
+                        <th>配件分类</th>
+                        <th>配件名称</th>
+                        <th>品牌</th>
+                        <th>规格型号</th>
+                        <th>单位</th>
+                        <th>仓库</th>
+                        <th>库位</th>
+                        <th>库位量</th>
+                        <th>单价（元）</th>
+                        <th>数量</th>
+                        <th>金额（元）</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr>
+                        <td>{{interparts.partsCode}}</td>
+                        <td>{{interparts.partsTypeName}}</td>
+                        <td>{{interparts.partsName}}</td>
+                        <td>{{interparts.brandName}}</td>
+                        <td>{{interparts.partsSpec}}</td>
+                        <td>{{interparts.partsUnit}}</td>
+                        <td>{{interParamsdateils.depotName  }}</td>
+                        <td>{{interParamsdateils.depotPosName}}</td>
+                        <td>{{interparts.inventory}}</td>
+                        <td>{{interParamsdateils.price}}</td>
+                        <td>{{interParamsdateils.count}}</td>
+                        <td>{{interParamsdateils.totalPrice}}</td>
+                        
+                    </tr>
+                </tbody>
+                
+            </table>
+        </div>
+        
+    </div>
+</div>

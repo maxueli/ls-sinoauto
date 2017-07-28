@@ -1,0 +1,309 @@
+<!--component html goes here -->
+<div id="accept" @flyIn>
+    <h4>维修验收</h4>
+    <form action="">
+        <div class="form-inline">
+            <input class="form-control" name="keyword" [(ngModel)]="acceptparams.condition" placeholder="请输入车牌号/工单号">
+            <button class="btn btn-success" (click)="search()">查询</button>
+        </div>
+        <div class="input-group status">
+            <label class="input-group-addon">工单状态</label>
+            <div class="form-control">
+                <div class="form-check-box">
+                    <label class="form-check-label">
+                        <input type="checkbox" class="form-check-input" name="allMaintenance" (change)="ischeckAll()">全部
+                    </label>
+                </div>
+                <div class="form-check-box">
+                    <label class="form-check-label">
+                        <input class="form-check-input" type="checkbox" name="maintenance" value="4" (change)="search()">待验收（已完工）
+                    </label>
+                </div>
+                <div class="form-check-box">
+                    <label class="form-check-label">
+                        <input class="form-check-input" type="checkbox" name="maintenance" value="5" (change)="search()">待结算（已验收）
+                    </label>
+                </div>
+            </div>
+        </div>
+    </form>
+    <div class="accept_main">
+        <div class="table-container">
+            <table class="table table-bordered text-center">
+                <thead>
+                    <tr>
+                        <th>操作</th>
+                        <th>状态</th>
+                        <th>车牌号</th>
+                        <th>工单号</th>
+                        <th>维修技师</th>
+                        <th>维修类型</th>
+                        <th>转派</th>
+                        <th>进场时间</th>
+                        <th>预计交车时间</th>
+                        <th>超时</th>
+                        <th>车型</th>
+                        <th>VIN</th>
+                        <th>服务顾问</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr *ngFor="let item of list">
+                        <td>
+                            <button class="btn btn-sm btn-info" (click)="acceptModal.show();getInfoDetail(item.orderId)">验收</button>
+                        </td>
+                        <td [ngSwitch]="item.orderStatus">
+                            <template [ngSwitchCase]="4">待验收(已完工)</template>
+                            <template [ngSwitchCase]="5">待结算(已验收)</template>
+                        </td>
+                        <td>{{item.carNo}}</td>
+                        <td>{{item.orderNo}}</td>
+                        <td>{{item.technicianName}}</td>
+                        <td>{{item.repairType}}</td>
+                        <td>{{item.turnToSendName}}</td>
+                        <td>{{item.createTime}}</td>
+                        <td>{{item.estimatedDeliveryTime}}</td>
+                        <td class="overTime">{{item.overtime}}</td>
+                        <td>{{item.carModelName}}</td>
+                        <td>{{item.vin}}</td>
+                        <td>{{item.serviceName}}</td>
+                    </tr>
+                </tbody>
+            </table>
+        </div>
+    </div>
+    <div class="form-group paginate">
+        <label>
+            每页显示
+            <select class="form-control select" (change)="pageChanged($event,'SELECT')">
+                <option value="10">10</option>
+                <option value="20">20</option>
+                <option value="30">30</option>
+                <option value="50">50</option>
+                <option value="100">100</option>
+            </select>
+        </label>
+        <pagination [totalItems]="totalItems" [(ngModel)]="index" [maxSize]="10" [itemsPerPage]="acceptparams.pageSize" [boundaryLinks]="true"
+            previousText="上一页" nextText="下一页" firstText="首页" lastText="尾页" (pageChanged)="pageChanged($event)"></pagination>
+            <label class="contorl-label">
+                跳转到<input type="number" class="form-control" min="1" [max]="maxPageSize" [(ngModel)]="choosePage">页
+            </label>
+            <button class="btn btn-default" (click)="pageChanged($event,'BUTTON')">GO</button>
+    </div>
+</div>
+
+<div bsModal #acceptModal="bs-modal" class="modal fade" tabindex="-1" role="dialog" aria-labelledby="myLargeModalLabel" aria-hidden="true"
+    [config]="{backdrop: 'static'}">
+    <div class="modal-dialog modal-lg">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h4 class="modal-title pull-left">验收详情</h4>
+                <button type="button" class="close pull-right" (click)="acceptModal.hide()" aria-label="Close"><span aria-hidden="true">&times;</span></button>
+            </div>
+            <div class="modal-body">
+                <tabset>
+                    <tab class="active">
+                        <template tabHeading>
+                            <i aria-hidden="true" class="fa fa-clone"></i> 维修项目
+                        </template>
+                        <table class="table table-bordered">
+                            <thead>
+                                <tr>
+                                    <th>
+                                        <input type="checkbox" name="allPro" (change)="isAllPro()">
+                                    </th>
+                                    <th>项目名称</th>
+                                    <th>维修工时</th>
+                                    <th>维修技师</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                <tr *ngFor="let item of orderInfo">
+                                    <td>
+                                        <input type="checkbox" name="pros" (change)="ischeckAllPro()" value={{item.repairProjectId}} [disabled]="item.isPass">
+                                    </td>
+                                    <td>
+                                        {{item.projectName}}
+                                        <label class="append-stamp" *ngIf="item.isExtra">增项</label>
+                                        <span class="accept-stamp" *ngIf="item.isPass"></span>
+                                    </td>
+                                    <td>{{item.repairHour}}</td>
+                                    <td>{{item.assignTechnicanName}}</td>
+                                </tr>
+                            </tbody>
+                        </table>
+                        <div class="form-group mt-1">
+                            <label for=""><span style="color: red;margin-right: 5px">*</span>出厂里程： </label>
+                            <input type="text" #mileage='ngModel' class="form-control mileageInput" (keyup)="onKeyPress($event)" [(ngModel)]='checkOrderInfo.mileage'
+                                [ngClass]="{'ng-touched':checkOrderInfo.mileage>approachtime,'ng-invalid':checkOrderInfo.mileage<approachtime}"
+                                name='mileage' onkeyup="this.value=this.value.replace(/\D/g,'')" required>
+                                <div class="input-group-addon unit">KM</div>
+                                <div *ngIf="checkOrderInfo.mileage<approachtime" class="errinline">
+                                    <span style="color: red">数量不能小于{{approachtime}}</span>
+                                </div>
+                                <div *ngIf="mileage.errors && (mileage.dirty  || mileage.valid)" class="errinline">
+                                    <div [hidden]='!mileage.errors.required' class="formInfo">
+                                        数量不能为空
+                                    </div>
+                                </div>
+                                <div class="mt-1">
+                                    <button class="btn btn-success" (click)="pass()" [disabled]="disBtn">通过</button>
+                                </div>
+                        </div>
+                    </tab>
+                    <tab *ngIf="usePartsFlag" class="parts">
+                        <template tabHeading>
+                            <i aria-hidden="true" class="fa fa-wrench"></i> 维修配件
+                        </template>
+                        <table class="table table-bordered">
+                            <thead>
+                                <tr>
+                                    <th>维修工项</th>
+                                    <th>配件名称</th>
+                                    <th>品牌</th>
+                                    <th>规格型号</th>
+                                    <th>数量</th>
+                                    <th>单价(元)</th>
+                                    <th>金额(元)</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                <tr *ngFor="let item of partsList">
+                                    <td>{{item.repairProjetName}}</td>
+                                    <td>{{item.partName}}</td>
+                                    <td>{{item.partsBrand}}</td>
+                                    <td>{{item.partsSpec}}</td>
+                                    <td>{{item.num}}</td>
+                                    <td class="text-right">{{item.price}}</td>
+                                    <td class="text-right">{{item.totoal}}</td>
+                                </tr>
+                            </tbody>
+                        </table>
+                    </tab>
+                    <tab *ngIf="preViewOrderFlag">
+                        <template tabHeading>
+                            <i aria-hidden="true" class="fa fa-clipboard"></i> 预检单
+                        </template>
+                        <table class="table table-bordered">
+                            <thead>
+                                <tr>
+                                    <th colspan="4" style="text-align: left">基本信息</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                <tr>
+                                    <td>预检类型</td>
+                                    <td>{{preViewList.previewStatus}}</td>
+                                    <td>油量</td>
+                                    <td>
+                                        {{preViewList.remainingOil}}
+                                        <span *ngIf="preViewList.remainingOil">%</span>
+                                    </td>
+                                </tr>
+                                <tr>
+                                    <td>故障描述</td>
+                                    <td colspan="3">{{preViewList.faultDesc}}</td>
+                                </tr>
+                            </tbody>
+                        </table>
+                        <table class="table table-bordered">
+                            <thead>
+                                <tr>
+                                    <th colspan="4" style="text-align: left">检查项</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                <tr>
+                                    <td>项目名称</td>
+                                    <td>检查项（项）</td>
+                                    <td>异常项</td>
+                                    <td>其他备注</td>
+                                </tr>
+                                <tr>
+                                    <td>随车附件</td>
+                                    <td>
+                                        <span>检查项：{{preViewList.partsTestNum}}</span><br>
+                                        <span>合格项：{{preViewList.partsTestPassNum}}</span><br>
+                                        <span style="color: red">异常项：{{preViewList.partsTestExcNum}}</span>
+                                    </td>
+                                    <td>{{preViewList.partsExc}}</td>
+                                    <td>{{preViewList.partsRemark}}</td>
+                                </tr>
+                                <tr>
+                                    <td>仪表盘</td>
+                                    <td>
+                                        <span>检查项：{{preViewList.dashboardNum}}</span><br>
+                                        <span>合格项：{{preViewList.dashboardPassNum}}</span><br>
+                                        <span style="color: red">异常项：{{preViewList.dashboardExcNum}}</span>
+                                    </td>
+                                    <td>{{preViewList.dashboardExc}}</td>
+                                    <td>{{preViewList.dashboardRemark}}</td>
+                                </tr>
+                            </tbody>
+                        </table>
+                        <table class="table table-bordered">
+                            <thead>
+                                <tr>
+                                    <th colspan="4" style="border: 0;text-align: left">车辆缺陷标识</th>
+                                    <th colspan="2" style="border: 0;text-align: right">
+                                        <span>划痕</span>
+                                        <span>变形</span>
+                                        <span>破损</span>
+                                    </th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                <tr>
+                                    <td colspan="3">外观</td>
+                                    <td colspan="3">内饰</td>
+                                </tr>
+                                <tr>
+                                    <td colspan="3">
+                                        <img src="{{preViewList.surfacePicUrl}}" alt="">
+                                        <!--<img style="width: 50%;border-radius: 10px" src="https://ss3.bdstatic.com/70cFv8Sh_Q1YnxGkpoWK1HF6hhy/it/u=2261844264,1398222573&fm=26&gp=0.jpg"-->
+                                            alt="">
+                                    </td>
+                                    <td colspan="3">
+                                        <img src="{{preViewList.interiorPicUrl}}" alt="">
+                                        <!--<img style="width: 50%;border-radius: 10px" src="https://ss3.bdstatic.com/70cFv8Sh_Q1YnxGkpoWK1HF6hhy/it/u=2261844264,1398222573&fm=26&gp=0.jpg"-->
+                                            alt="">
+                                    </td>
+                                </tr>
+                            </tbody>
+                        </table>
+                        <table class="table table-bordered">
+                            <thead>
+                                <tr>
+                                    <th colspan="4" style="border: 0;text-align: left">照片</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                <tr *ngFor="let item of preViewPics">
+                                    <td style="padding: 5px">
+                                        <img src="{{item.picUrl}}" alt="">
+                                        <!--<img style="width: 50%;border-radius: 10px" src="http://img1.imgtn.bdimg.com/it/u=258914696,3391282823&fm=26&gp=0.jpg" alt="">-->
+                                    </td>
+                                </tr>
+                            </tbody>
+                        </table>
+                        <div class="text-font mt-3">
+                            <div class="pull-left text-left">
+                                <p>
+                                    <span class="mr-3">预检员：{{preViewList.previewerName}}</span>
+                                    <span>日期：{{preViewList.createTime}}</span>
+                                </p>
+                            </div>
+                            <div class="pull-right text-left">
+                                <p>
+                                    <span class="mr-3">
+          客户签名：<img alt="客户签名" class="img-fluid rounded" height="25" width="100" src="{{preViewList.customerSignUrl}}"></span>
+                                    <span>日期：{{preViewList.finishTime}}</span>
+                                </p>
+                            </div>
+                        </div>
+                    </tab>
+                </tabset>
+            </div>
+        </div>
+    </div>
+    </div>

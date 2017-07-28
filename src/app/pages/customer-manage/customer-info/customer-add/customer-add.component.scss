@@ -1,0 +1,185 @@
+.container {
+    width: 100%;
+    background: #fff;
+    form {
+        .form-inline {
+            margin: 8px 0;
+            display: flex;
+            justify-content: space-between;
+            .input-group {
+                width: 23%;
+                label {
+                    width: 99px;
+                    text-align: left;
+                }
+                .table {
+                    width: initial !important;
+                    td {
+                        cursor: pointer;
+                    }
+                }
+                .dropdown-menu {
+                    top: 37px;
+                    left: 99px;
+                }
+                .form-control {
+                    width: 100% !important;
+                }
+            }
+            .formInfo {
+                color: #a94442;
+                padding-left: 100px;
+                margin-top: -5px;
+            }
+        }
+        .form-inline:last-child>div {
+            width: 74.33%;
+        }
+    }
+    .tabCard {
+        i {
+            margin-right: 5px;
+        }
+        table {
+            margin: 10px 0 0 0;
+            th,
+            td {
+                text-align: center;
+                vertical-align: middle;
+            }
+            th {
+                background: #f3f3f4;
+            }
+        }
+        .add {
+            padding: 15px 0;
+            button {
+                color: #727171;
+                font-weight: bold;
+                font-size: 15px;
+                border-radius: 4px;
+                i {
+                    color: #27b394;
+                    font-size: 20px;
+                    margin-right: 5px;
+                    position: relative;
+                    top: 2px;
+                }
+            }
+            .btn-default:active,
+            .btn-default:hover {
+                color: #292b2c;
+                background-color: #e6e6e6;
+                background-image: none;
+                border-color: #adadad;
+            }
+        }
+    }
+    >.text-center {
+        padding: 20px 0;
+        border-top: 1px solid #eee;
+    }
+}
+
+.modal {
+    .modal-header button {
+        width: 24px;
+        height: 24px;
+        border-radius: 50%;
+        border: 2px solid #000;
+        opacity: .3;
+        margin-top: 0px;
+        padding: 0;
+        span {
+            position: relative;
+            top: -2px;
+        }
+    }
+    .modal-body form {
+        .form-inline {
+            display: flex;
+            justify-content: space-between;
+            margin-bottom: 15px;
+            >.input-group {
+                width: 48%;
+                label {
+                    width: 122px;
+                    text-align: left;
+                }
+                .dropdown-menu {
+                    top: 37px;
+                    left: 122px;
+                }
+                .form-control {
+                    width: 100% !important;
+                }
+            }
+            .formInfo {
+                color: #a94442;
+                padding-left: 122px;
+                margin-top: -5px;
+            }
+        }
+        >div:last-child {
+            margin-top: 30px;
+        }
+    }
+}
+
+.container>div>button:last-child,
+.modal-body .text-center>button:last-child {
+    border: 1px solid #ccc;
+}
+
+button {
+    padding: 6px 30px;
+    text-decoration: none !important;
+    border: 0;
+    outline: none !important;
+    transition: .8s !important;
+}
+
+.text-center button {
+    padding: 9px 30px;
+}
+
+.btn-primary {
+    background-color: #27b394 !important;
+    margin-left: 10px;
+}
+
+.btn-primary:hover {
+    background-color: #22cda7 !important;
+}
+
+.btn:disabled {
+    background-color: #dcdddd !important;
+    opacity: 1;
+    border-color: #dcdddd;
+    cursor: not-allowed;
+}
+
+.input-group-addon,
+.form-control {
+    height: 40px;
+    font-size: 16px;
+    border-color: #e8e8e8;
+}
+
+.form-control:disabled {
+    background-color: #f7f8f8;
+}
+
+.input-group {
+    .defBgColor {
+        background: #fff;
+        cursor: pointer;
+    }
+    .icon-sm {
+        float: left;
+        color: red;
+        font-size: 20px;
+        font-style: normal;
+        margin-right: 5px;
+    }
+}

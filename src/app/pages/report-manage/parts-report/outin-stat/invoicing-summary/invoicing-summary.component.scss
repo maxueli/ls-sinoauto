@@ -1,0 +1,46 @@
+.container {
+    width: 100%;
+    background: #fff;
+    h4{
+        border-bottom: 1px solid #ccc;
+        line-height: 40px;
+    }
+    >p {
+        color: #000;
+        font-size: 16px;
+        span {
+            font-size: 16px;
+            color: red;
+            font-weight: bold;
+        }
+    }
+    .table-container {
+        width: 100%;
+        max-height: 400px;
+        overflow: auto;
+        margin-bottom: 20px;
+        table {
+            width: 110% !important;
+            // min-width: 110% !important;
+        }
+    }
+}
+
+button {
+    padding: 6px 30px;
+    text-decoration: none !important;
+    border: 0;
+    outline: none !important;
+}
+
+table {
+    margin-bottom: 0;
+    th,
+    td {
+        text-align: center;
+        vertical-align: middle;
+    }
+    th {
+        background: #f3f3f4;
+    }
+}

@@ -1,0 +1,263 @@
+.container {
+    width: 100%;
+    background: #fff;
+    h4 {
+        line-height: 40px;
+        border-bottom: 1px solid #ccc;
+    }
+    .select {
+        position: relative;
+        .input-group-addon,
+        .form-control,
+        button {
+            height: 40px;
+            font-size: 16px;
+            border-color: #e8e8e8;
+        }
+        .gdStatus .form-control {
+            display: inline-table;
+            padding-top: 8px;
+        }
+        .input-group {
+            margin-bottom: 10px;
+            .form-check-box {
+                display: inline-block;
+                margin: 0 15px 0 0;
+                label {
+                    margin-bottom: 0;
+                    padding-left: 20px;
+                    position: relative;
+                    font-weight: normal;
+                    input {
+                        position: absolute;
+                        top: 0px;
+                        left: 4px;
+                    }
+                }
+            }
+        }
+        .form-inline {
+            padding-right: 8%;
+            .input-group {
+                margin-right: 10px;
+                .selectDefaultOption {
+                    display: none;
+                }
+                button {
+                    margin-right: 10px;
+                }
+                .date {
+                    position: absolute;
+                    top: 34px;
+                    z-index: 10;
+                    .well {
+                        margin-bottom: 0 !important;
+                        padding: 0 !important;
+                    }
+                }
+            }
+            .dateError {
+                position: relative;
+                .formInfo {
+                    color: #a94442;
+                    position: absolute;
+                    top: 45px;
+                    left: 90px;
+                }
+            }
+            .show {
+                display: inline-table!important;
+            }
+        }
+        .form-inline-dateError {
+            margin-bottom: 25px;
+        }
+        .advanceFilter {
+            height: 40px;
+            line-height: 40px;
+            position: absolute;
+            top: 40px;
+            right: 0px;
+            a {
+                font-size: 16px;
+                color: #1CB4C6;
+                text-decoration: none;
+                cursor: pointer;
+            }
+        }
+    }
+    .table-container {
+        width: 100%;
+        max-height: 520px;
+        overflow: auto;
+        table {
+            width: 130% !important;
+            min-width: 150% !important;
+            margin-bottom: 0;
+            th,
+            td {
+                text-align: center;
+                vertical-align: middle;
+            }
+            th {
+                background: #f3f3f4;
+            }
+        }
+    }
+}
+
+.modal {
+    .modal-header button {
+        width: 24px;
+        height: 24px;
+        border-radius: 50%;
+        border: 2px solid #000;
+        opacity: .3;
+        margin-top: 0px;
+        padding: 0;
+        span {
+            position: relative;
+            top: -2px;
+        }
+    }
+    >.table {
+        td {
+            width: 35%;
+        }
+        td.fixed-width {
+            width: 15%;
+        }
+    }
+    .tabCard {
+        i {
+            margin-right: 5px;
+        }
+        table {
+            margin: 10px 0 0 0;
+            caption {
+                background: #f3f3f4;
+            }
+            th,
+            td {
+                vertical-align: middle;
+            }
+            th {
+                text-align: center;
+            }
+        }
+        .customerUrlBox {
+            margin-top: 30px;
+        }
+        .previewPic {
+            margin: 0;
+            li {
+                margin: 10px 0;
+                padding: 0;
+                width: 49.5%;
+                display: inline-block;
+                img {
+                    max-width: 100%;
+                }
+            }
+        }
+    }
+    .card {
+        width: 100%;
+        height: 40px;
+        line-height: 40px;
+        color: #8a6d3b;
+        font-size: 1rem;
+        background-color: #fcf8e3 !important;
+        border: 1px solid #dcdddd;
+        padding-left: 27px;
+        margin: 15px auto;
+        >span {
+            color: #8a6d3b;
+            font-size: 16px;
+            margin-right: 1.5rem;
+            >span {
+                color: #eb5267;
+                font-size: 20px;
+                margin-left: 2px;
+            }
+        }
+    }
+}
+
+// .btn-primary {
+//     background-color: #27b394 !important;
+//     margin-left: 10px;
+// }
+// .btn-primary:hover {
+//     background-color: #22cda7 !important;
+// }
+.printgoods {
+    display: none;
+    position: relative;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    .printHeader {
+        line-height: 21px;
+        padding: 10px;
+        border-bottom: 2px solid #000;
+        margin-bottom: 20px;
+        .printTitle {
+            font-size: 16px;
+            font-weight: 500;
+            position: absolute;
+            top: 10px;
+            right: 0;
+        }
+    }
+    .printContnet {
+        ul {
+            list-style: none;
+            margin: 0;
+            padding: 0;
+            li {
+                display: inline-block;
+                padding: 5px 0;
+                margin-right: 10px;
+            }
+        }
+        table {
+            th,
+            td {
+                vertical-align: middle;
+            }
+            th {
+                text-align: center;
+            }
+        }
+        table.basicInfo {
+            caption {
+                width: 58px;
+                padding-left: 8px;
+                border-bottom: 3px solid #000;
+            }
+            td {
+                border-color: transparent;
+            }
+            td.basicInfo_title {
+                width: 100px;
+                text-align: left;
+            }
+        }
+        table.project span {
+            margin-right: 10px;
+        }
+    }
+    .printFooter {
+        position: relative;
+        margin-top: 20px;
+        span {
+            margin-right: 15px;
+            color: #000;
+        }
+        span.customer {
+            margin: 0 80px 0 0;
+        }
+    }
+}

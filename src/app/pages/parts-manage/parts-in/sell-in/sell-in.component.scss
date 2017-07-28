@@ -1,0 +1,238 @@
+// component css goes here
+.purchans-content {
+    position: relative;
+    display: flex;
+    flex-direction: column;
+    background: #fff;
+    width: 98%;
+    padding-left: 25px;
+    .header {
+        flex: 1;
+        .title {
+            float: left;
+            line-height: 30px;
+        }
+        .list-info {
+            float: right;
+            margin-left: .3em;
+            color: #1c84c6;
+            font-size: 1.5rem;
+            position: relative;
+            line-height: 50px;
+            a {
+                color: #337ab7 !important;
+                text-decoration: none;
+            }
+            .dropdown-menu {
+                position: absolute;
+                top: 40px;
+                left: -267px;
+                width: 380px;
+                th,
+                td {
+                    color: #000 !important;
+                }
+            }
+        }
+        &:after {
+            content: '';
+            display: table;
+            clear: both;
+        }
+    }
+    >.content {
+        padding: 20px 0px;
+        border: 1px solid #ddd;
+        border-left: 0;
+        border-right: 0;
+        .form-inline {
+            border-bottom: 1px solid #ddd;
+            padding-bottom: 20px;
+        }
+        .input-group-addon {
+            border-top-left-radius: 4px;
+            border-bottom-left-radius: 4px;
+            background: #f3f3f4;
+            border-color: #eef0f1;
+            color: #727171;
+        }
+        .form-control {
+            border: 1px solid rgb(238, 240, 241) !important;
+            font-size: 1rem;
+            color: #727171;
+            font-weight: 400;
+        }
+        .input-icon {
+            // border:1px solid rgba(0, 0, 0, .125) !important;
+            border-top-left-radius: 0;
+            border-bottom-left-radius: 0;
+            // border-left-color: transparent;
+            background: #fff;
+            color: #727171;
+            // border-radius: none;
+        }
+        .btn {
+            padding: 9px 30px;
+            border-radius: 5px;
+            font-weight: 500;
+            font-size: 1.5rem;
+        }
+        .btn:disabled {
+            background: #dcdddd;
+            opacity: 1;
+            border-color: #dcdddd;
+            cursor: not-allowed;
+        }
+        .table-caption {
+            width: 106px;
+            height: 35px;
+            line-height: 35px;
+            border: 1px solid #ddd;
+            color: #000;
+            font-size: 1.5rem;
+            text-align: center;
+            font-weight: 400;
+            margin-top: 20px;
+        }
+        .table-container {
+            position: relative;
+            overflow: auto;
+            max-height: 500px;
+            width: 100%;
+            max-width: 100%;
+            border: 1px solid rgb(236, 238, 239);
+            .table {
+                border-collapse: collapse;
+                background: transparent;
+                width: 110% !important;
+                min-width: 110% !important;
+                margin: 0;
+                border: 0 !important;
+                text-align: center;
+                th,
+                td {
+                    vertical-align: middle;
+                }
+                th {
+                    background: #f3f3f4;
+                    color: #727171;
+                    border-color: #dcdddd;
+                    font-size: 1.5rem;
+                    font-weight: 500;
+                    text-align: center;
+                }
+            }
+        }
+        div {
+            font-size: 1.5rem;
+            font-weight: 500;
+        }
+    }
+    .footer {
+        padding: 20px 0px;
+        .btn {
+            padding: 9px 30px;
+            border-radius: 5px;
+            font-weight: 500;
+            font-size: 1.5rem;
+        }
+        .btn:disabled {
+            background: #dcdddd;
+            opacity: 1;
+            border-color: #dcdddd;
+            cursor: not-allowed;
+        }
+    }
+    .complete {
+        .icon {
+            width: 40px !important;
+            height: 40px !important;
+            line-height: 40px !important;
+            color: rgba(39, 179, 148, 0.59);
+            font-size: 30px !important;
+            text-align: center;
+            border: 4px solid rgba(39, 179, 148, 0.57);
+            border-radius: 50%;
+            margin: 6px auto 14px !important;
+            padding: 0;
+            position: relative;
+            box-sizing: content-box;
+        }
+        .content {
+            text-align: center;
+            margin: 10px 0;
+            font-size: 16px;
+        }
+        .infoButton {
+            text-align: center;
+            margin: 25px 0 10px 0;
+            button {
+                padding: 7px 28px !important;
+            }
+            button:last-child {
+                border: 1px solid #ccc;
+            }
+        }
+    }
+}
+
+.printgoods {
+    display: none;
+    position: relative;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    .printHeader {
+        line-height: 21px;
+        padding: 10px; // border: 1px solid #000;
+        border-bottom: 2px solid #000;
+        margin-bottom: 20px;
+        .printTitle {
+            position: absolute;
+            top: 15px;
+            right: 0;
+            font-size: 16px;
+            font-weight: 500;
+        }
+    }
+    .printContnet {
+        ul {
+            list-style: none;
+            margin: 0;
+            padding: 0;
+            li {
+                display: inline-block;
+                padding: 5px 0;
+                margin-right: 10px;
+            }
+        }
+        table {
+            width: 100%;
+            height: 100%;
+            text-align: center;
+            vertical-align: middle;
+            thead {
+                border: 1px solid #000;
+                border-bottom: 0;
+                th {
+                    word-break: keep-all;
+                    white-space: nowrap;
+                    text-align: center;
+                    vertical-align: middle;
+                    border: 0;
+                    border-bottom: 1px solid #000;
+                }
+            }
+        }
+    }
+    .printFooter {
+        position: relative;
+        margin-top: 100px;
+        .operator {
+            position: absolute;
+            top: 0;
+            right: 0;
+        }
+    }
+}

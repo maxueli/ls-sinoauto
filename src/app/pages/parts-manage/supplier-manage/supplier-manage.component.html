@@ -1,0 +1,324 @@
+<!--component html goes here -->
+<div id="parts_price" @flyIn>
+    <h4 clas="parts_title">供应商管理</h4>
+    <div class="parts_top">
+        <form action="">
+            <div class="row">
+                <div class="col-md-2">
+                    <div class="input-group">
+                        <span class="input-group-addon" id="sizing-addon2">供应商代码</span>
+                        <input type="text" class="form-control" placeholder="供应商代码" [(ngModel)]="supplierParams.supplierCode" name="supplierCode">
+
+                    </div>
+                </div>
+                <div class="col-md-2">
+                    <div class="input-group">
+                        <span class="input-group-addon" id="sizing-addon2">供应商名称</span>
+                        <input type="text" class="form-control" placeholder="供应商名称" [(ngModel)]="supplierParams.supplierName" aria-describedby="sizing-addon2"
+                            name="supplierName">
+                    </div>
+                </div>
+                <div class="col-md-2">
+                    <div class="input-group">
+                        <span class="input-group-addon" id="sizing-addon2">联系人</span>
+                        <input type="text" class="form-control" placeholder="联系人" [(ngModel)]="supplierParams.contacts" aria-describedby="sizing-addon2"
+                            name="contacts">
+                    </div>
+                </div>
+                <div class="col-md-2">
+                    <div class="input-group">
+                        <span class="input-group-addon" id="sizing-addon2">联系人电话</span>
+                        <input type="text" class="form-control" placeholder="联系人电话" [(ngModel)]="supplierParams.contactPhone" aria-describedby="sizing-addon2"
+                            name="contactPhone">
+                    </div>
+                </div>
+                <div class="form-group mb-2">
+                    <button class="btn btn-primary" type="submit" (click)="search()">查询</button>
+                </div>
+
+            </div>
+        </form>
+    </div>
+    <div class="parts_main">
+        <table class="table table-bordered text-center">
+            <thead>
+                <tr>
+                    <th><input type="checkbox" name="allselect" (change)="ischeckAll()"></th>
+                    <th>操作</th>
+                    <th>状态</th>
+                    <th>供应商代码</th>
+                    <th>供应商名称</th>
+                    <th>简称</th>
+                    <th>联系人</th>
+                    <th>联系人电话</th>
+                    <th>座机</th>
+                    <th>地址</th>
+                    <th>邮编</th>
+                    <th>备注</th>
+                </tr>
+            </thead>
+            <tbody>
+                <tr *ngFor="let item of list">
+                    <!-- <td><input type="checkbox" name="radios" (change)="isradio(item.supplierId,item.isEnable);"></td> -->
+                    <td><input type="checkbox" name="radios" (change)="isradio($event,item);"></td>
+                    <td><button class="btn btn-sm btn-info" [disabled]="!item.isEnable" (click)="supplierEdit(item)">编辑</button></td>
+                    <td>{{item.isEnable?'启动':'未启动'}}</td>
+                    <td>{{item.supplierCode}}</td>
+                    <td>{{item.supplierName}}</td>
+                    <td>{{item.shortName}}</td>
+                    <td>{{item.contacts}}</td>
+                    <td>{{item.contactPhone}}</td>
+                    <td>{{item.contactPhone}}</td>
+                    <td>{{item.supplierAddress}}</td>
+                    <td>{{item.zipCode}}</td>
+                    <td>{{item.remark}}</td>
+                </tr>
+            </tbody>
+        </table>
+    </div>
+    <div class="stock_buttom">
+        <div class="form-group paginate">
+            <label>
+                每页显示
+                <select class="form-control select" (change)="pageChanged($event,'SELECT')">
+                    <option value="10">10</option>
+                    <option value="20">20</option>
+                    <option value="30">30</option>
+                    <option value="50">50</option>
+                    <option value="100">100</option>
+                </select>
+            </label>
+            <pagination [totalItems]="totalItems" [(ngModel)]="index" [maxSize]="10" [itemsPerPage]="supplierParams.pageSize" [boundaryLinks]="true"
+                previousText="上一页" nextText="下一页" firstText="首页" lastText="尾页" (pageChanged)="pageChanged($event)"></pagination>
+            <label class="contorl-label">
+                跳转到<input type="number" class="form-control" min="1" [max]="maxPageSize" [(ngModel)]="choosePage">页
+            </label>
+            <button class="btn btn-default" (click)="pageChanged($event,'BUTTON')">GO</button>
+        </div>
+    </div>
+
+    <div class="stock_foot">
+        <!-- Single button -->
+        <button type="button" class="btn btn-primary" (click)="addsupplier.show()">
+           新增
+        </button>
+        <button type="button" class="btn btn-default btn_qi" [disabled]="disabled" (click)="Enable()">
+           启用/停用
+        </button>
+        <button type="button" class="btn btn-default" data-toggle="modal" data-target="#myModal">
+           导出
+        </button>
+    </div>
+</div>
+
+<!--编辑 模态框 start-->
+<div bsModal #lgModal="bs-modal" class="modal fade" tabindex="-1" role="dialog" aria-labelledby="myLargeModalLabel" aria-hidden="true">
+    <div class="modal-dialog modal-lg">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h4 class="modal-title pull-left"> 编辑供应商</h4>
+                <button type="button" class="close pull-right" (click)="lgModal.hide()" aria-label="Close">
+          <span aria-hidden="true">&times;</span>
+        </button>
+            </div>
+            <div class="modal-body">
+                <div class="modal_main clearfix">
+                      <form [formGroup]="editsupplierForm">
+                        <div class="modal_left pull-left">
+                            <div class="input_group">
+                                <label><span>*</span>名称：</label>
+                                <input type="text" class="form-control" formControlName="supplierName" [(ngModel)]="searchParams.supplierName" placeholder="请输入供应商名称">
+                                <div class="form-inline" *ngIf="editFormErrors.supplierName.error">
+                                    <div [hidden]="!editFormErrors.supplierName.error" class="formInfo input-group">
+                                        {{editFormErrors.supplierName.error}}
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="input_group">
+                                <label><span>*</span>联系人：</label>
+                                <input type="text" class="form-control" formControlName="editcontacts" [(ngModel)]="searchParams.contacts" placeholder="请输入联系人">
+                                <div class="form-inline" *ngIf="editFormErrors.editcontacts.error">
+                                    <div [hidden]="!editFormErrors.editcontacts.error" class="formInfo input-group">
+                                        {{editFormErrors.editcontacts.error}}
+                                    </div>
+                                </div>
+                            </div>
+                              <div class="input_group">
+                                <label>联系人手机：</label>
+                                <input type="text" class="form-control" formControlName="editcontactPhone" [(ngModel)]="searchParams.contactPhone" placeholder="请输入联系人手机">
+                                <div class="form-inline" *ngIf="editFormErrors.editcontactPhone.error">
+                                    <div [hidden]="!editFormErrors.editcontactPhone.error" class="formInfo input-group">
+                                        {{editFormErrors.editcontactPhone.error}}
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="input_group">
+                                <label>简称：</label>
+                                <input type="text" class="form-control" formControlName="editshortName" [(ngModel)]="searchParams.shortName" placeholder="请输入供应商简称">
+                            </div>  
+
+                        </div>
+                          <div class="modal_right pull-right">
+
+                            <div class="input_group">
+                                <label>地址：</label>
+                                <input type="text" class="form-control" formControlName="editAddress" [(ngModel)]="searchParams.supplierAddress" placeholder="请输入供应商地址">
+                            </div>
+                            <div class="input_group">
+                                <label>邮编：</label>
+                                <input type="text" class="form-control" formControlName="editzipCode" [(ngModel)]="searchParams.zipCode" placeholder="请输入供应商邮编">
+                            </div>
+                            <div class="input_group">
+                                <label>座机：</label>
+                                <input type="text" class="form-control" formControlName="editlandline" [(ngModel)]="searchParams.landline" placeholder="请输入供应商座机">
+                            </div>
+                            <div class="input_group">
+                                <label>备注：</label>
+                                <input type="text" class="form-control" formControlName="editremark" [(ngModel)]="searchParams.remark" placeholder="请输入供应商备注">
+                                
+                            </div>
+
+                        </div>  
+                        <div class="button clearfix">
+                            <button class="btn btn-primary" type="submit" (click)="supoilersubmit()">提交</button>
+                            <button class="btn btn-default" type="reset" (click)="lgModal.hide()">返回</button>
+                        </div>
+                    </form>  
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+<!--编辑 模态框 end-->
+
+<!--新增 模态框 start-->
+<div bsModal #addsupplier="bs-modal" class="modal fade" tabindex="-1" role="dialog" aria-labelledby="myLargeModalLabel" aria-hidden="true">
+    <div class="modal-dialog modal-lg">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h4 class="modal-title pull-left"> 新增供应商</h4>
+                <button type="button" class="close pull-right" (click)="addsupplier.hide()" aria-label="Close">
+          <span aria-hidden="true">&times;</span>
+        </button>
+            </div>
+            <div class="modal-body">
+                <div class="modal_main clearfix">
+                     <form [formGroup]="supplierForm">
+                        <div class="modal_left pull-left">
+                            <div class="formAddInfo input-group bg-danger dis">
+                                供应商名称已存在，无法重复添加
+                            </div>
+                            <div class="input_group">
+                                <label><span>*</span>名称：</label>
+
+                                <input type="text" class="form-control" formControlName="Name" [(ngModel)]="addsupplierParams.supplierName" placeholder="请输入供应商名称">
+                                <div class="form-inline" *ngIf="addFormErrors.Name.error">
+                                    <div [hidden]="!addFormErrors.Name.error" class="formInfo input-group">
+                                        {{addFormErrors.Name.error}}
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="input_group">
+                                <label><span>*</span>联系人：</label>
+                                <input type="text" class="form-control" formControlName="contacts" [(ngModel)]="addsupplierParams.contacts" placeholder="请输入联系人">
+                                <div class="form-inline" *ngIf="addFormErrors.contacts.error">
+                                    <div [hidden]="!addFormErrors.contacts.error" class="formInfo input-group">
+                                        {{addFormErrors.contacts.error}}
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="input_group">
+                                <label>联系人手机：</label>
+                                <input type="text" class="form-control" formControlName="contactPhone" [(ngModel)]="addsupplierParams.contactPhone" placeholder="请输入联系人手机">
+                                <div class="form-inline" *ngIf="addFormErrors.contactPhone.error">
+                                    <div [hidden]="!addFormErrors.contactPhone.error" class="formInfo input-group">
+                                        {{addFormErrors.contactPhone.error}}
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="input_group">
+                                <label>简称：</label>
+                                <input type="text" class="form-control" formControlName="shortName" [(ngModel)]="addsupplierParams.shortName" placeholder="请输入供应商简称">
+                            </div>
+
+                        </div>
+                        <div class="modal_right pull-right">
+
+                            <div class="input_group">
+                                <label>地址：</label>
+                                <input type="text" class="form-control" formControlName="supplierAddress" [(ngModel)]="addsupplierParams.supplierAddress"
+                                    placeholder="请输入供应商地址">
+                            </div>
+                            <div class="input_group">
+                                <label>邮编：</label>
+                                <input type="text" class="form-control" formControlName="zipCode" [(ngModel)]="addsupplierParams.zipCode" placeholder="请输入供应商邮编">
+                            </div>
+                            <div class="input_group">
+                                <label>座机：</label>
+                                <input type="text" class="form-control" formControlName="landline" [(ngModel)]="addsupplierParams.landline" placeholder="025-1234567">
+                                <div class="form-inline" *ngIf="addFormErrors.landline.error">
+                                    <div [hidden]="!addFormErrors.landline.error" class="formInfo input-group">
+                                        {{addFormErrors.landline.error}}
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="input_group">
+                                <label>备注：</label>
+                                <input type="text" class="form-control" formControlName="remark" [(ngModel)]="addsupplierParams.remark" placeholder="请输入供应商备注">
+                            </div>
+
+                        </div>
+                        <div class="button clearfix">
+                            <button class="btn btn-primary" type="submit" [disabled]="!supplierForm.valid" (click)="addsupoiler()">提交</button>
+                            <button class="btn btn-default" type="reset">重置</button>
+                        </div>
+                    </form> 
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+<!--新增 模态框 end-->
+
+<!--编辑提示框  -->
+<div bsModal #tishi="bs-modal" class="modal modal-tishi fade tishi" tabindex="-1" role="dialog" aria-labelledby="mySmallModalLabel"
+    aria-hidden="true" [config]="{backdrop: 'static'}">
+    <div class="modal-dialog modal-sm">
+        <div class="modal-content">
+            <div class="modal-body">
+                <button type="button" class="close pull-right" aria-label="Close" (click)="tishi.hide()">
+                    <span aria-hidden="true">&times;</span>
+                </button>
+                <div>
+                    <div class="icon">√</div>
+                    <div class="content">修改成功</div>
+                    <div class="infoButton">
+                        <button type="button" class="btn btn-primary" (click)="tishi.hide()">确定</button>
+
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+<!--新增提示  -->
+<div bsModal #addhint="bs-modal" class="modal modal-tishi fade tishi" tabindex="-1" role="dialog" aria-labelledby="mySmallModalLabel"
+    aria-hidden="true" [config]="{backdrop: 'static'}">
+    <div class="modal-dialog modal-sm">
+        <div class="modal-content">
+            <div class="modal-body">
+                <button type="button" class="close pull-right" aria-label="Close" (click)="addhint.hide()">
+                    <span aria-hidden="true">&times;</span>
+                </button>
+                <div>
+                    <div class="icon">√</div>
+                    <div class="content">新增成功</div>
+                    <div class="infoButton">
+                        <button type="button" class="btn btn-primary" (click)="addhint.hide()">确定</button>
+
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>

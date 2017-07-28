@@ -1,0 +1,4 @@
+<alert *ngFor="let alert of _alert?.alerts;let i = index" [type]="alert.type" dismissible="{{alert.dismissible}}" dismissOnTimeout="{{alert.dismissOnTimeout}}"
+    (onClose)="closeAlert(i)">
+    {{ alert?.msg }}
+</alert>

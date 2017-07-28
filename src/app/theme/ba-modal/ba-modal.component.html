@@ -1,0 +1,25 @@
+<!--component html goes here -->
+<!--提示弹框-->
+<div class="modal fade" bsModal #TipsModal="bs-modal" [config]="{backdrop: 'static'}"
+     tabindex="-1" role="dialog" aria-labelledby="mySmallModalLabel" aria-hidden="true">
+  <div class="modal-dialog modal-sm">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h4 class="modal-title pull-left">提示</h4>
+        <button type="button" class="close pull-right" aria-label="Close" (click)="tipsClose()">
+          <span aria-hidden="true">&times;</span>
+        </button>
+      </div>
+      <div class="modal-body">
+            <div>
+                <label>代码编号</label>{{modal.code}}
+            </div>
+            <div>
+                <label >提示信息</label>{{modal.msg}}
+            </div>
+      </div>
+      <div class="modal-foot">
+      </div>
+    </div>
+  </div>
+</div>

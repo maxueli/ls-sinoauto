@@ -1,0 +1,22 @@
+.userlogin{
+    // border: 1px solid red;
+    background-color: rgba(255, 255,255, 0.8);
+    border-radius: 10px;
+    margin: auto auto ;
+    width: 525px;
+    height: 330px;
+    div.typo {
+        text-align: center;
+        padding: 30px 0px;
+    }
+    label{
+        font-weight: 500
+    };
+    div.sign-in{
+        padding: 0px 40px;
+          button.btn-primary{
+        width: 100%
+    }
+    }
+  
+}

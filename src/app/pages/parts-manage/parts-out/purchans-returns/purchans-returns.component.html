@@ -1,0 +1,382 @@
+<!--component html goes here -->
+<div class="purchans-content" @flyIn>
+  <div class="header">
+    <h4 class="title">采购退库</h4>
+    <div class="list-info" dropdown [autoClose]='dropdownShow' >
+      <a href dropdownToggle (click)="false">
+        <i class="fa fa-list-alt"></i>
+        <span>挂单信息({{hangList.totalCount}})</span>
+        <i class="fa fa-angle-up"></i>
+      </a>
+      <div *dropdownMenu  class="dropdown-menu">
+        <table class="table table-hover">
+          <thead>
+            <tr>
+              <th>供应商</th>
+              <th>挂单时间</th>
+              <th>操作</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr *ngFor="let item of hangList.result" >
+              <td (click)='showHanglogItem(item)'>{{item.implUserName}}</td>
+              <td (click)='showHanglogItem(item)'>{{item.createTime}}</td>
+              <td (click)='deletehanglog(item)'>
+                <span class="cursor-pointer" >
+                  <i class="cursor-pointer fa fa-times-circle"></i>
+                  作废
+                </span>
+              </td>
+            </tr>
+             <tr *ngIf="hangOrderListCount>=10" >
+              <td colspan="3">
+                <pagination [totalItems]="hangOrderListCount"  [maxSize]="5" class="pagination-sm" [boundaryLinks]="true" previousText="&lsaquo;" nextText="&rsaquo;" firstText="&laquo;" lastText="&raquo;" (pageChanged)="pageChanged($event,'hang')"></pagination>
+              </td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+    </div>
+  </div>
+  <div class="content">
+    <form class="form-inline">
+      <div class="form-group">
+        <label class="sr-only" for="supplierName"></label>
+        <div class="input-group">
+          <div class="input-group-addon">供应商名称</div>
+          <input type="text" class="form-control" name="supplierName" [(ngModel)]='findSuppliers.supplierName'
+              (focus)='getsupplierName()' (blur)='blursupplierName()' (keyup)='getsupplierName()' placeholder="请输入供应商名称">
+          <div class="input-icon input-group-addon" (click)='getsupplierName()'>
+            <i class="cursor-pointer fa fa-search "></i>
+          </div>
+        </div>
+         <div class="supplier" *ngIf="getsupplierList.length!=0" >
+            <table class="table table-hover table-sm table-bordered table-responsive">
+              <thead>
+                <tr>
+                  <th>供应商</th>
+                  <th>挂单时间</th>
+                </tr>
+              </thead>
+              <tbody>
+                <tr  *ngFor="let item of getsupplierList"(click)='getsupplierId(item)' >
+                  <td>{{item.supplierName}}</td>
+                  <td>{{item.contacts}}</td>
+                </tr>
+              </tbody>
+            </table>
+            <pagination *ngIf="suppliertotal>=10" [totalItems]="suppliertotal" [(ngModel)]="supplierindex" name='sellpageChange' [maxSize]="10" class="pagination-sm"
+              previousText="上一页" nextText="下一页" firstText="首页" lastText="尾页" [boundaryLinks]="true" [rotate]="false" (numPages)="numPages = $event"
+              (pageChanged)="supplierPage($event)"></pagination>
+          </div>
+      </div>
+      <div class="form-group">
+        <label class="sr-only" for="sellIn"></label>
+        <div class="input-group">
+          <div class="input-group-addon">入库单号</div>
+          <select class="form-control" [ngModel]="purchCode" (ngModelChange)="purchCode=$event;setInfo()"   name="purchCode"  (change)='purchItemCode($event.target.value)'  >
+            <option value="">请选择入库单号</option>
+            <option *ngFor="let item of purchCodeList" [value]="item">{{item}}</option>
+          </select>
+        </div>
+      </div>
+    </form>
+    <div class="table-caption">采购入库信息</div>
+    <div class="table-container">
+      <table class="table purchansIn table-bordered">
+        <thead>
+          <tr>
+            <th>操作</th>
+            <th>序号</th>
+            <th>库位</th>
+            <th>配件编码</th>
+            <th>配件类别</th>
+            <th>配件名称</th>
+            <th>品牌</th>
+            <th>规格型号</th>
+            <th>单位</th>
+            <th>数量</th>
+            <th>已退数量</th>
+            <th>含税单价（元）</th>
+            <th>含税总金额（元）</th>
+            <th>不含税单价（元）</th>
+            <th>不含税总金额（元）</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr *ngIf="findTableInShow" >
+            <td>
+              <button [disabled]='findTableIn.count==findTableIn.returnCount' (click)='lgModal.show();getModelData();' class="btn btn-sm btn-info purchansIn">退库</button>
+            </td>
+            <td>{{1}}</td>
+            <td>{{findTableIn.depotPosName}}</td>
+            <td>{{findTableIn.partsCode}}</td>
+            <td>{{findTableIn.partsTypeName}}</td>
+            <td>{{findTableIn.partsName}}</td>
+            <td>{{findTableIn.partsBrandName}}</td>
+            <td>{{findTableIn.partsSpec}}</td>
+            <td>{{findTableIn.partsUnit}}</td>
+            <td>{{findTableIn.count}}</td>
+            <td>{{findTableIn.returnCount}}</td>
+            <td>{{findTableIn.taxPrice}}</td>
+            <td>{{findTableIn.totalTaxPrice}}</td>
+            <td>{{findTableIn.price}}</td>
+            <td>{{findTableIn.totalPrice}}</td>
+          </tr>
+        </tbody>
+      </table>
+    </div>
+    <div class="loading"  hidden>
+      <i class="fa fa-spinner fa-fw fa-spin fa-3x d-none"></i>
+    </div>
+    <hr>
+    <div class="table-caption">采购退库信息</div>
+    <div class="table-container">
+      <table class="table table-bordered">
+        <thead>
+          <tr>
+            <th>操作</th>
+            <th>序号</th>
+            <th>仓库</th>
+            <th>库位</th>
+            <th>配件编码</th>
+            <th>配件类别</th>
+            <th>配件名称</th>
+            <th>品牌</th>
+            <th>规格型号</th>
+            <th>单位</th>
+            <th>数量</th>
+            <th>含税单价（元）</th>
+            <th>含税总金额（元）</th>
+            <th>不含税单价（元）</th>
+            <th>不含税总金额（元）</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr *ngIf="findTableOutShow" >
+            <td>
+              <button class="btn btn-sm btn-danger"(click)='deletefindTableOut()'>删除</button>
+            </td>
+            <td>1</td>
+            <td>{{findTableOut.depotName}}</td>
+            <td>{{findTableOut.depotPosName}}</td>
+            <td>{{findTableOut.partsCode}}</td>
+            <td>{{findTableOut.partsTypeName}}</td>
+            <td>{{findTableOut.partsName}}</td>
+            <td>{{findTableOut.partsBrandName}}</td>
+            <td>{{findTableOut.partsSpec}}</td>
+            <td>{{findTableOut.partsUnit}}</td>
+            <td>{{findTableOut.count?findTableOut.count:findTableOut.retreatCount}}</td>
+            <td>{{findTableOut.taxPrice}}</td>
+            <td>{{findTableOut.totalTaxPrice}}</td>
+            <td>{{findTableOut.price}}</td>
+            <td>{{findTableOut.totalPrice}}</td>
+          </tr>
+        </tbody>
+      </table>
+
+    </div>
+  </div>
+  <div class="footer">
+    <button class="btn btn-primary" [disabled]='!findTableOutShow' (click)='createBill()'>生成采购退库单</button>
+    <button class="btn btn-success btn-suspend" [disabled]='!findTableOutShow'(click)='hangBill()'>挂单</button>
+  </div>
+  <div bsModal #lgModal="bs-modal" class="modal fade" [config]="{backdrop: 'static'}" tabindex="-1" role="dialog" aria-labelledby="mySmallModalLabel"
+    aria-hidden="true">
+    <div class="modal-dialog modal-lg">
+      <div class="modal-content">
+        <div class="modal-header">
+          <h4 class="modal-title pull-left" style="font-size:1.5rem;font-weight:500;">新增</h4>
+          <button type="button" class="close pull-right" (click)="lgModalClose()" aria-label="Close">
+            <span aria-hidden="true">&times;</span>
+          </button>
+        </div>
+        <div class="modal-body">
+          <div class="newAdd">
+            <form class="card-block row " [formGroup]="depotOut" >
+              <div class="card">
+                <div class="card-left">
+                  <div class="form-group">
+                    <label class="form-control-label hq-required">
+                    配件编码
+                    </label>
+                    <input type="text" class="form-control " formControlName='partsCode'  [(ngModel)]='findModelIn.partsCode' readonly name="partsCode">
+
+                  </div>
+                  <div class="form-group">
+                    <label class="form-control-label hq-required">
+                      配件名称
+                    </label>
+                    <input type="text" class="form-control " formControlName='partsName' readonly [(ngModel)]='findModelIn.partsName' name="partsName" >
+                  </div>
+                  <div class="form-group">
+                    <label class="form-control-label hq-required">
+                    品牌
+                    </label>
+                    <input type="text" class="form-control " formControlName='partsBrandName'  [(ngModel)]='findModelIn.partsBrandName' readonly name="partsBrandName" >
+                  </div>
+                  <div class="form-group">
+                    <label class="form-control-label hq-required">
+                    规格型号
+                    </label>
+                    <input type="text" class="form-control " readonly formControlName='partsSpec' [(ngModel)]='findModelIn.partsSpec' name="partsSpec">
+                  </div>
+                  <div class="form-group">
+                    <label class="form-control-label hq-required">
+                    配件类别
+                    </label>
+                    <input type="text" class="form-control " readonly formControlName='partsTypeName'  [(ngModel)]='findModelIn.partsTypeName' name="partsTypeName">
+                  </div>
+                  <div class="form-group">
+                    <label class="form-control-label hq-required">
+                    仓库
+                    </label>
+                    <input type="text" class="form-control " readonly formControlName='depotName' [(ngModel)]='findModelIn.depotName'  name="depotName">
+
+                  </div>
+                </div>
+                <div class="card-right">
+                  <div class="form-group">
+                    <label class="form-control-label hq-required">
+                      库位
+                    </label>
+                    <input type="text" class="form-control " readonly formControlName='depotPosName'   [(ngModel)]='findModelIn.depotPosName' name="depotPosName">
+
+                  </div>
+                  <div class="form-group" >
+                    <label class="form-control-label hq-required">
+                      数量
+                    </label>
+                    <input type="number" class="form-control " (keyup)='purchansCount(findModelIn.count)' (blur)='purchansCountBlur()' formControlName='count' [(ngModel)]='findModelIn.count'  >
+                    <div *ngIf="formErrors.count.error" class="errMsg">
+                      {{formErrors.count.error}}
+                    </div>
+                    <div class="errMsg">
+
+                    </div>
+                  </div>
+                  <div class="form-group">
+                    <label class="form-control-label hq-required">
+                      含税单价（元）
+                    </label>
+                    <input type="text" class="form-control " readonly formControlName='taxPrice'   [(ngModel)]='findModelIn.taxPrice' name="taxPrice">
+
+                  </div>
+                  <div class="form-group">
+                    <label class="form-control-label hq-required">
+                      不含税单价（元）
+                    </label>
+                    <input type="text" class="form-control " readonly formControlName='price'  [(ngModel)]='findModelIn.price' name="price">
+
+                  </div>
+                   <div class="form-group">
+                    <label class="form-control-label hq-required">
+                      含税总金额（元）
+                    </label>
+                    <input type="text" class="form-control " readonly formControlName='totalTaxPrice'  [(ngModel)]='findModelIn.totalTaxPrice' name="totalTaxPrice">
+                  </div>
+                  <div class="form-group">
+                    <label class="form-control-label hq-required">
+                      不含税总金额（元）
+                    </label>
+                    <input type="text" class="form-control " readonly formControlName='totalPrice' name='totalPrice'  [(ngModel)]='findModelIn.totalPrice'>
+                  </div>
+
+                </div>
+              </div>
+              <div class="card-botton">
+                <button class="btn btn-primary mr-2"  [disabled]="!depotOut.valid" (click)='modelSbumit()'>提交并关闭</button>
+              </div>
+            </form>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+  <div class="modal fade" bsModal #staticModal="bs-modal" [config]="{backdrop: 'static'}" tabindex="-1" role="dialog" aria-labelledby="mySmallModalLabel"
+    aria-hidden="true">
+    <div class="modal-dialog modal-sm">
+      <div class="modal-content">
+        <div class="modal-header">
+          <h4 class="modal-title pull-left">提示</h4>
+          <button type="button" class="close pull-right" aria-label="Close" (click)="offprint()">
+          <span aria-hidden="true">&times;</span>
+        </button>
+        </div>
+        <div class="modal-body" style="font-size:16px;text-align:center;">
+          <div style="margin-bottom:10px;font-weight:700">
+            已生成销售出库单，是否需要打印？
+          </div>
+          <div class="btnGroup">
+            <button class="btn-primary btn-sm btn"(click)='dyHtml($event)'>确定</button>
+            <button class="btn-default btn-sm btn" (click)='offprint()'>取消</button>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+<div class="printgoods">
+  <div class="printHeader">
+    <img src="../../../../../assets/img/login_logo.png" alt="">
+    <span class="printTitle">维修发料单</span>
+  </div>
+  <div class="printContnet">
+    <ul>
+      <li>
+        领料单号： RB999901170627001
+      </li>
+      <li>
+        流水号：1
+      </li>
+      <li>车牌号：苏A88888</li>
+      <li>开单时间：2017-07-05 15：28：44</li>
+    </ul>
+    <table class="table">
+      <thead>
+        <tr>
+          <th>维修项目</th>
+          <th>配件编码</th>
+          <th>配件类型</th>
+          <th>配件名称</th>
+          <th>品牌</th>
+          <th>规格型号</th>
+          <th>单位</th>
+          <th>仓库</th>
+          <th>库位</th>
+          <th>单价（元）</th>
+          <th>数量</th>
+          <th>金额（元）</th>
+          <th>备注</th>
+          <th>领料人</th>
+        </tr>
+      </thead>
+      <tbody>
+        <tr>
+          <td>更换前刹车片</td>
+          <td>10010</td>
+          <td>钥匙</td>
+          <td>钥匙</td>
+          <td>花旗的品牌</td>
+          <td>100*12*13</td>
+          <td>组</td>
+          <td>南京本道仓库</td>
+          <td>1-01-01</td>
+          <td>15.60</td>
+          <td>1</td>
+          <td>15.60</td>
+          <td>15.60</td>
+          <td>老赵</td>
+        </tr>
+      </tbody>
+    </table>
+  </div>
+  <div class="printFooter">
+    <div class="printTime">
+      打印时间:2017-07-06 10：28：16
+    </div>
+    <div class="operator">
+      操作人：老魏 领料人：
+    </div>
+  </div>
+</div>

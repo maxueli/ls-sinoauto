@@ -1,0 +1,357 @@
+<div class="container userAndCustomer">
+    <h4 *ngIf="getRouParam.code == 1">编辑车主</h4>
+    <h4 *ngIf="getRouParam.code == 2">新增车主</h4>
+    <hr>
+    <form [formGroup]="customerForm">
+        <div class="form-inline">
+            <div class="input-group">
+                <label for="mobile" class="input-group-addon"><i class="icon-sm">*</i>手机号</label>
+                <input *ngIf="getRouParam.code == 1" type="text" class="form-control" formControlName="mobile" id="mobile" maxlength="11" onkeypress="return event.keyCode>=48&&event.keyCode<=57">
+                <input *ngIf="getRouParam.code == 2" type="text" class="form-control" formControlName="mobile" id="mobile" maxlength="11" onkeypress="return event.keyCode>=48&&event.keyCode<=57" (click)="isCollapsed('mobile')" (keyup)="reloadCarsInfo($event, 'mobile')">
+                <span *ngIf="getRouParam.code == 2" class="input-group-addon defBgColor" (click)="isCollapsed('mobile')"><i class="fa fa-search"></i></span>
+                <table [collapse]="mobileCollapsed" class="table table-bordered table-hover dropdown-menu">
+                    <thead>
+                        <tr>
+                            <th class="text-center">客户名称</th>
+                            <th class="text-center">手机号</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr role="menuitem" class="dropdown-item" *ngFor="let item of userList" (click)="selectCarsInfo('', item.mobile, 'mobile', item.customerId)">
+                            <td>{{item.name}}</td>
+                            <td>{{item.mobile}}</td>
+                        </tr>
+                    </tbody>
+                    <tfoot>
+                        <tr>
+                            <td role="menuitem" (click)="mobileCollapsed = false" colspan="2">
+                                <pagination [totalItems]="totalItems[3]" [maxSize]="5" class="pagination-sm" [boundaryLinks]="true" previousText="&lsaquo;" nextText="&rsaquo;" firstText="&laquo;" lastText="&raquo;" (pageChanged)="pageChanged($event,'mobile')"></pagination>
+                            </td>
+                        </tr>
+                    </tfoot>
+                </table>
+            </div>
+            <div class="input-group">
+                <label for="gender" class="input-group-addon">性别</label>
+                <select class="form-control" formControlName="gender" id="gender">
+                    <option value="1">男</option>
+                    <option value="2">女</option>
+                    <option value="3">保密</option>
+                </select>
+            </div>
+            <div class="input-group">
+                <label for="birthday" class="input-group-addon">生日</label>
+                <input type="text" class="form-control" formControlName="birthday" id="birthday" ngui-datetime-picker [close-on-select]="false" date-only="true">
+            </div>
+            <div class="input-group">
+                <label for="idNumber" class="input-group-addon">身份证号</label>
+                <input type="text" class="form-control" formControlName="idNumber" id="idNumber" maxlength="18">
+            </div>
+        </div>
+        <div class="form-inline" *ngIf="customerFormErrors.mobile.error || customerFormErrors.gender.error || customerFormErrors.birthday.error || customerFormErrors.idNumber.error">
+            <div [hidden]="!customerFormErrors.mobile.error" class="formInfo input-group">
+                {{customerFormErrors.mobile.error}}
+            </div>
+            <div [hidden]="!customerFormErrors.gender.error" class="formInfo input-group">
+                {{customerFormErrors.gender.error}}
+            </div>
+            <div [hidden]="!customerFormErrors.birthday.error" class="formInfo input-group">
+                {{customerFormErrors.birthday.error}}
+            </div>
+            <div [hidden]="!customerFormErrors.idNumber.error" class="formInfo input-group">
+                {{customerFormErrors.idNumber.error}}
+            </div>
+        </div>
+        <div class="form-inline">
+            <div class="input-group">
+                <label for="name" class="input-group-addon"><i class="icon-sm">*</i>车主</label>
+                <input *ngIf="getRouParam.code == 1" type="text" class="form-control" formControlName="name" id="name">
+                <input *ngIf="getRouParam.code == 2" type="text" class="form-control" formControlName="name" id="name" (click)="isCollapsed('name')" (keyup)="reloadCarsInfo($event, 'name')">
+                <span *ngIf="getRouParam.code == 2" class="input-group-addon defBgColor" (click)="isCollapsed('name')"><i class="fa fa-search"></i></span>
+                <table [collapse]="nameCollapsed" class="table table-bordered table-hover dropdown-menu">
+                    <thead>
+                        <tr>
+                            <th class="text-center">客户名称</th>
+                            <th class="text-center">手机号</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr role="menuitem" class="dropdown-item" *ngFor="let item of userList" (click)="selectCarsInfo('', item.name, 'name', item.customerId)">
+                            <td>{{item.name}}</td>
+                            <td>{{item.mobile}}</td>
+                        </tr>
+                    </tbody>
+                    <tfoot>
+                        <tr>
+                            <td role="menuitem" (click)="nameCollapsed = false" colspan="2">
+                                <pagination [totalItems]="totalItems[3]" [maxSize]="5" class="pagination-sm" [boundaryLinks]="true" previousText="&lsaquo;" nextText="&rsaquo;" firstText="&laquo;" lastText="&raquo;" (pageChanged)="pageChanged($event,'name')"></pagination>
+                            </td>
+                        </tr>
+                    </tfoot>
+                </table>
+            </div>
+            <div class="input-group">
+                <label for="landline" class="input-group-addon">座机</label>
+                <input type="text" class="form-control" formControlName="landline" id="landline" placeholder="010-1234567" maxlength="13">
+            </div>
+            <div class="input-group">
+                <label for="fax" class="input-group-addon">传真</label>
+                <input type="text" class="form-control" formControlName="fax" id="fax" maxlength="13">
+            </div>
+            <div class="input-group">
+                <label for="email" class="input-group-addon">Email</label>
+                <input type="email" class="form-control" formControlName="email" id="email">
+            </div>
+        </div>
+        <div class="form-inline" *ngIf="customerFormErrors.name.error || customerFormErrors.landline.error || customerFormErrors.fax.error || customerFormErrors.email.error">
+            <div [hidden]="!customerFormErrors.name.error" class="formInfo input-group">
+                {{customerFormErrors.name.error}}
+            </div>
+            <div [hidden]="!customerFormErrors.landline.error" class="formInfo input-group">
+                {{customerFormErrors.landline.error}}
+            </div>
+            <div [hidden]="!customerFormErrors.fax.error" class="formInfo input-group">
+                {{customerFormErrors.fax.error}}
+            </div>
+            <div [hidden]="!customerFormErrors.email.error" class="formInfo input-group">
+                {{customerFormErrors.email.error}}
+            </div>
+        </div>
+        <div class="form-inline">
+            <div class="input-group">
+                <label for="sourceChannel" class="input-group-addon">来源渠道</label>
+                <select class="form-control" formControlName="sourceChannel" id="sourceChannel">
+                    <option style="display:none"></option>
+                    <option value="1">网络平台</option>
+                    <option value="2">宣传广告</option>
+                    <option value="3">直接到店</option>
+                    <option value="4">朋友介绍</option>
+                    <option value="5">微信</option>
+                    <option value="6">店铺活动</option>
+                </select>
+            </div>
+            <div class="input-group">
+                <label for="proId" class="input-group-addon">省份</label>
+                <select class="form-control" formControlName="proId" id="proId" (change)="loadCitys($event)">
+                    <option *ngFor="let item of provResults" [value]="item[0]">{{item[1]}}</option>
+                </select>
+            </div>
+            <div class="input-group">
+                <label for="cityId" class="input-group-addon">城市</label>
+                <select class="form-control" formControlName="cityId" id="cityId" (change)="loadAreas($event)">
+                    <option *ngFor="let item of cityResults" [value]="item[0]">{{item[1]}}</option>
+                </select>
+            </div>
+            <div class="input-group">
+                <label for="countryId" class="input-group-addon">县区</label>
+                <select class="form-control" formControlName="countryId" id="countryId" (change)="getAreaName($event)">
+                    <option *ngFor="let item of areaResults" [value]="item[0]">{{item[1]}}</option>
+                </select>
+            </div>
+        </div>
+        <div class="form-inline">
+            <div class="input-group">
+                <label for="address" class="input-group-addon">详细地址</label>
+                <input type="text" class="form-control" formControlName="address" id="address">
+            </div>
+        </div>
+    </form>
+    <tabset class="tabCard">
+        <tab>
+            <template tabHeading>
+                <i aria-hidden="true" class="fa fa-car"></i>车辆信息
+            </template>
+            <table class="table table-bordered">
+                <thead>
+                    <tr>
+                        <th>操作</th>
+                        <th>序号</th>
+                        <th>车牌号</th>
+                        <th>品牌</th>
+                        <th>车系</th>
+                        <th>车型</th>
+                        <th>VIN</th>
+                        <th>发动机号</th>
+                        <th>车身颜色</th>
+                        <th>购车日期</th>
+                        <th>验车日期</th>
+                        <th>保险到期日期</th>
+                        <th>保险公司</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr *ngFor="let item of param.customerCars; let i = index">
+                        <td>
+                            <button class="btn btn-success" type="button" (click)="editCarsInfo(i);addCar.show()">编辑</button>
+                            <button class="btn btn-danger" type="button" (click)="delCarsInfo(i)">删除</button>
+                        </td>
+                        <td class="text-center">{{i+1}}</td>
+                        <td>{{item.carNo}}</td>
+                        <td>{{item.brandName}}</td>
+                        <td>{{item.seriesName}}</td>
+                        <td>{{item.modelName}}</td>
+                        <td>{{item.vin}}</td>
+                        <td>{{item.carColor}}</td>
+                        <td>{{item.engineNo}}</td>
+                        <td>{{item.vehicleDate}}</td>
+                        <td>{{item.buyDate}}</td>
+                        <td>{{item.insuranceExpireDate}}</td>
+                        <td>{{item.insuranceCompanyId}}</td>
+                    </tr>
+                </tbody>
+            </table>
+            <div class="text-center add">
+                <button class="btn btn-link btn-default" (click)="addCar.show()">
+                    <i aria-hidden="true" class="fa fa-plus-circle text-success"></i>
+                    新增车辆
+                </button>
+            </div>
+        </tab>
+    </tabset>
+    <div class="text-center">
+        <button type="button" class="btn btn-primary" (click)="saveCustomerInfo()">
+            <i class="fa fa-spinner fa-fw fa-spin fa-none-size d-none" [hidden]="editLoad"></i>保存车主信息
+        </button>
+        <button type="button" class="btn btn-default" (click)="localpage()">返回车主列表</button>
+    </div>
+</div>
+
+<div bsModal #addCar="bs-modal" class="modal fade userAndCustomer" tabindex="-1" role="dialog" aria-labelledby="myLargeModalLabel" aria-hidden="true" [config]="{backdrop: 'static'}">
+    <div class="modal-dialog modal-lg">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h4 class="modal-title pull-left" [hidden]="editCarId == null">编辑车辆</h4>
+                <h4 class="modal-title pull-left" [hidden]="editCarId != null">新增车辆</h4>
+                <button type="button" class="close pull-right" aria-label="Close" (click)="addCar.hide();cancelSaveCarsInfo()">
+                    <span aria-hidden="true">&times;</span>
+                </button>
+            </div>
+            <div class="modal-body">
+                <form [formGroup]="carsForm">
+                    <div class="form-inline">
+                        <div class="input-group">
+                            <label for="carNo" class="input-group-addon"><i class="icon-sm">*</i>车牌号</label>
+                            <input type="text" class="form-control" formControlName="carNo" id="carNo" maxlength="7">
+                        </div>
+                        <div class="input-group" dropdown id="carsBrand">
+                            <label for="brandName" class="input-group-addon"><i class="icon-sm">*</i>品牌</label>
+                            <input type="text" class="form-control" formControlName="brandName" id="brandName" (click)="isCollapsed('brand')" (keyup)="reloadCarsInfo($event, 'brand')">
+                            <span class="input-group-addon defBgColor" (click)="isCollapsed('brand')"><i class="fa fa-search"></i> </span>
+                            <ul [collapse]="brandCollapsed" class="dropdown-menu card card-block card-header">
+                                <li role="menuitem" *ngFor="let item of carsBrand" (click)="selectCarsInfo(item.key, item.value, 'brand')">
+                                    <a class="dropdown-item">{{item.value}}</a>
+                                </li>
+                                <li class="divider dropdown-divider"></li>
+                                <li role="menuitem" (click)="brandCollapsed = false">
+                                    <pagination [totalItems]="totalItems[0]" [maxSize]="5" class="pagination-sm" [boundaryLinks]="true" previousText="&lsaquo;" nextText="&rsaquo;" firstText="&laquo;" lastText="&raquo;" (pageChanged)="pageChanged($event,'brand')"></pagination>
+                                </li>
+                            </ul>
+                        </div>
+                    </div>
+                    <div class="form-inline" *ngIf="carsFormErrors.carNo.error || carsFormErrors.brandName.error">
+                        <div [hidden]="!carsFormErrors.carNo.error" class="formInfo input-group">
+                            {{carsFormErrors.carNo.error}}
+                        </div>
+                        <div [hidden]="!carsFormErrors.brandName.error" class="formInfo input-group">
+                            {{carsFormErrors.brandName.error}}
+                        </div>
+                    </div>
+                    <div class="form-inline">
+                        <div class="input-group" dropdown>
+                            <label for="seriesName" class="input-group-addon"><i class="icon-sm">*</i>车系</label>
+                            <input type="text" class="form-control" formControlName="seriesName" id="seriesName" (click)="isCollapsed('series')" (keyup)="reloadCarsInfo($event, 'series')">
+                            <span class="input-group-addon defBgColor" (click)="isCollapsed('series')"><i class="fa fa-search"></i></span>
+                            <ul [collapse]="seriesCollapsed" class="dropdown-menu card card-block card-header">
+                                <li role="menuitem" *ngFor="let item of carsSeries" (click)="selectCarsInfo(item.key, item.value, 'series')">
+                                    <a class="dropdown-item">{{item.value}}</a>
+                                </li>
+                                <li class="divider dropdown-divider"></li>
+                                <li role="menuitem" (click)="seriesCollapsed = false">
+                                    <pagination [totalItems]="totalItems[1]" [maxSize]="5" class="pagination-sm" [boundaryLinks]="true" previousText="&lsaquo;" nextText="&rsaquo;" firstText="&laquo;" lastText="&raquo;" (pageChanged)="pageChanged($event,'series')"></pagination>
+                                </li>
+                            </ul>
+                        </div>
+                        <div class="input-group" dropdown>
+                            <label for="modelName" class="input-group-addon"><i class="icon-sm">*</i>车型</label>
+                            <input type="text" class="form-control" formControlName="modelName" id="modelName" (click)="isCollapsed('model')" (keyup)="reloadCarsInfo($event, 'model')">
+                            <span class="input-group-addon defBgColor" (click)="isCollapsed('model')"><i class="fa fa-search"></i></span>
+                            <ul [collapse]="modelCollapsed" class="dropdown-menu card card-block card-header">
+                                <li role="menuitem" *ngFor="let item of carsModel" (click)="selectCarsInfo(item.key, item.value, 'model')">
+                                    <a class="dropdown-item">{{item.value}}</a>
+                                </li>
+                                <li class="divider dropdown-divider"></li>
+                                <li role="menuitem" (click)="modelCollapsed = false">
+                                    <pagination [totalItems]="totalItems[2]" [maxSize]="5" class="pagination-sm" [boundaryLinks]="true" previousText="&lsaquo;" nextText="&rsaquo;" firstText="&laquo;" lastText="&raquo;" (pageChanged)="pageChanged($event,'model')"></pagination>
+                                </li>
+                            </ul>
+                        </div>
+                    </div>
+                    <div class="form-inline" *ngIf="carsFormErrors.seriesName.error || carsFormErrors.modelName.error">
+                        <div [hidden]="!carsFormErrors.seriesName.error" class="formInfo input-group">
+                            {{carsFormErrors.seriesName.error}}
+                        </div>
+                        <div [hidden]="!carsFormErrors.modelName.error" class="formInfo input-group">
+                            {{carsFormErrors.modelName.error}}
+                        </div>
+                    </div>
+                    <div class="form-inline">
+                        <div class="input-group">
+                            <label for="vin" class="input-group-addon">VIN</label>
+                            <input type="text" class="form-control" formControlName="vin" id="vin" maxlength="17">
+                        </div>
+                        <div class="input-group">
+                            <label for="carColor" class="input-group-addon">车身颜色</label>
+                            <input type="text" class="form-control" formControlName="carColor" id="carColor">
+                        </div>
+                    </div>
+                    <div class="form-inline" *ngIf="carsFormErrors.vin.error || carsFormErrors.carColor.error">
+                        <div [hidden]="!carsFormErrors.vin.error" class="formInfo input-group">
+                            {{carsFormErrors.vin.error}}
+                        </div>
+                        <div [hidden]="!carsFormErrors.carColor.error" class="formInfo input-group">
+                            {{carsFormErrors.carColor.error}}
+                        </div>
+                    </div>
+                    <div class="form-inline">
+                        <div class="input-group">
+                            <label for="engineNo" class="input-group-addon">发动机号</label>
+                            <input type="text" class="form-control" formControlName="engineNo" id="engineNo" maxlength="16">
+                        </div>
+                        <div class="input-group">
+                            <label for="vehicleDate" class="input-group-addon">验车日期</label>
+                            <input type="text" class="form-control" formControlName="vehicleDate" id="vehicleDate" ngui-datetime-picker [close-on-select]="false" date-only="true">
+                        </div>
+                    </div>
+                    <div class="form-inline" *ngIf="carsFormErrors.engineNo.error || carsFormErrors.vehicleDate.error">
+                        <div [hidden]="!carsFormErrors.engineNo.error" class="formInfo input-group">
+                            {{carsFormErrors.engineNo.error}}
+                        </div>
+                        <div [hidden]="!carsFormErrors.vehicleDate.error" class="formInfo input-group">
+                            {{carsFormErrors.vehicleDate.error}}
+                        </div>
+                    </div>
+                    <div class="form-inline">
+                        <div class="input-group">
+                            <label for="buyDate" class="input-group-addon">购车日期</label>
+                            <input type="text" class="form-control" formControlName="buyDate" id="buyDate" ngui-datetime-picker [close-on-select]="false" date-only="true">
+                        </div>
+                        <div class="input-group">
+                            <label for="insuranceExpireDate" class="input-group-addon">保险到期日期</label>
+                            <input type="text" class="form-control" formControlName="insuranceExpireDate" id="insuranceExpireDate" ngui-datetime-picker [close-on-select]="false" date-only="true">
+                        </div>
+                    </div>
+                    <div class="form-inline">
+                        <div class="input-group">
+                            <label for="insuranceCompanyId" class="input-group-addon">保险公司</label>
+                            <input type="text" class="form-control" formControlName="insuranceCompanyId" id="insuranceCompanyId" onkeypress="return event.keyCode>=48&&event.keyCode<=57">
+                        </div>
+                    </div>
+                    <div class="text-center">
+                        <button type="button" class="btn btn-primary" [disabled]="!carsForm.valid" (click)="addCar.hide();saveCarsInfo()">保存</button>
+                        <button type="button" class="btn btn-default" (click)="addCar.hide();cancelSaveCarsInfo()">取消</button>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+</div>
